@@ -1,18 +1,12 @@
-var builder = WebApplication.CreateBuilder(args);
+using System.CommandLine.Builder;
+using System.CommandLine.Parsing;
+using BeaconBridge.Commands.Helpers;
+using BeaconBridge.Startup.Cli;
+using BeaconBridge.Startup.Web;
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-app.Run();
+await new CommandLineBuilder(new CliEntrypoint())
+  .UseDefaults()
+  .UseRootCommandBypass(args, WebEntrypoint.Run)
+  .UseCliHostDefaults(args)
+  .Build()
+  .InvokeAsync(args);
