@@ -1,3 +1,5 @@
+using BeaconBridge.Config;
+
 namespace BeaconBridge.Startup.Web;
 
 public static class ConfigureWebService
@@ -10,7 +12,9 @@ public static class ConfigureWebService
     b.Services.AddSwaggerGen();
 
     // Add Options
-
+    b.Services
+      .Configure<BeaconInfoOptions>(b.Configuration.GetSection("BeaconInfo"))
+      .Configure<OrganisationOptions>(b.Configuration.GetSection("Organisation"));
     // Add HttpClients
 
     // Add Services
