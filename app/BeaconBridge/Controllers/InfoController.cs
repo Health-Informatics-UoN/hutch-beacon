@@ -1,5 +1,6 @@
 using BeaconBridge.Config;
 using BeaconBridge.Models;
+using BeaconBridge.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -7,21 +8,16 @@ namespace BeaconBridge.Controllers;
 
 [ApiController]
 [Route("api/")]
-public class InfoController: ControllerBase
+public class InfoController(IOptions<BeaconInfoOptions> beaconInfoOptions,
+    IOptions<OrganisationOptions> organisationOptions,InfoService infoService)
+  : ControllerBase
 {
-  private readonly BeaconInfoOptions _beaconInfoOptions;
-  private readonly OrganisationOptions _organisationOptions;
-  
-
-  public InfoController(IOptions<BeaconInfoOptions> beaconInfoOptions, 
-    IOptions<OrganisationOptions> organisationOptions)
-  {
-    _organisationOptions = organisationOptions.Value;
-    _beaconInfoOptions = beaconInfoOptions.Value;
-  }
+  private readonly BeaconInfoOptions _beaconInfoOptions = beaconInfoOptions.Value;
+  private readonly OrganisationOptions _organisationOptions = organisationOptions.Value;
+  private readonly InfoService _infoService = infoService;
 
   [HttpGet,Route("")]
-  public ActionResult<Info> Get()
+  public ActionResult<Info> Get([FromQuery] string requestedSchema)
   {
     var info = new Info()
     {
@@ -29,7 +25,8 @@ public class InfoController: ControllerBase
       {
         ApiVersion = _beaconInfoOptions.ApiVersion,
         BeaconId = _beaconInfoOptions.BeaconId,
-        Granularity = _beaconInfoOptions.Granularity
+        Granularity = _beaconInfoOptions.Granularity,
+        RequestSummary = _infoService.SetSummary(requestedSchema)
       },
       Response =
       {
@@ -41,14 +38,14 @@ public class InfoController: ControllerBase
         Description = _beaconInfoOptions.Description,
         Version = _beaconInfoOptions.Version,
         WelcomeUrl = _beaconInfoOptions.WelcomeUrl,
-        AlternativeUrl = _beaconInfoOptions.AlternativeUrl
+        AlternativeUrl = _beaconInfoOptions.AlternativeUrl,
       }
     };
     return info;
   }
   
   [HttpGet,Route("[controller]")]
-  public ActionResult<Info> GetInfo()
+  public ActionResult<Info> GetInfo([FromQuery] string requestedSchema)
   {
     var info = new Info()
     {
@@ -56,7 +53,8 @@ public class InfoController: ControllerBase
       {
         ApiVersion = _beaconInfoOptions.ApiVersion,
         BeaconId = _beaconInfoOptions.BeaconId,
-        Granularity = _beaconInfoOptions.Granularity
+        Granularity = _beaconInfoOptions.Granularity,
+        RequestSummary = _infoService.SetSummary(requestedSchema)
       },
       Response =
       {

@@ -14,7 +14,7 @@ public class Meta
   public string Granularity { get; set; } = string.Empty;
 
   [JsonPropertyName("receivedRequestSummary")]
-  public string RequestSummary { get; set; } = string.Empty;
+  public RequestSummary RequestSummary { get; set; } = new();
 
   [JsonPropertyName("returnedSchemas")]
   public string ReturnedSchemas { get; set; } = string.Empty;
