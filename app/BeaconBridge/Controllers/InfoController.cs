@@ -13,23 +13,23 @@ public class InfoController(IOptions<BeaconInfoOptions> beaconInfoOptions,
 {
   private readonly BeaconInfoOptions _beaconInfoOptions = beaconInfoOptions.Value;
   private readonly OrganisationOptions _organisationOptions = organisationOptions.Value;
-  [HttpGet,Route(""),Route("info")]
-  public ActionResult<Info> Get([FromQuery] string requestedSchema)
+
+  [HttpGet, Route(""), Route("info")]
+  public ActionResult<Info> Get([FromQuery] string? requestedSchema)
   {
-    var info = new Info()
+    var info = new Info
     {
-      Meta =
+      BaseMeta =
       {
         ApiVersion = _beaconInfoOptions.ApiVersion,
-        BeaconId = _beaconInfoOptions.BeaconId,
-        Granularity = _beaconInfoOptions.Granularity
+        BeaconId = _beaconInfoOptions.BeaconId
       },
       Response =
       {
         Id = _beaconInfoOptions.BeaconId,
         Name = _beaconInfoOptions.Name,
         ApiVersion = _beaconInfoOptions.ApiVersion,
-        Environment = _beaconInfoOptions.Environment,
+        Environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")!,
         Organisation = _organisationOptions,
         Description = _beaconInfoOptions.Description,
         Version = _beaconInfoOptions.Version,
