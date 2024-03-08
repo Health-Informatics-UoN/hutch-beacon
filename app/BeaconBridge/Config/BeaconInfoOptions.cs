@@ -5,9 +5,8 @@ public class BeaconInfoOptions
   public string BeaconId { get; set; } = string.Empty;
   
   public string ApiVersion { get; set; } = string.Empty;
-  public string Name { get; set; } = string.Empty;
   
-  public string Environment { get; set; } = string.Empty;
+  public string Name { get; set; } = string.Empty;
   
   public string Description { get; set; } = string.Empty;
   
