@@ -1,8 +1,9 @@
 namespace BeaconBridge.Constants;
 
-public enum Granularity
+public static class Granularity
 {
-   Boolean,
-   Count,
-   Record
+  public const string Boolean = "boolean";
+  public const string Count = "count";
+  public const string Record = "record";
+  
 }
