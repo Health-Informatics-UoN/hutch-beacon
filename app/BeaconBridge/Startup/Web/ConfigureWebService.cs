@@ -1,5 +1,4 @@
 using BeaconBridge.Config;
-using BeaconBridge.Services;
 
 namespace BeaconBridge.Startup.Web;
 
@@ -19,8 +18,6 @@ public static class ConfigureWebService
     // Add HttpClients
 
     // Add Services
-    b.Services
-      .AddTransient<InfoService>();
 
     return b;
   }
