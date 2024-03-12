@@ -3,7 +3,7 @@
 public class Tre
 {
   public int Id { get; set; }        
-  public virtual List<BL.Models.Project> Projects { get; set; }
+  public virtual List<Project> Projects { get; set; }
   public string Name { get; set; }
 
   public DateTime LastHeartBeatReceived { get; set; }

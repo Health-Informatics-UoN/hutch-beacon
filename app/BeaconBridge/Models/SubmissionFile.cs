@@ -10,6 +10,6 @@ public class SubmissionFile
   public string SubmisionBucketFullPath { get; set; }
   public FileStatus Status { get; set; }
   public string Description { get; set; }
-  public virtual BL.Models.Submission Submission { get; set; }
+  public virtual Submission Submission { get; set; }
 
 }

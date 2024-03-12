@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Text.Json;
 using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
@@ -8,12 +9,10 @@ using BeaconBridge.Config;
 using BeaconBridge.Models;
 using BeaconBridge.Services.Contracts;
 using Minio.Exceptions;
-using Newtonsoft.Json;
-using Serilog;
 
 namespace BeaconBridge.Services;
 
-public class MinioHelper(MinioOptions minioSettings) : IMinioHelper
+public class MinioHelper(ILogger<MinioHelper> logger, MinioOptions minioSettings) : IMinioHelper
 {
   public async Task<bool> CheckBucketExists(string bucketName = "")
   {
@@ -28,7 +27,7 @@ public class MinioHelper(MinioOptions minioSettings) : IMinioHelper
     }
     catch (Exception e)
     {
-      Log.Error(e, "{Function} Something went wrong", "CheckBucketExists");
+      logger.LogError(e, "{Function} Something went wrong", "CheckBucketExists");
       throw;
     }
   }
@@ -39,7 +38,7 @@ public class MinioHelper(MinioOptions minioSettings) : IMinioHelper
     try
     {
 
-      ListObjectsV2Request request = new ListObjectsV2Request
+      var request = new ListObjectsV2Request
       {
         BucketName = bucketName,
         Prefix = prefix
@@ -47,16 +46,16 @@ public class MinioHelper(MinioOptions minioSettings) : IMinioHelper
 
       var amazonS3Client = GenerateAmazonS3Client();
       var data = await amazonS3Client.ListObjectsV2Async(request);
-      Log.Information("{bucketName} created successfully.", bucketName);
+      logger.LogInformation("{BucketName} created successfully", bucketName);
       return data;
     }
     catch (MinioException e)
     {
-      Log.Warning("GetFilesInBucket: {bucketName}, failed due to Minio exception: {message}", bucketName, e.Message);
+      logger.LogWarning("GetFilesInBucket: {BucketName}, failed due to Minio exception: {Message}", bucketName, e.Message);
     }
     catch (Exception ex)
     {
-      Log.Warning("GetFilesInBucket: {bucketName}, failed due to Exception: {message}", bucketName, ex.Message);
+      logger.LogWarning("GetFilesInBucket: {BucketName}, failed due to Exception: {Message}", bucketName, ex.Message);
     }
 
     return null;
@@ -76,29 +75,29 @@ public class MinioHelper(MinioOptions minioSettings) : IMinioHelper
 
         if (found)
         {
-          Log.Information("{bucketName} already exists.", bucketName);
+          logger.LogInformation("{BucketName} already exists", bucketName);
           return true;
         }
         else
         {
           var amazonS3Client = GenerateAmazonS3Client();
           await amazonS3Client.PutBucketAsync(bucketName);
-          Log.Information("{bucketName} created successfully.", bucketName);
+          logger.LogInformation("{BucketName} created successfully", bucketName);
           return true;
         }
       }
       catch (MinioException e)
       {
-        Log.Warning("Create bucket: {bucketName}, failed due to Minio exception: {message}", bucketName, e.Message);
+        logger.LogWarning("Create bucket: {BucketName}, failed due to Minio exception: {Message}", bucketName, e.Message);
       }
       catch (Exception ex)
       {
-        Log.Warning("Create bucket: {bucketName}, failed due to Exception: {message}", bucketName, ex.Message);
+        logger.LogWarning("Create bucket: {BucketName}, failed due to Exception: {Message}", bucketName, ex.Message);
       }
     }
     else
     {
-      Log.Warning("Cannot create bucket as bucket name is null or empty.");
+      logger.LogWarning("Cannot create bucket as bucket name is null or empty");
     }
     return false;
   }
@@ -130,12 +129,12 @@ public class MinioHelper(MinioOptions minioSettings) : IMinioHelper
           var response = await amazonS3Client.PutObjectAsync(uploadRequest);
           if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
           {
-            Log.Warning($"Successfully uploaded {objectName} to {bucketName}.");
+            logger.LogWarning($"Successfully uploaded {objectName} to {bucketName}.");
             return true;
           }
           else
           {
-            Log.Warning($"Could not upload {objectName} to {bucketName}.");
+            logger.LogWarning($"Could not upload {objectName} to {bucketName}.");
             return false;
           }
         }
@@ -177,12 +176,12 @@ public class MinioHelper(MinioOptions minioSettings) : IMinioHelper
 
       if (response.HttpStatusCode == System.Net.HttpStatusCode.OK)
       {
-        Log.Warning($"Successfully uploaded {objectName} to {bucketName}.");
+        logger.LogWarning($"Successfully uploaded {objectName} to {bucketName}.");
         return true;
       }
       else
       {
-        Log.Warning($"Could not upload {objectName} to {bucketName}.");
+        logger.LogWarning($"Could not upload {objectName} to {bucketName}.");
         return false;
       }
     }
@@ -205,7 +204,7 @@ public class MinioHelper(MinioOptions minioSettings) : IMinioHelper
     }
     catch (AmazonS3Exception ex)
     {
-      Log.Error(ex.ToString());
+      logger.LogError(ex.ToString());
     }
   }
 
@@ -222,14 +221,14 @@ public class MinioHelper(MinioOptions minioSettings) : IMinioHelper
     try
     {
       await amazonS3Client.GetObjectMetadataAsync(request);
-      Log.Warning($"{request.Key} Exists on {bucketName}.");
+      logger.LogWarning($"{request.Key} Exists on {bucketName}.");
       return true;
     }
     catch (AmazonS3Exception ex)
     {
       if (ex.StatusCode == HttpStatusCode.NotFound)
       {
-        Log.Warning($"{request.Key} Not Exists on {bucketName}.");
+        logger.LogWarning($"{request.Key} Not Exists on {bucketName}.");
         return false;
       }
       else
@@ -273,16 +272,14 @@ public class MinioHelper(MinioOptions minioSettings) : IMinioHelper
 
   public async Task<bool> RabbitExternalObject(string msgBytes)
   {
-    var FileInfo = JsonConvert.DeserializeObject<MQFetchFile>(msgBytes);
-    if (FileInfo == null)
+    var fileInfo = JsonSerializer.Deserialize<MQFetchFile>(msgBytes);
+    if (fileInfo == null)
     {
       return false;
     }
-    else
-    {
-      await FetchAndStoreObject(FileInfo.Url, FileInfo.BucketName, FileInfo.Key);
-      return true;
-    }
+
+    await FetchAndStoreObject(fileInfo.Url, fileInfo.BucketName, fileInfo.Key);
+    return true;
   }
 
   public async Task<bool> CreateBucketPolicy(string bucketName)

@@ -4,7 +4,6 @@ using BeaconBridge.Data;
 using BeaconBridge.Services.Contracts;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using BeaconBridge.Models;
 
 namespace BeaconBridge.Utilities;
@@ -77,10 +76,5 @@ public class ControllerHelpers
             };
             dbContext.AuditLogs.Add(audit);
             await dbContext.SaveChangesAsync();
-            Log.Information(
-                "{Function}: AuditLogs: LogType: {LogType,} UserId: {UserId}, ProjectId: {ProjectId}, TreId: {TreId}, SubmissionId: {SubmissionId}, FormData {FormData}, LoggedInUser: {LoggedInUser}",
-                "AddAuditLog", logType.ToString(), user == null ? "[null]" : user.Id, project == null ? "[null]" : project.Id,
-                tre == null ? "[null]" : tre.Id, submission == null ? "[null]" : submission.Id, formData == null ? "[null]" : formData,
-                (from x in loggedInUser.Claims where x.Type == "preferred_username" select x.Value).First());
         }
 }
