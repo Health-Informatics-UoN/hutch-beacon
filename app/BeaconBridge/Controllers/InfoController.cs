@@ -8,12 +8,12 @@ namespace BeaconBridge.Controllers;
 [ApiController]
 [Route("api/")]
 public class InfoController(IOptions<BeaconInfoOptions> beaconInfoOptions,
-    IOptions<OrganisationOptions> organisationOptions)
+    IOptions<OrganisationOptions> organisationOptions, IOptions<ServiceOptions> serviceOptions)
   : ControllerBase
 {
   private readonly BeaconInfoOptions _beaconInfoOptions = beaconInfoOptions.Value;
   private readonly OrganisationOptions _organisationOptions = organisationOptions.Value;
-
+  private readonly ServiceOptions _serviceOptions = serviceOptions.Value;
   [HttpGet, Route(""), Route("info")]
   public ActionResult<Info> Get([FromQuery] string? requestedSchema)
   {
@@ -38,5 +38,27 @@ public class InfoController(IOptions<BeaconInfoOptions> beaconInfoOptions,
       }
     };
     return info;
+  }
+
+  [HttpGet, Route("service-info")]
+  public ActionResult<ServiceInfo> GetServiceInfo()
+  {
+    var serviceInfo = new ServiceInfo()
+    {
+      Id = _beaconInfoOptions.BeaconId,
+      Name = _beaconInfoOptions.Name,
+      Type = _serviceOptions.Type,
+      Description = _beaconInfoOptions.Description,
+      Organisation =
+      {
+        Name = _organisationOptions.Name,
+        WelcomeUrl = _organisationOptions.WelcomeUrl
+      },
+      ContactUrl = _organisationOptions.ContactUrl,
+      DocumentationUrl = _serviceOptions.DocumentationUrl,
+      Environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")!,
+      Version = _beaconInfoOptions.Version
+    };
+    return serviceInfo;
   }
 }
