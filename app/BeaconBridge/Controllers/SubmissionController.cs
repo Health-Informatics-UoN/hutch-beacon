@@ -13,8 +13,7 @@ namespace BeaconBridge.Controllers;
 [ApiController, Route("api/[controller]/")]
 public class SubmissionController(BeaconContext db, ILogger logger, IMinioHelper minioHelper) : ControllerBase
 {
-  [HttpGet]
-  [Route("get-waiting-submissions-for-tre")]
+  [HttpGet("get-waiting-submissions-for-tre")]
   public async Task<IActionResult> GetWaitingSubmissionsForTre()
   {
     var tre = await ControllerHelpers.GetUserTre(User, db);
@@ -30,7 +29,7 @@ public class SubmissionController(BeaconContext db, ILogger logger, IMinioHelper
     return Ok(results);
   }
   
-  [HttpGet, Route("get-request-cancel-subs-for-tre")]
+  [HttpGet("get-request-cancel-subs-for-tre")]
   public async Task<IActionResult> GetRequestCancelSubsForTre()
   {
     var tre = await ControllerHelpers.GetUserTre(User, db);
@@ -47,7 +46,7 @@ public class SubmissionController(BeaconContext db, ILogger logger, IMinioHelper
     return StatusCode(200, results);
   }
   
-  [HttpGet, Route("update-status-for-tre")]
+  [HttpGet("update-status-for-tre")]
   public async Task<IActionResult> UpdateStatusForTre(string subId, StatusType statusType, string? description)
   {
     await UpdateStatusForTreGuts(subId, statusType, description);
@@ -56,7 +55,7 @@ public class SubmissionController(BeaconContext db, ILogger logger, IMinioHelper
     return NoContent();
   }
   
-  [HttpGet, Route("close-submission-for-tre")]
+  [HttpGet("close-submission-for-tre")]
   public async Task<IActionResult> CloseSubmissionForTre(string subId, StatusType statusType, string? finalFile, string? description)
   {
     if (!UpdateSubmissionStatus.SubCompleteTypes.Contains(statusType) && statusType != StatusType.Failure)
