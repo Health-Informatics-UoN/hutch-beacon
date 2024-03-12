@@ -14,7 +14,8 @@ public static class ConfigureWebService
     // Add Options
     b.Services
       .Configure<BeaconInfoOptions>(b.Configuration.GetSection("BeaconInfo"))
-      .Configure<OrganisationOptions>(b.Configuration.GetSection("Organisation"));
+      .Configure<OrganisationOptions>(b.Configuration.GetSection("Organisation"))
+      .Configure<ServiceOptions>(b.Configuration.GetSection("ServiceInfo"));
     // Add HttpClients
 
     // Add Services
