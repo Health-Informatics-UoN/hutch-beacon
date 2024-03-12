@@ -2,13 +2,15 @@ using BeaconBridge.Constants;
 using BeaconBridge.Data;
 using BeaconBridge.Models;
 using BeaconBridge.Services;
+using BeaconBridge.Services.Contracts;
 using BeaconBridge.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace BeaconBridge.Controllers;
 
 [ApiController, Route("api/[controller]/")]
-public class SubmissionController(BeaconContext db, ILogger<SubmissionController> logger) : ControllerBase
+public class SubmissionController(BeaconContext db, ILogger<SubmissionController> logger, IMinioHelper minioHelper) : ControllerBase
 {
   [HttpGet]
   [Route("get-waiting-submissions-for-tre")]
@@ -89,6 +91,45 @@ public class SubmissionController(BeaconContext db, ILogger<SubmissionController
       logger.LogError(ex, "{Function} Crashed", "GetSubmission");
       throw;
     }
+  }
+  
+  [HttpGet("download-file")]
+  public async Task<IActionResult> DownloadFileAsync(int submissionId)
+  {
+    try
+    {
+      logger.LogDebug("DownloadFileAsync submissionId > {SubmissionId}", submissionId);
+      var submission = db.Submissions.First(x => x.Id == submissionId);
+
+
+      logger.LogDebug("DownloadFileAsync submission.Project.OutputBucket > {ProjectOutputBucket} submission.FinalOutputFile > {SubmissionFinalOutputFile} ", submission.Project.OutputBucket, submission.FinalOutputFile);
+      var response = await minioHelper.GetCopyObject(submission.Project.OutputBucket, submission.FinalOutputFile);
+
+            
+      var responseStream = response.ResponseStream;
+      return File(responseStream, GetContentType(submission.FinalOutputFile), submission.FinalOutputFile);
+    }
+    catch (Exception ex)
+    {
+      logger.LogError(ex, "{Function} Crashed", "DownloadFiles");
+      throw;
+    }
+
+  }
+  
+  private static string GetContentType(string fileName)
+  {
+    // Create a new FileExtensionContentTypeProvider
+    var provider = new FileExtensionContentTypeProvider();
+
+    // Try to get the content type based on the file name's extension
+    if (provider.TryGetContentType(fileName, out var contentType))
+    {
+      return contentType;
+    }
+
+    // If the content type cannot be determined, provide a default value
+    return "application/octet-stream"; // This is a common default for unknown file types
   }
   
   private async Task<Submission> UpdateStatusForTreGuts(string subId, StatusType statusType, string? description)
