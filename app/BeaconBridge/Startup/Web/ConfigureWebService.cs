@@ -14,8 +14,11 @@ public static class ConfigureWebService
     b.Services.AddSwaggerGen();
 
     // Add Options
-    b.Services.Configure<MinioOptions>(b.Configuration.GetSection("Minio"));
-    b.Services.Configure<KeyCloakOptions>(b.Configuration.GetSection("Keycloak"));
+    b.Services
+      .Configure<BeaconInfoOptions>(b.Configuration.GetSection("BeaconInfo"))
+      .Configure<MinioOptions>(b.Configuration.GetSection("Minio"))
+      .Configure<KeyCloakOptions>(b.Configuration.GetSection("Keycloak"))
+      .Configure<OrganisationOptions>(b.Configuration.GetSection("Organisation"));
 
     // Add HttpClients
 
