@@ -15,11 +15,13 @@ public static class ConfigureWebService
 
     // Add Options
     b.Services.Configure<MinioOptions>(b.Configuration.GetSection("Minio"));
+    b.Services.Configure<KeyCloakOptions>(b.Configuration.GetSection("Keycloak"));
 
     // Add HttpClients
 
     // Add Services
     b.Services.AddTransient<MinioHelper>();
+    b.Services.AddTransient<KeycloakMinioUserService>();
 
     return b;
   }
