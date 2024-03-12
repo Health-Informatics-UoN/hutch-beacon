@@ -31,7 +31,7 @@ public class ControllerHelpers
         }
 
 
-        public async Task<Tre?> GetUserTre(ClaimsPrincipal loggedInUser, BeaconContext dbContext)
+        public static async Task<Tre?> GetUserTre(ClaimsPrincipal loggedInUser, BeaconContext dbContext)
         {
             var usersName = (from x in loggedInUser.Claims where x.Type == "preferred_username" select x.Value).First();
             var tre = await dbContext.Tres.FirstAsync(x => string.Equals(x.AdminUsername, usersName, StringComparison.CurrentCultureIgnoreCase));

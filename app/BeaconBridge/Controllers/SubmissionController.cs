@@ -1,18 +1,20 @@
 using BeaconBridge.Constants;
 using BeaconBridge.Data;
+using BeaconBridge.Models;
+using BeaconBridge.Services;
 using BeaconBridge.Utilities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeaconBridge.Controllers;
 
 [ApiController, Route("api/[controller]/")]
-public class SubmissionController(BeaconContext db, ControllerHelpers helpers) : ControllerBase
+public class SubmissionController(BeaconContext db) : ControllerBase
 {
   [HttpGet]
   [Route("get-waiting-submissions-for-tre")]
   public async Task<IActionResult> GetWaitingSubmissionsForTre()
   {
-    var tre = await helpers.GetUserTre(User, db);
+    var tre = await ControllerHelpers.GetUserTre(User, db);
     if (tre == null)
     {
       return NotFound();
@@ -28,7 +30,7 @@ public class SubmissionController(BeaconContext db, ControllerHelpers helpers) :
   [HttpGet, Route("get-request-cancel-subs-for-tre")]
   public async Task<IActionResult> GetRequestCancelSubsForTre()
   {
-    var tre = await helpers.GetUserTre(User, db);
+    var tre = await ControllerHelpers.GetUserTre(User, db);
     if (tre == null)
     {
       return NotFound();
@@ -40,5 +42,35 @@ public class SubmissionController(BeaconContext db, ControllerHelpers helpers) :
 
 
     return StatusCode(200, results);
+  }
+  
+  [HttpGet]
+  [Route("update-status-for-tre")]
+  public async Task<IActionResult> UpdateStatusForTre(string subId, StatusType statusType, string? description)
+  {
+    await UpdateStatusForTreGuts(subId, statusType, description);
+    await db.SaveChangesAsync();
+    
+    return NoContent();
+  }
+  
+  private async Task<Submission> UpdateStatusForTreGuts(string subId, StatusType statusType, string? description)
+  {
+    var tre = await ControllerHelpers.GetUserTre(User, db);
+
+
+    var sub = db.Submissions.FirstOrDefault(x => x.Id == int.Parse(subId) && x.Tre == tre);
+    if (sub == null)
+    {
+      throw new Exception("Invalid subid or tre not valid for tes");
+    }
+
+    if (UpdateSubmissionStatus.SubCompleteTypes.Contains(sub.Status))
+    {
+      throw new Exception("Submission already closed. Can't change status");
+    }
+
+    UpdateSubmissionStatus.UpdateStatusNoSave(sub, statusType, description);
+    return sub;
   }
 }
