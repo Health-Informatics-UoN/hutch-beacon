@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BeaconBridge.Controllers;
 
 [ApiController, Route("api/[controller]/")]
-public class SubmissionController(BeaconContext db) : ControllerBase
+public class SubmissionController(BeaconContext db, ILogger<SubmissionController> logger) : ControllerBase
 {
   [HttpGet]
   [Route("get-waiting-submissions-for-tre")]
@@ -72,6 +72,23 @@ public class SubmissionController(BeaconContext db) : ControllerBase
     await db.SaveChangesAsync();
             
     return NoContent();
+  }
+  
+  [HttpGet("get-submission/{submissionId}")]
+  public Submission GetSubmission(int submissionId)
+  {
+    try
+    {
+      var submission = db.Submissions.First(x => x.Id == submissionId);
+
+      logger.LogInformation("{Function} Submission retrieved successfully", "GetSubmission");
+      return submission;
+    }
+    catch (Exception ex)
+    {
+      logger.LogError(ex, "{Function} Crashed", "GetSubmission");
+      throw;
+    }
   }
   
   private async Task<Submission> UpdateStatusForTreGuts(string subId, StatusType statusType, string? description)
