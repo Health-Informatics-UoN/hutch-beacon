@@ -44,13 +44,33 @@ public class SubmissionController(BeaconContext db) : ControllerBase
     return StatusCode(200, results);
   }
   
-  [HttpGet]
-  [Route("update-status-for-tre")]
+  [HttpGet, Route("update-status-for-tre")]
   public async Task<IActionResult> UpdateStatusForTre(string subId, StatusType statusType, string? description)
   {
     await UpdateStatusForTreGuts(subId, statusType, description);
     await db.SaveChangesAsync();
     
+    return NoContent();
+  }
+  
+  [HttpGet, Route("close-submission-for-tre")]
+  public async Task<IActionResult> CloseSubmissionForTre(string subId, StatusType statusType, string? finalFile, string? description)
+  {
+    if (!UpdateSubmissionStatus.SubCompleteTypes.Contains(statusType) && statusType != StatusType.Failure)
+    {
+      throw new Exception("Invalid completion type");
+    }
+
+    if (statusType == StatusType.Failure)
+    {
+      await UpdateStatusForTreGuts(subId, statusType, description);
+      await db.SaveChangesAsync();
+      statusType = StatusType.Failed;
+    }
+    var sub = await UpdateStatusForTreGuts(subId, statusType, description);
+    sub.FinalOutputFile = finalFile;
+    await db.SaveChangesAsync();
+            
     return NoContent();
   }
   
