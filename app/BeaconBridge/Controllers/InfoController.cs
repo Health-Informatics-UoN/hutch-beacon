@@ -49,10 +49,15 @@ public class InfoController(IOptions<BeaconInfoOptions> beaconInfoOptions,
       Name = _beaconInfoOptions.Name,
       Type = _serviceOptions.Type,
       Description = _beaconInfoOptions.Description,
-      Organisation =
+      Organisation = 
       {
+        Id = null,
         Name = _organisationOptions.Name,
-        WelcomeUrl = _organisationOptions.WelcomeUrl
+        WelcomeUrl = _organisationOptions.WelcomeUrl,
+        Address = null,
+        ContactUrl = null,
+        Description = null,
+        LogoUrl = null
       },
       ContactUrl = _organisationOptions.ContactUrl,
       DocumentationUrl = _serviceOptions.DocumentationUrl,
