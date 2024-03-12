@@ -1,3 +1,6 @@
+using BeaconBridge.Config;
+using BeaconBridge.Services;
+
 namespace BeaconBridge.Startup.Web;
 
 public static class ConfigureWebService
@@ -11,10 +14,12 @@ public static class ConfigureWebService
     b.Services.AddSwaggerGen();
 
     // Add Options
+    b.Services.Configure<MinioOptions>(b.Configuration.GetSection("Minio"));
 
     // Add HttpClients
 
     // Add Services
+    b.Services.AddTransient<MinioHelper>();
 
     return b;
   }
