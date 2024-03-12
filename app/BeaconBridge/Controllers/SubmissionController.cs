@@ -6,6 +6,7 @@ using BeaconBridge.Services.Contracts;
 using BeaconBridge.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.EntityFrameworkCore;
 
 namespace BeaconBridge.Controllers;
 
@@ -114,7 +115,47 @@ public class SubmissionController(BeaconContext db, ILogger<SubmissionController
       logger.LogError(ex, "{Function} Crashed", "DownloadFiles");
       throw;
     }
+  }
+  
+  [HttpPost("save-submission-files")]
+  public async Task<IActionResult> SaveSubmissionFiles(int submissionId, List<SubmissionFile> submissionFiles)
+  {
+    try { 
+      var existingSubmission = db.Submissions
+        .Include(d => d.SubmissionFiles)
+        .FirstOrDefault(d => d.Id == submissionId);
 
+      if (existingSubmission != null)
+      {
+        foreach (var file in submissionFiles)
+        {
+          var existingFile =
+            existingSubmission.SubmissionFiles.FirstOrDefault(f =>
+              f.TreBucketFullPath == file.TreBucketFullPath);
+          if (existingFile != null)
+          {
+            existingFile.Name = file.Name;
+            existingFile.TreBucketFullPath = file.TreBucketFullPath;
+            existingFile.SubmisionBucketFullPath = file.SubmisionBucketFullPath;
+            existingFile.Status = file.Status;
+            existingFile.Description = file.Description;
+          }
+          else
+          {
+            existingSubmission.SubmissionFiles.Add(file);
+          }
+        }
+
+        await db.SaveChangesAsync();
+        return Ok(existingSubmission);
+      }
+      return BadRequest();
+    }
+    catch (Exception ex)
+    {
+      logger.LogError(ex, "{Function} Crashed", "SaveSubmissionFiles");
+      throw;
+    }
   }
   
   private static string GetContentType(string fileName)
