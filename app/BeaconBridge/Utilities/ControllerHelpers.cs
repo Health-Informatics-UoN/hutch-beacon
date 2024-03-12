@@ -1,11 +1,13 @@
 using System.Security.Claims;
+using BeaconBridge.Constants;
 using BeaconBridge.Data;
 using BeaconBridge.Services.Contracts;
-using BL.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
+using BeaconBridge.Models;
 
-namespace BeaconBridge.Services;
+namespace BeaconBridge.Utilities;
 
 public class ControllerHelpers
 {
@@ -29,14 +31,10 @@ public class ControllerHelpers
         }
 
 
-        public static Tre? GetUserTre(ClaimsPrincipal loggedInUser, BeaconContext dbContext)
+        public async Task<Tre?> GetUserTre(ClaimsPrincipal loggedInUser, BeaconContext dbContext)
         {
             var usersName = (from x in loggedInUser.Claims where x.Type == "preferred_username" select x.Value).First();
-            var tre = dbContext.Tres.FirstOrDefault(x => x.AdminUsername.ToLower() == usersName.ToLower());
-            if (tre == null)
-            {
-                throw new Exception("User " + usersName + " doesn't have a tre");
-            }
+            var tre = await dbContext.Tres.FirstAsync(x => string.Equals(x.AdminUsername, usersName, StringComparison.CurrentCultureIgnoreCase));
 
             return tre;
         }

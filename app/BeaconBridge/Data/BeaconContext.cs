@@ -1,5 +1,5 @@
-using BL.Models;
 using Microsoft.EntityFrameworkCore;
+using BeaconBridge.Models;
 
 namespace BeaconBridge.Data;
 
@@ -15,7 +15,7 @@ public class BeaconContext : DbContext
   public DbSet<Project> Projects { get; set; }
         
         
-  public DbSet<BL.Models.Tre> Tres { get; set; }
+  public DbSet<Tre> Tres { get; set; }
 
   public DbSet<Submission> Submissions { get; set; }
   public DbSet<HistoricStatus> HistoricStatuses { get; set; }
