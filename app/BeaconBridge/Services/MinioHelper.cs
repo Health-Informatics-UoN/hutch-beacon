@@ -12,7 +12,7 @@ using Minio.Exceptions;
 
 namespace BeaconBridge.Services;
 
-public class MinioHelper(ILogger<MinioHelper> logger, MinioOptions minioSettings) : IMinioHelper
+public class MinioHelper(ILogger logger, MinioOptions minioSettings) : IMinioHelper
 {
   public async Task<bool> CheckBucketExists(string bucketName = "")
   {

@@ -2,7 +2,7 @@
 
 namespace BeaconBridge.Config;
 
-public class KeyCloakOptions(ILogger<KeyCloakOptions> logger)
+public class KeyCloakOptions(ILogger logger)
 {
 
   public string Authority { get; set; }

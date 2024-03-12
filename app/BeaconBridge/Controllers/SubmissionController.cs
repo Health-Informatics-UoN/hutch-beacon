@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BeaconBridge.Controllers;
 
 [ApiController, Route("api/[controller]/")]
-public class SubmissionController(BeaconContext db, ILogger<SubmissionController> logger, IMinioHelper minioHelper) : ControllerBase
+public class SubmissionController(BeaconContext db, ILogger logger, IMinioHelper minioHelper) : ControllerBase
 {
   [HttpGet]
   [Route("get-waiting-submissions-for-tre")]
