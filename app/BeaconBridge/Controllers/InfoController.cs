@@ -40,7 +40,7 @@ public class InfoController(IOptions<BeaconInfoOptions> beaconInfoOptions,
     return info;
   }
 
-  [HttpGet, Route("service-info")]
+  [HttpGet("service-info")]
   public ActionResult<ServiceInfo> GetServiceInfo()
   {
     var serviceInfo = new ServiceInfo()
