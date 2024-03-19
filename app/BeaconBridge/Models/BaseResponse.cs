@@ -3,7 +3,7 @@ using BeaconBridge.Config;
 
 namespace BeaconBridge.Models;
 
-public class Response
+public class BaseResponse
 {
   [JsonPropertyName("id")] 
   public string Id { get; set; } = string.Empty;
