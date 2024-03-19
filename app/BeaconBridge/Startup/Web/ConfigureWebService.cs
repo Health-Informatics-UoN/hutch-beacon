@@ -18,8 +18,8 @@ public static class ConfigureWebService
       .Configure<BeaconInfoOptions>(b.Configuration.GetSection("BeaconInfo"))
       .Configure<MinioOptions>(b.Configuration.GetSection("Minio"))
       .Configure<KeyCloakOptions>(b.Configuration.GetSection("Keycloak"))
-      .Configure<OrganisationOptions>(b.Configuration.GetSection("Organisation"));
-
+      .Configure<OrganisationOptions>(b.Configuration.GetSection("Organisation"))
+      .Configure<ServiceOptions>(b.Configuration.GetSection("ServiceInfo"));
     // Add HttpClients
 
     // Add Services
