@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using BeaconBridge.Constants.Submission;
+using BeaconBridge.Models.Submission;
 
 namespace BeaconBridge.Data.Entities;
 
@@ -10,7 +12,6 @@ public class Submission
   public string SourceCrate { get; set; }
   public string TesName { get; set; }
   public string? TesJson { get; set; }
-
   public string? FinalOutputFile { get; set; }
   public string DockerInputLocation { get; set; }
   public Project Project { get; set; }
