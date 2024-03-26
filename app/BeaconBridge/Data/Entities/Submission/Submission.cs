@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using BeaconBridge.Constants.Submission;
 using BeaconBridge.Models.Submission;
 
-namespace BeaconBridge.Data.Entities;
+namespace BeaconBridge.Data.Entities.Submission;
 
 public class Submission
 {

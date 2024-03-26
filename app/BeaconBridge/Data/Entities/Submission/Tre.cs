@@ -1,4 +1,4 @@
-namespace BeaconBridge.Data.Entities;
+namespace BeaconBridge.Data.Entities.Submission;
 
 public class Tre
 {

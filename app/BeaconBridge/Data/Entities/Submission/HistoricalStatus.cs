@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using BeaconBridge.Constants.Submission;
 
-namespace BeaconBridge.Data.Entities;
+namespace BeaconBridge.Data.Entities.Submission;
 
 public class HistoricStatus
 {
