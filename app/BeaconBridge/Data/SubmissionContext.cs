@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BeaconBridge.Data;
 
-public class DbContext
+public class SubmissionContext: DbContext
 {
   public DbSet<User> Users { get; set; }
   public DbSet<Project> Projects { get; set; }
