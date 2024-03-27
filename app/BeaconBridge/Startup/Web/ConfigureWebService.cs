@@ -27,7 +27,9 @@ public static class ConfigureWebService
     // Add HttpClients
 
     // Add Services
-    b.Services.AddTransient<UserHelper>();
+    b.Services
+      .AddTransient<UserHelper>()
+      .AddSingleton<SubmissionStatusService>();
 
     return b;
   }
