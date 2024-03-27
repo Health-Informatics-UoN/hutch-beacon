@@ -1,5 +1,6 @@
 using BeaconBridge.Config;
 using BeaconBridge.Data;
+using BeaconBridge.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace BeaconBridge.Startup.Web;
@@ -26,6 +27,9 @@ public static class ConfigureWebService
     // Add HttpClients
 
     // Add Services
+    b.Services
+      .AddTransient<UserHelper>()
+      .AddSingleton<SubmissionStatusService>();
 
     return b;
   }
