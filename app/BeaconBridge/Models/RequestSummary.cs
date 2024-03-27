@@ -19,14 +19,17 @@ public class RequestSummary
   
   public string? IncludeResultSetResponses { get; set; } = ResultsetResponses.Hit;
 
-  public Dictionary<string, int>? Pagination { get; set; } = new()
-  {
-    { "skip", 0 },
-    { "limit", 10 }
-  };
+  public Pagination Pagination { get; set; } = new();
   
   public string? Granularity { get; set; } = Constants.Granularity.Boolean;
   
   public bool TestMode { get; set; } = false;
 
+}
+
+public class Pagination
+{
+  public int? Skip { get; set; } = 0;
+
+  public int? Limit { get; set; } = 10;
 }
