@@ -209,35 +209,4 @@ public class OpenIdIdentityService(IOptions<OpenIdOptions> openIdOptions,
     logger.LogError("Attempted OIDC Token Request failed: {Error}", tokenResponse.Error);
     throw new InvalidOperationException(tokenResponse.Error);
   }
-
-  // JWT content validation example
-  // var jwtHandler = new JwtSecurityTokenHandler();
-  // var token = jwtHandler.ReadJwtToken(tokenResponse.AccessToken);
-  // var groupClaims = token.Claims.Where(c => c.Type == "realm_access").Select(c => c.Value);
-  // var roles = new TokenRoles()
-  // {
-  //   roles = new List<string>()
-  // };
-  // if (!string.IsNullOrWhiteSpace(requiredRole))
-  // {
-  //   if (groupClaims.Any())
-  //   {
-  //     roles = JsonConvert.DeserializeObject<TokenRoles>(groupClaims.First());
-  //   }
-  //
-  //   if (!roles.roles.Any(gc => gc.Equals(requiredRole)))
-  //   {
-  //     Log.Information("{Function} User {Username} does not have correct role {AdminRole}",
-  //       "GetTokenForUser", username, requiredRole);
-  //     return "";
-  //   }
-  //
-  //   Log.Information("{Function} Token found with correct role {AdminRole} for User {Username}",
-  //     "GetTokenForUser", requiredRole, username);
-  // }
-  // else
-  // {
-  //   Log.Information("{Function} Token found for User {Username}, no role required",
-  //     "GetTokenForUser", requiredRole, username);
-  // }
 }
