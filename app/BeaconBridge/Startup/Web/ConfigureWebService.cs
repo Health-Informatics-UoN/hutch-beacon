@@ -23,7 +23,8 @@ public static class ConfigureWebService
     b.Services
       .Configure<BeaconInfoOptions>(b.Configuration.GetSection("BeaconInfo"))
       .Configure<OrganisationOptions>(b.Configuration.GetSection("Organisation"))
-      .Configure<ServiceOptions>(b.Configuration.GetSection("ServiceInfo"));
+      .Configure<ServiceOptions>(b.Configuration.GetSection("ServiceInfo"))
+      .Configure<MinioOptions>(b.Configuration.GetSection("Minio"));
     // Add HttpClients
 
     // Add Services
