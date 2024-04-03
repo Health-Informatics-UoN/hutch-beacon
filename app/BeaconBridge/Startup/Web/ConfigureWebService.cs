@@ -30,6 +30,7 @@ public static class ConfigureWebService
     // Add Services
     b.Services
       .AddTransient<UserHelper>()
+      .AddTransient<MinioService>()
       .AddSingleton<SubmissionStatusService>();
 
     return b;
