@@ -24,12 +24,14 @@ public static class ConfigureWebService
       .Configure<BeaconInfoOptions>(b.Configuration.GetSection("BeaconInfo"))
       .Configure<OrganisationOptions>(b.Configuration.GetSection("Organisation"))
       .Configure<ServiceOptions>(b.Configuration.GetSection("ServiceInfo"))
+      .Configure<OpenIdOptions>(b.Configuration.GetSection("IdentityProvider"))
       .Configure<MinioOptions>(b.Configuration.GetSection("Minio"));
     // Add HttpClients
 
     // Add Services
     b.Services
       .AddTransient<UserHelper>()
+      .AddTransient<OpenIdIdentityService>()
       .AddTransient<MinioService>()
       .AddSingleton<SubmissionStatusService>();
 
