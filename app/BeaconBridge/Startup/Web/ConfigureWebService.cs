@@ -30,6 +30,7 @@ public static class ConfigureWebService
     // Add Services
     b.Services
       .AddTransient<UserHelper>()
+      .AddTransient<OpenIdIdentityService>()
       .AddSingleton<SubmissionStatusService>();
 
     return b;
