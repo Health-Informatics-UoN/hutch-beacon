@@ -68,6 +68,21 @@ public class RoCrateBuilder
   }
 
   /// <summary>
+  /// Adds Agent Entity and links to relevant organisation and project.
+  /// </summary>
+  public void AddAgent()
+  {
+    var organisation = _crate.Entities.Values.First(x => x.Id == _crateOrganizationOptions.Id);
+    var project = _crate.Entities.Values.First(x => x.Id.StartsWith("#project-"));
+    var agentEntity = new Entity(identifier: _crateAgentOptions.Id);
+    agentEntity.SetProperty("@type", _crateAgentOptions.Type);
+    agentEntity.SetProperty("name", _crateAgentOptions.Name);
+    agentEntity.SetProperty("affiliation", new Part() { Id = organisation.Id });
+    agentEntity.AppendTo("memberOf", project);
+    _crate.Add(agentEntity);
+  }
+
+  /// <summary>
   /// Adds Project Entity as configured
   /// </summary>
   /// <returns></returns>
