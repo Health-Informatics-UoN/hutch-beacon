@@ -155,6 +155,23 @@ public class RoCrateBuilder
     }
   }
 
+  /// <summary>
+  /// <para>Add the <c>CreateAction</c> to the RO-Crate.</para>
+  /// </summary>
+  public void AddCreateAction()
+  {
+    var createActionId = $"#query-{Guid.NewGuid()}";
+    var createAction = new ContextEntity(_crate, createActionId);
+    createAction.SetProperty("@type", "CreateAction");
+    createAction.SetProperty("actionStatus", ActionStatus.PotentialActionStatus);
+
+    _crate.Entities.TryGetValue(GetWorkflowUrl(), out var workflow);
+    if (workflow is not null) createAction.SetProperty("instrument", new Part { Id = workflow.Id });
+    createAction.SetProperty("name", "Beacon Request");
+
+    _crate.Add(createAction);
+  }
+
   public void AddCheckValueAssessAction(string status, DateTime startTime, Part validator)
   {
     var checkActionId = $"#check-{Guid.NewGuid()}";
