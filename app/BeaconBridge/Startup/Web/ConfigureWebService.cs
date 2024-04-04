@@ -1,6 +1,8 @@
+using System.IO.Abstractions;
 using BeaconBridge.Config;
 using BeaconBridge.Data;
 using BeaconBridge.Services;
+using Flurl.Http.Configuration;
 using Microsoft.EntityFrameworkCore;
 
 namespace BeaconBridge.Startup.Web;
@@ -18,6 +20,11 @@ public static class ConfigureWebService
       var connectionString = b.Configuration.GetConnectionString("BeaconBridgeDb");
       o.UseSqlite(connectionString ?? "Data Source=BeaconBridge.db");
     });
+    b.Services
+      .AddAutoMapper(typeof(Program).Assembly)
+      .AddSingleton<IFlurlClientFactory, PerBaseUrlFlurlClientFactory>()
+      .AddHttpClient() // We prefer Flurl for most use cases, but IdentityModel has extensions for vanilla HttpClient
+      .AddTransient<IFileSystem, FileSystem>();
 
     // Add Options
     b.Services
