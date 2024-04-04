@@ -11,7 +11,7 @@ namespace BeaconBridge.Services;
 /// </summary>
 public class OpenIdIdentityService(IOptions<OpenIdOptions> openIdOptions,
   IHttpClientFactory httpClientFactory,
-  ILogger logger)
+  ILogger<OpenIdIdentityService> logger)
 {
   private readonly HttpClient _http = httpClientFactory.CreateClient();
   private readonly OpenIdOptions _openIdOptions = openIdOptions.Value;
