@@ -1,3 +1,4 @@
+using System.Text.Json;
 using BeaconBridge.Config;
 using BeaconBridge.Constants;
 using Flurl;
@@ -107,6 +108,26 @@ public class RoCrateBuilder
     orgEntity.SetProperty("@type", _crateOrganizationOptions.Type);
     orgEntity.SetProperty("name", _crateOrganizationOptions.Name);
     _crate.Add(orgEntity);
+  }
+
+  /// <summary>
+  /// Adds Licence Entity to Five Safes RO-Crate.
+  /// </summary>
+  public void AddLicense()
+  {
+    if (string.IsNullOrEmpty(_publishingOptions.License?.Uri)) return;
+
+    var licenseProps = _publishingOptions.License.Properties;
+    var licenseEntity = new CreativeWork(
+      identifier: _publishingOptions.License.Uri,
+      properties: JsonSerializer.SerializeToNode(licenseProps)?.AsObject());
+
+    // Bug in ROCrates.Net: CreativeWork class uses the base constructor so @type is Thing by default
+    licenseEntity.SetProperty("@type", "CreativeWork");
+
+    _crate.Add(licenseEntity);
+
+    _crate.RootDataset.SetProperty("license", new Part { Id = licenseEntity.Id });
   }
 
   public void AddCheckValueAssessAction(string status, DateTime startTime, Part validator)
