@@ -29,7 +29,7 @@ public class RequestSummary
 
 public class Pagination
 {
-  public int? Skip { get; set; } = 0;
+  public int Skip { get; set; }
 
-  public int? Limit { get; set; } = 10;
+  public int Limit { get; set; }
 }
