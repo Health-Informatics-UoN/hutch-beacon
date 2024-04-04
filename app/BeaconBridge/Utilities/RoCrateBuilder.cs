@@ -1,5 +1,6 @@
 using BeaconBridge.Config;
 using ROCrates;
+using ROCrates.Models;
 
 namespace BeaconBridge.Utilities;
 
@@ -62,5 +63,32 @@ public class RoCrateBuilder
   private void ResetCrate()
   {
     _crate = new ROCrate();
+  }
+
+  /// <summary>
+  /// Adds Project Entity as configured
+  /// </summary>
+  /// <returns></returns>
+  private void AddProject()
+  {
+    var projectEntity = new Entity(identifier: $"#project-{Guid.NewGuid()}");
+    projectEntity.SetProperty("@type", _crateProjectOptions.Type);
+    projectEntity.SetProperty("name", _crateProjectOptions.Name);
+    projectEntity.SetProperty("identifier", _crateProjectOptions.Identifiers);
+    projectEntity.SetProperty("funding", _crateProjectOptions.Funding);
+    projectEntity.SetProperty("member", _crateProjectOptions.Member);
+    _crate.Add(projectEntity);
+  }
+
+  /// <summary>
+  /// Adds Organisation Entity as configured.
+  /// </summary>
+  /// <returns></returns>
+  private void AddOrganisation()
+  {
+    var orgEntity = new Entity(identifier: _crateOrganizationOptions.Id);
+    orgEntity.SetProperty("@type", _crateOrganizationOptions.Type);
+    orgEntity.SetProperty("name", _crateOrganizationOptions.Name);
+    _crate.Add(orgEntity);
   }
 }
