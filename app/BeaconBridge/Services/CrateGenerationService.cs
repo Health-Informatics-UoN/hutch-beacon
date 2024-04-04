@@ -14,7 +14,7 @@ using File = System.IO.File;
 
 namespace BeaconBridge.Services;
 
-public class CrateGenerationService(ILogger logger,
+public class CrateGenerationService(ILogger<CrateGenerationService> logger,
   IOptions<CratePublishingOptions> publishingOptions,
   IOptions<CrateAgentOptions> agentOptions,
   IOptions<CrateProjectOptions> projectOptions,
