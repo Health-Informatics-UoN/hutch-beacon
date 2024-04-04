@@ -1,4 +1,7 @@
 using BeaconBridge.Config;
+using BeaconBridge.Data;
+using BeaconBridge.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace BeaconBridge.Startup.Web;
 
@@ -10,15 +13,27 @@ public static class ConfigureWebService
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     b.Services.AddEndpointsApiExplorer();
     b.Services.AddSwaggerGen();
+    b.Services.AddDbContext<SubmissionContext>(o =>
+    {
+      var connectionString = b.Configuration.GetConnectionString("BeaconBridgeDb");
+      o.UseSqlite(connectionString ?? "Data Source=BeaconBridge.db");
+    });
 
     // Add Options
     b.Services
       .Configure<BeaconInfoOptions>(b.Configuration.GetSection("BeaconInfo"))
       .Configure<OrganisationOptions>(b.Configuration.GetSection("Organisation"))
-      .Configure<ServiceOptions>(b.Configuration.GetSection("ServiceInfo"));
+      .Configure<ServiceOptions>(b.Configuration.GetSection("ServiceInfo"))
+      .Configure<OpenIdOptions>(b.Configuration.GetSection("IdentityProvider"))
+      .Configure<MinioOptions>(b.Configuration.GetSection("Minio"));
     // Add HttpClients
 
     // Add Services
+    b.Services
+      .AddTransient<UserHelper>()
+      .AddTransient<OpenIdIdentityService>()
+      .AddTransient<MinioService>()
+      .AddSingleton<SubmissionStatusService>();
 
     return b;
   }
