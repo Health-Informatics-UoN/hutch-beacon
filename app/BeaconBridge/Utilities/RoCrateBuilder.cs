@@ -130,6 +130,31 @@ public class RoCrateBuilder
     _crate.RootDataset.SetProperty("license", new Part { Id = licenseEntity.Id });
   }
 
+  /// <summary>
+  /// Update mainEntity to Five Safes RO-Crate.
+  /// </summary>
+  /// <exception cref="InvalidDataException">mainEntity not found in RO-Crate.</exception>
+  public void UpdateMainEntity()
+  {
+    var workflowUri = GetWorkflowUrl();
+    if (_crate.Entities.TryGetValue(workflowUri, out var mainEntity))
+    {
+      mainEntity.SetProperty("name", _workflowOptions.Name);
+
+      mainEntity.SetProperty("distribution", new Part
+      {
+        Id = Url.Combine(_workflowOptions.BaseUrl, _workflowOptions.Id.ToString(), "ro_crate")
+          .SetQueryParam("version", _workflowOptions.Version.ToString())
+      });
+      _crate.Add(mainEntity);
+      _crate.RootDataset.SetProperty("mainEntity", new Part { Id = mainEntity.Id });
+    }
+    else
+    {
+      throw new InvalidDataException("Could not find mainEntity in RO-Crate.");
+    }
+  }
+
   public void AddCheckValueAssessAction(string status, DateTime startTime, Part validator)
   {
     var checkActionId = $"#check-{Guid.NewGuid()}";
