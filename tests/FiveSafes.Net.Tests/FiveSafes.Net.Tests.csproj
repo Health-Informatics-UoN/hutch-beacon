@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FiveSafes.Net\FiveSafes.Net.csproj"/>
+    <ProjectReference Include="..\..\lib\FiveSafes.Net\FiveSafes.Net.csproj"/>
   </ItemGroup>
 
 </Project>
