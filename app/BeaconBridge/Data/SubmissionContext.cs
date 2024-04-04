@@ -3,8 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BeaconBridge.Data;
 
-public class SubmissionContext: DbContext
+public class SubmissionContext : DbContext
 {
+  public SubmissionContext(DbContextOptions<SubmissionContext> options) : base(options)
+  {
+  }
+
+  public SubmissionContext()
+  {
+  }
+
   public DbSet<User> Users { get; set; }
   public DbSet<Project> Projects { get; set; }
   public DbSet<Tre> Tres { get; set; }
