@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaconBridge", "app\BeaconB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaconBridge.Tests", "tests\BeaconBridge.Tests\BeaconBridge.Tests.csproj", "{7E96B240-64D2-485A-AAC8-CF03C14247CA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiveSafes.Net.Tests", "tests\FiveSafes.Net.Tests\FiveSafes.Net.Tests.csproj", "{808FF4B6-DB5A-4501-8FE7-5EF3A6AE2D3E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{7E96B240-64D2-485A-AAC8-CF03C14247CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E96B240-64D2-485A-AAC8-CF03C14247CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E96B240-64D2-485A-AAC8-CF03C14247CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{808FF4B6-DB5A-4501-8FE7-5EF3A6AE2D3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{808FF4B6-DB5A-4501-8FE7-5EF3A6AE2D3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{808FF4B6-DB5A-4501-8FE7-5EF3A6AE2D3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{808FF4B6-DB5A-4501-8FE7-5EF3A6AE2D3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
