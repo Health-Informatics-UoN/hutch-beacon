@@ -1,7 +1,9 @@
 using BeaconBridge.Config;
 using BeaconBridge.Constants;
+using BeaconBridge.Data;
 using BeaconBridge.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace BeaconBridge.Controllers;
@@ -9,7 +11,7 @@ namespace BeaconBridge.Controllers;
 [ApiController]
 [Route("api/")]
 public class InfoController(IOptions<BeaconInfoOptions> beaconInfoOptions,
-    IOptions<OrganisationOptions> organisationOptions, IOptions<ServiceOptions> serviceOptions)
+    IOptions<OrganisationOptions> organisationOptions, IOptions<ServiceOptions> serviceOptions, BeaconContext context)
   : ControllerBase
 {
   private readonly BeaconInfoOptions _beaconInfoOptions = beaconInfoOptions.Value;
@@ -77,8 +79,10 @@ public class InfoController(IOptions<BeaconInfoOptions> beaconInfoOptions,
   /// </param>
   /// <returns></returns>
   [HttpGet("filtering_terms")]
-  public ActionResult<FilterResponse> GetFilteringTerms([FromQuery] int skip = 0, [FromQuery] int limit = 10)
+  public async Task<ActionResult<FilterResponse>> GetFilteringTerms([FromQuery] int skip = 0,
+    [FromQuery] int limit = 10)
   {
+    var terms = await context.FilteringTerms.ToListAsync();
     var filterResponse = new FilterResponse()
     {
       Meta = new()
@@ -92,17 +96,14 @@ public class InfoController(IOptions<BeaconInfoOptions> beaconInfoOptions,
           Pagination = new Pagination() { Limit = limit, Skip = skip }
         }
       },
-      Response = new List<FilteringTerm>
-      {
-        // set to static value for now
-        new()
+      Response = (from x in terms
+        select new FilteringTerm
         {
-          Type = "type",
-          Id = "id",
-          Label = "1",
-          Scope = "individuals"
-        }
-      }
+          Type = x.Type,
+          Id = x.Id,
+          Label = x.Label,
+          Scope = x.Scope
+        }).ToList()
     };
     filterResponse.Meta.ReturnedSchemas.Add(new DefaultSchemas().FilteringTerms);
     return filterResponse;
