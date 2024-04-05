@@ -1,4 +1,3 @@
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using BeaconBridge.Config;
 using BeaconBridge.Constants;
@@ -35,18 +34,14 @@ public class CrateGenerationService(ILogger<CrateGenerationService> logger,
   /// <summary>
   /// Build an RO-Crate.
   /// </summary>
-  /// <typeparam name="T">The type of the query.</typeparam>
-  /// <param name="job">The job to save to the crate.</param>
   /// <param name="bagItPath">The BagItArchive path to save the crate to.</param>
   /// <returns></returns>
   /// <exception cref="NotImplementedException">Query type is unavailable.</exception>
-  public async Task<BagItArchive> BuildCrate<T>(T job, string bagItPath) where T : class, new()
+  public async Task<BagItArchive> BuildCrate(string bagItPath)
   {
     var workflowUri = GetWorkflowUrl();
     var archive = await BuildBagIt(bagItPath, workflowUri);
-    var payload = JsonSerializer.Serialize(job);
     var payloadDestination = Path.Combine(archive.PayloadDirectoryPath, _tmpFileName);
-    await SaveJobPayload(payload, payloadDestination);
     logger.LogInformation("Saved query JSON to {PayloadDestination}", payloadDestination);
 
     // Generate ROCrate metadata
@@ -60,21 +55,6 @@ public class CrateGenerationService(ILogger<CrateGenerationService> logger,
     await archive.WriteTagManifestSha512();
 
     return archive;
-  }
-
-  /// <summary>
-  /// Save a job payload to a file on disk.
-  /// </summary>
-  /// <param name="payload">The string to write to the file.</param>
-  /// <param name="destination">The path to the file to be created.</param>
-  /// <returns></returns>
-  private async Task SaveJobPayload(string payload, string destination)
-  {
-    var destinationInfo = new FileInfo(destination);
-
-    using var fileStream = destinationInfo.Create();
-    using var writer = new StreamWriter(fileStream);
-    await writer.WriteAsync(payload);
   }
 
   /// <summary>
