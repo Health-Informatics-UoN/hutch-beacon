@@ -1,9 +1,7 @@
 using System.IO.Abstractions;
 using BeaconBridge.Config;
-using BeaconBridge.Data;
 using BeaconBridge.Services;
 using Flurl.Http.Configuration;
-using Microsoft.EntityFrameworkCore;
 
 namespace BeaconBridge.Startup.Web;
 
@@ -15,17 +13,11 @@ public static class ConfigureWebService
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     b.Services.AddEndpointsApiExplorer();
     b.Services.AddSwaggerGen();
-    // Submission context is not currently in use.
-    // b.Services.AddDbContext<SubmissionContext>(o =>
+    // b.Services.AddDbContext<BeaconContext>(o =>
     // {
     //   var connectionString = b.Configuration.GetConnectionString("BeaconBridgeDb");
     //   o.UseSqlite(connectionString ?? "Data Source=BeaconBridge.db");
     // });
-    b.Services.AddDbContext<BeaconContext>(o =>
-    {
-      var connectionString = b.Configuration.GetConnectionString("BeaconBridgeDb");
-      o.UseSqlite(connectionString ?? "Data Source=BeaconBridge.db");
-    });
     b.Services
       .AddAutoMapper(typeof(Program).Assembly)
       .AddSingleton<IFlurlClientFactory, PerBaseUrlFlurlClientFactory>()
