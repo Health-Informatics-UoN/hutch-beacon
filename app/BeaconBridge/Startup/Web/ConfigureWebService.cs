@@ -40,6 +40,7 @@ public static class ConfigureWebService
       .AddTransient<OpenIdIdentityService>()
       .AddTransient<MinioService>()
       .AddTransient<CrateGenerationService>()
+      .AddTransient<FilteringTermsService>()
       .AddSingleton<SubmissionStatusService>();
 
     return b;
