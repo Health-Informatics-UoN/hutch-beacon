@@ -1,6 +1,7 @@
 using BeaconBridge.Config;
 using BeaconBridge.Constants;
 using BeaconBridge.Models;
+using BeaconBridge.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -9,7 +10,8 @@ namespace BeaconBridge.Controllers;
 [ApiController]
 [Route("api/")]
 public class InfoController(IOptions<BeaconInfoOptions> beaconInfoOptions,
-    IOptions<OrganisationOptions> organisationOptions, IOptions<ServiceOptions> serviceOptions)
+    IOptions<OrganisationOptions> organisationOptions, IOptions<ServiceOptions> serviceOptions,
+    FilteringTermsService filteringTerms)
   : ControllerBase
 {
   private readonly BeaconInfoOptions _beaconInfoOptions = beaconInfoOptions.Value;
@@ -77,8 +79,10 @@ public class InfoController(IOptions<BeaconInfoOptions> beaconInfoOptions,
   /// </param>
   /// <returns></returns>
   [HttpGet("filtering_terms")]
-  public ActionResult<FilterResponse> GetFilteringTerms([FromQuery] int skip = 0, [FromQuery] int limit = 10)
+  public async Task<ActionResult<FilterResponse>> GetFilteringTerms([FromQuery] int skip = 0,
+    [FromQuery] int limit = 10)
   {
+    var terms = await filteringTerms.List();
     var filterResponse = new FilterResponse()
     {
       Meta = new()
@@ -92,17 +96,7 @@ public class InfoController(IOptions<BeaconInfoOptions> beaconInfoOptions,
           Pagination = new Pagination() { Limit = limit, Skip = skip }
         }
       },
-      Response = new List<FilteringTerm>
-      {
-        // set to static value for now
-        new()
-        {
-          Type = "type",
-          Id = "id",
-          Label = "1",
-          Scope = "individuals"
-        }
-      }
+      Response = terms
     };
     filterResponse.Meta.ReturnedSchemas.Add(new DefaultSchemas().FilteringTerms);
     return filterResponse;

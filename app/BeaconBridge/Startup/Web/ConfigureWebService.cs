@@ -15,7 +15,7 @@ public static class ConfigureWebService
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     b.Services.AddEndpointsApiExplorer();
     b.Services.AddSwaggerGen();
-    b.Services.AddDbContext<SubmissionContext>(o =>
+    b.Services.AddDbContext<BeaconContext>(o =>
     {
       var connectionString = b.Configuration.GetConnectionString("BeaconBridgeDb");
       o.UseSqlite(connectionString ?? "Data Source=BeaconBridge.db");
@@ -43,10 +43,11 @@ public static class ConfigureWebService
 
     // Add Services
     b.Services
-      .AddTransient<UserHelper>()
+      // .AddTransient<UserHelper>()  // Not used at the moment
       .AddTransient<OpenIdIdentityService>()
       .AddTransient<MinioService>()
       .AddTransient<CrateGenerationService>()
+      .AddTransient<FilteringTermsService>()
       .AddSingleton<SubmissionStatusService>();
 
     return b;
