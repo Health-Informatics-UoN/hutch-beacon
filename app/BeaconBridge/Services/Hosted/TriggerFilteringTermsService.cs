@@ -14,9 +14,14 @@ public class TriggerFilteringTermsService(IOptions<FilteringTermsUpdateOptions> 
 {
   private readonly FilteringTermsUpdateOptions _options = options.Value;
 
-  protected override Task ExecuteAsync(CancellationToken stoppingToken)
+  protected override async Task ExecuteAsync(CancellationToken stoppingToken)
   {
-    throw new NotImplementedException();
+    logger.LogInformation("Triggering filtering terms cache update");
+    while (!stoppingToken.IsCancellationRequested)
+    {
+      var delay = Task.Delay(TimeSpan.FromSeconds(_options.DelaySeconds), stoppingToken);
+      await delay;
+    }
   }
 
   public override Task StopAsync(CancellationToken cancellationToken)
