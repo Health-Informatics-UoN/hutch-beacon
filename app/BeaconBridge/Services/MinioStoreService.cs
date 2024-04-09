@@ -79,4 +79,22 @@ public class MinioService
     _logger.LogInformation("Successfully downloaded {FileName} from {Bucket} to {Destination}", objectName,
       _options.Bucket, destination);
   }
+
+  /// <summary>
+  /// Get the download URL to an object in MinIO.
+  /// </summary>
+  /// <param name="objectName">The name of the object to download.</param>
+  /// <returns>The object's download URL.</returns>
+  public string GetObjectDownloadUrl(string objectName)
+  {
+    var hostAndPort = _options.Host.Split(':');
+    var uriBuilder = new UriBuilder
+    {
+      Host = hostAndPort[0],
+      Path = Path.Combine("browser", _options.Bucket, objectName),
+      Scheme = _options.Secure ? Uri.UriSchemeHttps : Uri.UriSchemeHttp,
+    };
+    if (hostAndPort.Length > 1) uriBuilder.Port = int.Parse(hostAndPort[1]);
+    return uriBuilder.Uri.ToString();
+  }
 }
