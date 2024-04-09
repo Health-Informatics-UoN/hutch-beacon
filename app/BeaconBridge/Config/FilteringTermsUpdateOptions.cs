@@ -10,4 +10,9 @@ public class FilteringTermsUpdateOptions
   /// <para>Default: 86,400s (1 day)</para>
   /// </summary>
   public int DelaySeconds { get; set; } = 60 * 60 * 24;
+
+  /// <summary>
+  /// The path to the Filtering Terms workflow. It could be a link to it on WorkflowHub or a file on disk.
+  /// </summary>
+  public string PathToWorkflow { get; set; } = string.Empty;
 }
