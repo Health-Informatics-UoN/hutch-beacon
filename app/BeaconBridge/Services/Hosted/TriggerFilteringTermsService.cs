@@ -3,6 +3,12 @@ using Microsoft.Extensions.Options;
 
 namespace BeaconBridge.Services.Hosted;
 
+/// <summary>
+/// Hosted service for sending requests to the submission to trigger a workflow run that gets the filtering
+/// terms for an OMOP database.
+/// </summary>
+/// <param name="options"></param>
+/// <param name="logger"></param>
 public class TriggerFilteringTermsService(IOptions<FilteringTermsUpdateOptions> options,
   ILogger<TriggerFilteringTermsService> logger) : BackgroundService
 {
