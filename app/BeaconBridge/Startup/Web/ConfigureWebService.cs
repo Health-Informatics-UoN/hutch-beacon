@@ -38,7 +38,8 @@ public static class ConfigureWebService
       .Configure<CrateProjectOptions>(b.Configuration.GetSection("Crate:Project"))
       .Configure<CrateOrganizationOptions>(b.Configuration.GetSection("Crate:Organisation"))
       .Configure<AgreementPolicyOptions>(b.Configuration.GetSection("AgreementPolicy"))
-      .Configure<AssessActionsOptions>(b.Configuration.GetSection("AssessActions"));
+      .Configure<AssessActionsOptions>(b.Configuration.GetSection("AssessActions"))
+      .Configure<FilteringTermsUpdateOptions>(b.Configuration.GetSection("FilteringTerms"));
     // Add HttpClients
 
     // Add Services
