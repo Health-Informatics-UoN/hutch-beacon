@@ -2,6 +2,7 @@ using System.IO.Abstractions;
 using BeaconBridge.Config;
 using BeaconBridge.Data;
 using BeaconBridge.Services;
+using BeaconBridge.Services.Hosted;
 using Flurl.Http.Configuration;
 using Microsoft.EntityFrameworkCore;
 
@@ -49,7 +50,8 @@ public static class ConfigureWebService
       .AddTransient<MinioService>()
       .AddTransient<CrateGenerationService>()
       .AddTransient<FilteringTermsService>()
-      .AddSingleton<SubmissionStatusService>();
+      .AddSingleton<SubmissionStatusService>()
+      .AddHostedService<TriggerFilteringTermsService>();
 
     return b;
   }
