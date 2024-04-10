@@ -15,6 +15,7 @@ public class TriggerFilteringTermsService(IOptions<FilteringTermsUpdateOptions> 
   protected override async Task ExecuteAsync(CancellationToken stoppingToken)
   {
     logger.LogInformation("Triggering filtering terms cache update");
+    var objectName = Path.GetFileName(filteringTermsOptions.Value.PathToWorkflow);
     while (!stoppingToken.IsCancellationRequested)
     {
       var delay = Task.Delay(TimeSpan.FromSeconds(filteringTermsOptions.Value.DelaySeconds), stoppingToken);
@@ -22,15 +23,22 @@ public class TriggerFilteringTermsService(IOptions<FilteringTermsUpdateOptions> 
       // Add the workflow crate to MinIO
       if (await minio.StoreExists())
       {
-        logger.LogInformation("Saving Filtering Terms workflow to object store");
-        try
+        if (minio.ObjectIsInStore(objectName))
         {
-          await minio.WriteToStore(filteringTermsOptions.Value.PathToWorkflow);
+          logger.LogInformation("{Object} already exists",
+            Path.GetFileName(filteringTermsOptions.Value.PathToWorkflow));
         }
-        catch (Exception)
+        else
         {
-          logger.LogError("Unable to write {Object} to store", filteringTermsOptions.Value.PathToWorkflow);
-          throw;
+          logger.LogInformation("Saving Filtering Terms workflow to object store");
+          try
+          {
+            await minio.WriteToStore(filteringTermsOptions.Value.PathToWorkflow);
+          }
+          catch (Exception)
+          {
+            logger.LogError("Unable to write {Object} to store", filteringTermsOptions.Value.PathToWorkflow);
+          }
         }
       }
       else
@@ -41,8 +49,6 @@ public class TriggerFilteringTermsService(IOptions<FilteringTermsUpdateOptions> 
       }
 
       // Get the workflow URL
-      var workflowInfo = new FileInfo(filteringTermsOptions.Value.PathToWorkflow);
-      var objectName = workflowInfo.Name;
       var downloadUrl = minio.GetObjectDownloadUrl(objectName);
 
       // Build the TES task

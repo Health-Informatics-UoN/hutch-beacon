@@ -1,3 +1,4 @@
+using System.Reactive.Linq;
 using BeaconBridge.Config;
 using Microsoft.Extensions.Options;
 using Minio;
@@ -96,5 +97,23 @@ public class MinioService
     };
     if (hostAndPort.Length > 1) uriBuilder.Port = int.Parse(hostAndPort[1]);
     return uriBuilder.Uri.ToString();
+  }
+
+  /// <summary>
+  /// Determine if an object exists in the configured bucket
+  /// </summary>
+  /// <param name="objectName">The object to look for.</param>
+  /// <returns><c>true</c> if the object is in the bucket, else <c>false</c>.</returns>
+  public bool ObjectIsInStore(string objectName)
+  {
+    var args = new ListObjectsArgs().WithBucket(_options.Bucket);
+
+    var results = _minioClient.ListObjectsAsync(args).Any(x => x.Key == objectName);
+    foreach (var b in results)
+    {
+      if (b) return true;
+    }
+
+    return false;
   }
 }
