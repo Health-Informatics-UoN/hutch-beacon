@@ -1,4 +1,5 @@
 using BeaconBridge.Config;
+using BeaconBridge.Models.Submission.Tes;
 using Microsoft.Extensions.Options;
 
 namespace BeaconBridge.Services.Hosted;
@@ -7,32 +8,63 @@ namespace BeaconBridge.Services.Hosted;
 /// Hosted service for sending requests to the submission to trigger a workflow run that gets the filtering
 /// terms for an OMOP database.
 /// </summary>
-public class TriggerFilteringTermsService(IOptions<FilteringTermsUpdateOptions> options,
-  ILogger<TriggerFilteringTermsService> logger, MinioService minio) : BackgroundService
+public class TriggerFilteringTermsService(IOptions<FilteringTermsUpdateOptions> filteringTermsOptions,
+  ILogger<TriggerFilteringTermsService> logger, MinioService minio, IOptions<SubmissionOptions> submissionOptions,
+  TesSubmissionService submissionService) : BackgroundService
 {
-  private readonly FilteringTermsUpdateOptions _options = options.Value;
-
   protected override async Task ExecuteAsync(CancellationToken stoppingToken)
   {
     logger.LogInformation("Triggering filtering terms cache update");
     while (!stoppingToken.IsCancellationRequested)
     {
-      var delay = Task.Delay(TimeSpan.FromSeconds(_options.DelaySeconds), stoppingToken);
+      var delay = Task.Delay(TimeSpan.FromSeconds(filteringTermsOptions.Value.DelaySeconds), stoppingToken);
 
       // Add the workflow crate to MinIO
       if (await minio.StoreExists())
       {
         logger.LogInformation("Saving Filtering Terms workflow to object store");
-        // Todo: save workflow to Minio
+        try
+        {
+          await minio.WriteToStore(filteringTermsOptions.Value.PathToWorkflow);
+        }
+        catch (Exception)
+        {
+          logger.LogError("Unable to write {Object} to store", filteringTermsOptions.Value.PathToWorkflow);
+          throw;
+        }
       }
       else
       {
-        logger.LogCritical("Cannot save Filtering Terms workflow. Object store does not exist");
+        const string message = "Cannot save Filtering Terms workflow. Object store does not exist";
+        logger.LogCritical(message);
+        throw new Exception(message);
       }
 
+      // Get the workflow URL
+      var workflowInfo = new FileInfo(filteringTermsOptions.Value.PathToWorkflow);
+      var objectName = workflowInfo.Name;
+      var downloadUrl = minio.GetObjectDownloadUrl(objectName);
+
       // Build the TES task
+      var tesTask = new TesTask
+      {
+        Name = Guid.NewGuid().ToString(),
+        Executors = new List<TesExecutor>
+        {
+          new()
+          {
+            Image = downloadUrl,
+          }
+        },
+        Tags = new Dictionary<string, string>()
+        {
+          { "project", submissionOptions.Value.ProjectName },
+          { "tres", string.Join('|', submissionOptions.Value.Tres) }
+        },
+      };
 
       // Submit to submission layer
+      await submissionService.SubmitTesTask(tesTask);
 
       await delay;
     }
