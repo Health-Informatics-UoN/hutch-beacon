@@ -15,10 +15,10 @@ public class TesSubmissionService
   private string _identityToken;
 
   public TesSubmissionService(IOptions<SubmissionOptions> submissionOptions, OpenIdIdentityService openIdIdentity,
-    OpenIdOptions openIdOptions, ILogger<TesSubmissionService> logger)
+    IOptions<OpenIdOptions> openIdOptions, ILogger<TesSubmissionService> logger)
   {
     _openIdIdentity = openIdIdentity;
-    _openIdOptions = openIdOptions;
+    _openIdOptions = openIdOptions.Value;
     _submissionOptions = submissionOptions.Value;
     _logger = logger;
     _identityToken = GetAuthorised().Result;
