@@ -36,16 +36,13 @@ public class TesSubmissionService
 
     try
     {
-      var res = await req.PostJsonAsync(task);
-      if (res.ResponseMessage.IsSuccessStatusCode)
-        _logger.LogInformation("TES task submitted successfully");
-      else
-        _logger.LogError("Failed to submit TES task");
+      await req.PostJsonAsync(task);
+      _logger.LogInformation("TES task submitted successfully");
     }
-    catch (Exception)
+    catch (FlurlHttpException e)
     {
-      _logger.LogCritical("An unknown error occurred while attempting to send TES task to the Submission Layer");
-      throw;
+      var error = await e.GetResponseStringAsync();
+      _logger.LogCritical("Could not submit TES Task to Submission Layer. Reason: {Message}", error);
     }
   }
 
