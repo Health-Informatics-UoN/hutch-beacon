@@ -11,4 +11,9 @@ public class SubmissionOptions
   /// The list of TREs to submit the requests against on the Submission Layer.
   /// </summary>
   public List<string> Tres { get; set; } = new();
+
+  /// <summary>
+  /// The URL to the Submission Layer.
+  /// </summary>
+  public string SubmissionLayerHost { get; set; } = string.Empty;
 }

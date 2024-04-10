@@ -51,6 +51,7 @@ public static class ConfigureWebService
       .AddTransient<MinioService>()
       .AddTransient<CrateGenerationService>()
       .AddTransient<FilteringTermsService>()
+      .AddSingleton<TesSubmissionService>()
       .AddSingleton<SubmissionStatusService>()
       .AddHostedService<TriggerFilteringTermsService>();
 
