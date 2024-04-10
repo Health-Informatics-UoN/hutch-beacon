@@ -44,7 +44,7 @@ public class TesSubmissionService
     }
     catch (Exception)
     {
-      _logger.LogCritical("An unknown error occurred while attempting to send ");
+      _logger.LogCritical("An unknown error occurred while attempting to send TES task to the Submission Layer");
       throw;
     }
   }
