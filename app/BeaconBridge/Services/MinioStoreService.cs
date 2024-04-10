@@ -1,3 +1,4 @@
+using System.Reactive.Linq;
 using BeaconBridge.Config;
 using Microsoft.Extensions.Options;
 using Minio;
@@ -78,5 +79,41 @@ public class MinioService
     await _minioClient.GetObjectAsync(getObjectArgs);
     _logger.LogInformation("Successfully downloaded {FileName} from {Bucket} to {Destination}", objectName,
       _options.Bucket, destination);
+  }
+
+  /// <summary>
+  /// Get the download URL to an object in MinIO.
+  /// </summary>
+  /// <param name="objectName">The name of the object to download.</param>
+  /// <returns>The object's download URL.</returns>
+  public string GetObjectDownloadUrl(string objectName)
+  {
+    var hostAndPort = _options.Host.Split(':');
+    var uriBuilder = new UriBuilder
+    {
+      Host = hostAndPort[0],
+      Path = Path.Combine("browser", _options.Bucket, objectName),
+      Scheme = _options.Secure ? Uri.UriSchemeHttps : Uri.UriSchemeHttp,
+    };
+    if (hostAndPort.Length > 1) uriBuilder.Port = int.Parse(hostAndPort[1]);
+    return uriBuilder.Uri.ToString();
+  }
+
+  /// <summary>
+  /// Determine if an object exists in the configured bucket
+  /// </summary>
+  /// <param name="objectName">The object to look for.</param>
+  /// <returns><c>true</c> if the object is in the bucket, else <c>false</c>.</returns>
+  public bool ObjectIsInStore(string objectName)
+  {
+    var args = new ListObjectsArgs().WithBucket(_options.Bucket);
+
+    var results = _minioClient.ListObjectsAsync(args).Any(x => x.Key == objectName);
+    foreach (var b in results)
+    {
+      if (b) return true;
+    }
+
+    return false;
   }
 }

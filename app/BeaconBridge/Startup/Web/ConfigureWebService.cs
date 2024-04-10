@@ -2,6 +2,7 @@ using System.IO.Abstractions;
 using BeaconBridge.Config;
 using BeaconBridge.Data;
 using BeaconBridge.Services;
+using BeaconBridge.Services.Hosted;
 using Flurl.Http.Configuration;
 using Microsoft.EntityFrameworkCore;
 
@@ -38,7 +39,9 @@ public static class ConfigureWebService
       .Configure<CrateProjectOptions>(b.Configuration.GetSection("Crate:Project"))
       .Configure<CrateOrganizationOptions>(b.Configuration.GetSection("Crate:Organisation"))
       .Configure<AgreementPolicyOptions>(b.Configuration.GetSection("AgreementPolicy"))
-      .Configure<AssessActionsOptions>(b.Configuration.GetSection("AssessActions"));
+      .Configure<AssessActionsOptions>(b.Configuration.GetSection("AssessActions"))
+      .Configure<FilteringTermsUpdateOptions>(b.Configuration.GetSection("FilteringTerms"))
+      .Configure<SubmissionOptions>(b.Configuration.GetSection("SubmissionLayer"));
     // Add HttpClients
 
     // Add Services
@@ -48,7 +51,9 @@ public static class ConfigureWebService
       .AddTransient<MinioService>()
       .AddTransient<CrateGenerationService>()
       .AddTransient<FilteringTermsService>()
-      .AddSingleton<SubmissionStatusService>();
+      .AddSingleton<TesSubmissionService>()
+      .AddSingleton<SubmissionStatusService>()
+      .AddHostedService<TriggerFilteringTermsService>();
 
     return b;
   }
