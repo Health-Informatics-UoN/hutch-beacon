@@ -15,4 +15,9 @@ public class FilteringTermsUpdateOptions
   /// The path to the Filtering Terms workflow. It could be a link to it on WorkflowHub or a file on disk.
   /// </summary>
   public string PathToWorkflow { get; set; } = string.Empty;
+
+  /// <summary>
+  /// Save results from Filtering Terms workflow to this destination.
+  /// </summary>
+  public string PathToResults { get; set; } = string.Empty;
 }
