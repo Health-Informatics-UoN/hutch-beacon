@@ -4,5 +4,5 @@ public class Info
 {
   public BaseMeta BaseMeta { get; set; } = new();
 
-  public Response Response { get; set; } = new();
+  public BaseResponse BaseResponse { get; set; } = new();
 }
