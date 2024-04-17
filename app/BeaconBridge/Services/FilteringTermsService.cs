@@ -16,21 +16,30 @@ public class FilteringTermsService(BeaconContext context, IMapper mapper)
   }
 
   /// <summary>
-  /// Save a list of filtering terms to the DB cache.
+  /// Save a list of filtering terms to the DB cache. If an entity with an ID of one of the elements
+  /// already exists, it will be updated.
   /// </summary>
   /// <param name="filteringTerms">The list of filtering terms.</param>
-  public async Task SaveRangeAsync(IEnumerable<Models.FilteringTerm> filteringTerms)
+  public async Task AddOrUpdateRangeAsync(IEnumerable<Models.FilteringTerm> filteringTerms)
   {
-    var termEntities = filteringTerms.Select(term => new FilteringTerm
+    foreach (var term in filteringTerms)
     {
-      Type = term.Type,
-      Id = term.Id,
-      Label = term.Label,
-      Scope = term.Scope
-    });
-    foreach (var entity in termEntities)
-    {
-      await context.AddAsync(entity);
+      var existingEntity = await context.FilteringTerms.FindAsync(term.Id);
+      if (existingEntity is not null)
+      {
+        context.Entry(existingEntity).CurrentValues.SetValues(term);
+      }
+      else
+      {
+        var newEntity = new FilteringTerm
+        {
+          Type = term.Type,
+          Id = term.Id,
+          Label = term.Label,
+          Scope = term.Scope
+        };
+        await context.AddAsync(newEntity);
+      }
     }
 
     await context.SaveChangesAsync();
