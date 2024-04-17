@@ -101,4 +101,32 @@ public class InfoController(IOptions<BeaconInfoOptions> beaconInfoOptions,
     filterResponse.Meta.ReturnedSchemas.Add(new DefaultSchemas().FilteringTerms);
     return filterResponse;
   }
+
+  /// <summary>
+  /// Get the list of filtering terms handled by this beacon implementation.
+  /// </summary>
+  /// <param name="body">An object specifying the number to skip and the limit.</param>
+  /// <returns></returns>
+  [HttpPost("filtering_terms")]
+  public async Task<ActionResult<FilterResponse>> PostFilteringTerms([FromBody] FilteringTermsRequestBody body)
+  {
+    var terms = await filteringTerms.List();
+    var filterResponse = new FilterResponse()
+    {
+      Meta = new()
+      {
+        BeaconId = _beaconInfoOptions.BeaconId,
+        ApiVersion = _beaconInfoOptions.ApiVersion,
+        ReceivedRequestSummary = new RequestSummary()
+        {
+          ApiVersion = _beaconInfoOptions.ApiVersion,
+          Filters = null,
+          Pagination = new Pagination() { Limit = body.Limit, Skip = body.Skip }
+        }
+      },
+      Response = terms
+    };
+    filterResponse.Meta.ReturnedSchemas.Add(new DefaultSchemas().FilteringTerms);
+    return filterResponse;
+  }
 }
