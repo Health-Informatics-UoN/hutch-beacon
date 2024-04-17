@@ -20,4 +20,9 @@ public class FilteringTermsUpdateOptions
   /// Save results from Filtering Terms workflow to this destination.
   /// </summary>
   public string PathToResults { get; set; } = string.Empty;
+
+  /// <summary>
+  /// The expected file name for the filtering terms workflow output.
+  /// </summary>
+  public string ExpectedOutputFileName { get; set; } = "output.json";
 }

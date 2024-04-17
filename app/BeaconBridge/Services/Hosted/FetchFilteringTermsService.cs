@@ -63,7 +63,8 @@ public class FetchFilteringTermsService(IOptions<FilteringTermsUpdateOptions> fi
       try
       {
         // Get the file containing the results
-        var file = dirInfo.EnumerateFiles("output.json", SearchOption.AllDirectories).First();
+        var file = dirInfo
+          .EnumerateFiles(filteringTermsOptions.Value.ExpectedOutputFileName, SearchOption.AllDirectories).First();
 
         // Deserialise the file
         var termsJson = await File.ReadAllTextAsync(file.FullName, stoppingToken);
