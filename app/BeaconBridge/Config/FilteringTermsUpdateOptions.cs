@@ -17,7 +17,7 @@ public class FilteringTermsUpdateOptions
   public string PathToWorkflow { get; set; } = string.Empty;
 
   /// <summary>
-  /// Save results from Filtering Terms workflow to this destination.
+  /// Save results from Filtering Terms workflow to this directory.
   /// </summary>
   public string PathToResults { get; set; } = string.Empty;
 
