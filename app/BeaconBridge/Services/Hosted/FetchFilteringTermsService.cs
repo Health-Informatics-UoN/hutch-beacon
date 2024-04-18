@@ -13,21 +13,24 @@ public class FetchFilteringTermsService(IOptions<FilteringTermsUpdateOptions> fi
   protected override async Task ExecuteAsync(CancellationToken stoppingToken)
   {
     logger.LogInformation("Triggering filtering terms cache update");
-    var objectNameInBucket = Path.GetFileName(filteringTermsOptions.Value.PathToResults);
-    var objectDirectoryOnDisk = filteringTermsOptions.Value.PathToResults.Replace(
-      Path.GetExtension(objectNameInBucket), "");
 
     while (!stoppingToken.IsCancellationRequested)
     {
       var delay = Task.Delay(TimeSpan.FromSeconds(filteringTermsOptions.Value.DelaySeconds), stoppingToken);
+      string objectFileName;
 
       // Download RO-Crate from MinIO
-      if (await minio.StoreExists() && minio.ObjectIsInStore(objectNameInBucket))
+      if (await minio.StoreExists())
       {
         try
         {
+          logger.LogInformation("Looking for new workflow run results");
+          // Get the most recent object in the bucket
+          var mostRecentUpload = minio.GetObjectsInBucket().First();
+          objectFileName = mostRecentUpload.Key;
+          var destination = Path.Combine(filteringTermsOptions.Value.PathToResults, mostRecentUpload.Key);
           logger.LogInformation("Downloading the results RO-Crate of the workflow");
-          await minio.GetFromStore(objectNameInBucket, filteringTermsOptions.Value.PathToResults);
+          await minio.GetFromStore(objectFileName, destination);
           logger.LogInformation("Successfully downloaded the results RO-Crate of the workflow");
         }
         catch (BucketNotFoundException)
@@ -35,24 +38,23 @@ public class FetchFilteringTermsService(IOptions<FilteringTermsUpdateOptions> fi
           logger.LogError("Unable to download results RO-Crate from the store");
           continue;
         }
+        catch (Exception)
+        {
+          logger.LogError("Unable to find the most recently uploaded workflow run results");
+          continue;
+        }
       }
       else
       {
-        logger.LogError("Minio bucket does not exist or results RO-Crate {Object} not in store", objectNameInBucket);
+        logger.LogError("Minio bucket does not exist");
         continue;
       }
 
       // Unzip RO-Crate
-      if (objectDirectoryOnDisk is null)
-      {
-        logger.LogError("Couldn't locate download path for results RO-Crate on disk");
-        throw new DirectoryNotFoundException($"{objectDirectoryOnDisk} not found");
-      }
-
-      var dirInfo = new DirectoryInfo(objectDirectoryOnDisk);
+      var dirInfo = new DirectoryInfo(filteringTermsOptions.Value.PathToResults);
       try
       {
-        ZipFile.ExtractToDirectory(filteringTermsOptions.Value.PathToResults, dirInfo.Parent!.FullName);
+        ZipFile.ExtractToDirectory(objectFileName, filteringTermsOptions.Value.PathToResults);
       }
       catch (Exception e) when (e is NullReferenceException or IOException)
       {
