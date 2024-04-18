@@ -17,7 +17,7 @@ public class FetchFilteringTermsService(IOptions<FilteringTermsUpdateOptions> fi
     while (!stoppingToken.IsCancellationRequested)
     {
       var delay = Task.Delay(TimeSpan.FromSeconds(filteringTermsOptions.Value.DelaySeconds), stoppingToken);
-      string objectFileName;
+      var objectNameOnDisk = string.Empty;
 
       // Download RO-Crate from MinIO
       if (await minio.StoreExists())
@@ -27,39 +27,39 @@ public class FetchFilteringTermsService(IOptions<FilteringTermsUpdateOptions> fi
           logger.LogInformation("Looking for new workflow run results");
           // Get the most recent object in the bucket
           var mostRecentUpload = minio.GetObjectsInBucket().First();
-          objectFileName = mostRecentUpload.Key;
-          var destination = Path.Combine(filteringTermsOptions.Value.PathToResults, mostRecentUpload.Key);
+          objectNameOnDisk = Path.Combine(filteringTermsOptions.Value.PathToResults, mostRecentUpload.Key);
           logger.LogInformation("Downloading the results RO-Crate of the workflow");
-          await minio.GetFromStore(objectFileName, destination);
+          await minio.GetFromStore(mostRecentUpload.Key, objectNameOnDisk);
           logger.LogInformation("Successfully downloaded the results RO-Crate of the workflow");
         }
         catch (BucketNotFoundException)
         {
           logger.LogError("Unable to download results RO-Crate from the store");
-          continue;
+          await delay;
         }
         catch (Exception)
         {
           logger.LogError("Unable to find the most recently uploaded workflow run results");
-          continue;
+          await delay;
         }
       }
       else
       {
         logger.LogError("Minio bucket does not exist");
-        continue;
+        await delay;
       }
 
       // Unzip RO-Crate
       var dirInfo = new DirectoryInfo(filteringTermsOptions.Value.PathToResults);
+      if (!dirInfo.Exists) dirInfo.Create();
       try
       {
-        ZipFile.ExtractToDirectory(objectFileName, filteringTermsOptions.Value.PathToResults);
+        ZipFile.ExtractToDirectory(objectNameOnDisk, filteringTermsOptions.Value.PathToResults);
       }
       catch (Exception e) when (e is NullReferenceException or IOException)
       {
         logger.LogError("Unable to unzip results RO-Crate");
-        continue;
+        await delay;
       }
 
       try
@@ -76,26 +76,38 @@ public class FetchFilteringTermsService(IOptions<FilteringTermsUpdateOptions> fi
         await using var scope = serviceProvider.CreateAsyncScope();
         var filteringTermsService = scope.ServiceProvider.GetRequiredService<FilteringTermsService>();
         await filteringTermsService.AddOrUpdateRangeAsync(filteringTerms ?? throw new InvalidOperationException());
+        logger.LogInformation("Saved filtering terms to cache");
       }
       catch (InvalidOperationException)
       {
         logger.LogError("Unable to locate filtering terms RO-Crate or results file");
-        continue;
+        await delay;
       }
       catch (Exception e) when (e is NullReferenceException or JsonException)
       {
         logger.LogError("Unable to deserialise filtering terms file");
-        continue;
+        await delay;
       }
       catch (OperationCanceledException)
       {
         logger.LogError("Unable to read filtering terms JSON file");
-        continue;
+        await delay;
       }
-      finally
+
+      // Clean up
+      if (dirInfo.Exists)
       {
-        if (dirInfo.Exists) dirInfo.Delete(recursive: true);
+        foreach (var directory in dirInfo.EnumerateDirectories())
+        {
+          directory.Delete(recursive: true);
+        }
+
+        foreach (var file in dirInfo.EnumerateFiles())
+        {
+          file.Delete();
+        }
       }
+
 
       await delay;
     }
