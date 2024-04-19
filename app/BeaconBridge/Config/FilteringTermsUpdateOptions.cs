@@ -15,4 +15,14 @@ public class FilteringTermsUpdateOptions
   /// The path to the Filtering Terms workflow. It could be a link to it on WorkflowHub or a file on disk.
   /// </summary>
   public string PathToWorkflow { get; set; } = string.Empty;
+
+  /// <summary>
+  /// Save results from Filtering Terms workflow to this directory.
+  /// </summary>
+  public string PathToResults { get; set; } = string.Empty;
+
+  /// <summary>
+  /// The expected file name for the filtering terms workflow output.
+  /// </summary>
+  public string ExpectedOutputFileName { get; set; } = "output.json";
 }

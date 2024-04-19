@@ -2,6 +2,7 @@ using System.Reactive.Linq;
 using BeaconBridge.Config;
 using Microsoft.Extensions.Options;
 using Minio;
+using Minio.DataModel;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
 
@@ -115,5 +116,17 @@ public class MinioService
     }
 
     return false;
+  }
+
+  /// <summary>
+  /// Get an enumerator of objects in the configured bucket sorted by <c>LastModifiedTime</c>
+  /// from most to least recent.
+  /// </summary>
+  /// <returns>An enumerator of objects in the configured bucket.</returns>
+  public IEnumerable<Item> GetObjectsInBucket()
+  {
+    var args = new ListObjectsArgs().WithBucket(_options.Bucket);
+
+    return _minioClient.ListObjectsAsync(args).ToEnumerable().OrderBy(x => x.LastModifiedDateTime).Reverse();
   }
 }

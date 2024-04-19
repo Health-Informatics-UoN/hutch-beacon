@@ -53,7 +53,8 @@ public static class ConfigureWebService
       .AddTransient<FilteringTermsService>()
       .AddSingleton<TesSubmissionService>()
       .AddSingleton<SubmissionStatusService>()
-      .AddHostedService<TriggerFilteringTermsService>();
+      .AddHostedService<TriggerFilteringTermsService>()
+      .AddHostedService<FetchFilteringTermsService>();
 
     return b;
   }
