@@ -11,42 +11,42 @@ public class DataSeeder(BeaconContext db)
     {
       var seedData = new List<FilteringTerm>
       {
-        new FilteringTerm
+        new()
         {
           Type = "ontology",
           Id = "Gender:M",
           Label = "MALE",
           Scope = string.Empty
         },
-        new FilteringTerm
+        new()
         {
           Type = "ontology",
           Id = "Gender:F",
           Label = "FEMALE",
           Scope = string.Empty
         },
-        new FilteringTerm
+        new()
         {
           Type = "ontology",
           Id = "Race:2",
           Label = "Asian",
           Scope = string.Empty
         },
-        new FilteringTerm
+        new()
         {
           Type = "ontology",
           Id = "Race:5",
           Label = "White",
           Scope = string.Empty
         },
-        new FilteringTerm
+        new()
         {
           Type = "ontology",
           Id = "Race:3",
           Label = "Black or African American",
           Scope = string.Empty
         },
-        new FilteringTerm
+        new()
         {
           Type = "ontology",
           Id = "None:No matching concept",
@@ -54,6 +54,13 @@ public class DataSeeder(BeaconContext db)
           Scope = string.Empty
         }
       };
+
+      foreach (var seed in seedData)
+      {
+        db.Add(seed);
+      }
+
+      await db.SaveChangesAsync();
     }
   }
 }
