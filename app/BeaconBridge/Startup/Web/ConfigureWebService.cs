@@ -19,7 +19,7 @@ public static class ConfigureWebService
     b.Services.AddDbContext<BeaconContext>(o =>
     {
       var connectionString = b.Configuration.GetConnectionString("BeaconBridgeDb");
-      o.UseSqlite(connectionString ?? "Data Source=BeaconBridge.db");
+      o.UseNpgsql(connectionString);
     });
     b.Services
       .AddAutoMapper(typeof(Program).Assembly)
