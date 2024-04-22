@@ -1,3 +1,5 @@
+using System.Text;
+using System.Text.Json;
 using BeaconBridge.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,45 +11,7 @@ public class DataSeeder(BeaconContext db)
   {
     if (!await db.FilteringTerms.AsNoTracking().AnyAsync())
     {
-      var seedData = new List<FilteringTerm>
-      {
-        new()
-        {
-          Type = "ontology",
-          Id = "Gender:M",
-          Label = "MALE"
-        },
-        new()
-        {
-          Type = "ontology",
-          Id = "Gender:F",
-          Label = "FEMALE"
-        },
-        new()
-        {
-          Type = "ontology",
-          Id = "Race:2",
-          Label = "Asian"
-        },
-        new()
-        {
-          Type = "ontology",
-          Id = "Race:5",
-          Label = "White"
-        },
-        new()
-        {
-          Type = "ontology",
-          Id = "Race:3",
-          Label = "Black or African American"
-        },
-        new()
-        {
-          Type = "ontology",
-          Id = "None:No matching concept",
-          Label = "No matching concept"
-        }
-      };
+      var seedData = await ReadSampleData();
 
       foreach (var seed in seedData)
       {
@@ -56,5 +20,19 @@ public class DataSeeder(BeaconContext db)
 
       await db.SaveChangesAsync();
     }
+  }
+
+  private async Task<List<FilteringTerm>> ReadSampleData()
+  {
+    var assembly = typeof(DataSeeder).Assembly;
+    var resource = assembly.GetManifestResourceStream("BeaconBridge.SampleData.filtering_terms.json");
+
+    using var sr = new StreamReader(resource!, Encoding.UTF8);
+    var jsonText = await sr.ReadToEndAsync();
+
+    var results = JsonSerializer.Deserialize<List<FilteringTerm>>(jsonText);
+    if (results is null) throw new NullReferenceException("Could not parse the sample data");
+
+    return results;
   }
 }
