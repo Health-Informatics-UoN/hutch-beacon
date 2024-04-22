@@ -1,0 +1,2462 @@
+[
+  {
+    "type": "ontology",
+    "id": "Gender:F",
+    "label": "FEMALE"
+  },
+  {
+    "type": "ontology",
+    "id": "Race:2",
+    "label": "Asian"
+  },
+  {
+    "type": "ontology",
+    "id": "Race:5",
+    "label": "White"
+  },
+  {
+    "type": "ontology",
+    "id": "Race:3",
+    "label": "Black or African American"
+  },
+  {
+    "type": "ontology",
+    "id": "None:No matching concept",
+    "label": "No matching concept"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:43878008",
+    "label": "Streptococcal sore throat"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:283385000",
+    "label": "Laceration of thigh"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:271825005",
+    "label": "Respiratory distress"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:15724005",
+    "label": "Fracture of vertebral column without spinal cord injury"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:124171000119105",
+    "label": "Chronic intractable migraine without aura"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:83664006",
+    "label": "Idiopathic atrophic hypothyroidism"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:431856006",
+    "label": "Chronic kidney disease stage 2"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:443165006",
+    "label": "Pathological fracture due to osteoporosis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:22298006",
+    "label": "Myocardial infarction"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:1551000119108",
+    "label": "Nonproliferative diabetic retinopathy due to type 2 diabetes mellitus"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:70704007",
+    "label": "Sprain of wrist"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:11218009",
+    "label": "Infection due to Pseudomonas aeruginosa"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:16114001",
+    "label": "Fracture of ankle"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:36971009",
+    "label": "Sinusitis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:156073000",
+    "label": "Complete miscarriage"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:74400008",
+    "label": "Appendicitis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:80394007",
+    "label": "Hyperglycemia"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:35999006",
+    "label": "Blighted ovum"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:283371005",
+    "label": "Laceration of forearm"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:62106007",
+    "label": "Concussion with no loss of consciousness"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:192127007",
+    "label": "Child attention deficit disorder"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:1501000119109",
+    "label": "Proliferative retinopathy with type 2 diabetes mellitus"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:19169002",
+    "label": "Miscarriage in first trimester"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:403191005",
+    "label": "Partial thickness burn"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:197927001",
+    "label": "Recurrent urinary tract infection"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:47693006",
+    "label": "Rupture of appendix"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:30832001",
+    "label": "Rupture of patellar tendon"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:398254007",
+    "label": "Pre-eclampsia"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:40541001",
+    "label": "Acute pulmonary edema"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:55680006",
+    "label": "Drug overdose"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:427089005",
+    "label": "Diabetes mellitus due to cystic fibrosis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:236077008",
+    "label": "Protracted diarrhea"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:47200007",
+    "label": "High risk pregnancy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:254837009",
+    "label": "Malignant tumor of breast"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:44465007",
+    "label": "Sprain of ankle"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:49727002",
+    "label": "Cough"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:363406005",
+    "label": "Malignant tumor of colon"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:65710008",
+    "label": "Acute respiratory failure"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:446096008",
+    "label": "Perennial allergic rhinitis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:190905008",
+    "label": "Cystic fibrosis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:232353008",
+    "label": "Perennial allergic rhinitis with seasonal variation"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:127013003",
+    "label": "Kidney disorder due to diabetes mellitus"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:233678006",
+    "label": "Childhood asthma"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:200936003",
+    "label": "Lupus erythematosus"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:157141000119108",
+    "label": "Proteinuria due to type 2 diabetes mellitus"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:162573006",
+    "label": "Suspected lung cancer"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:307731004",
+    "label": "Injury of tendon of the rotator cuff of shoulder"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:284549007",
+    "label": "Laceration of hand"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:444814009",
+    "label": "Viral sinusitis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:403192003",
+    "label": "Full thickness burn"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:254632001",
+    "label": "Small cell carcinoma of lung"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:241929008",
+    "label": "Acute allergic reaction"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:235919008",
+    "label": "Gallstone"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:5602001",
+    "label": "Opioid abuse"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:93761005",
+    "label": "Primary malignant neoplasm of colon"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:707577004",
+    "label": "Female infertility due to cystic fibrosis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:301011002",
+    "label": "Escherichia coli urinary tract infection"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:33737001",
+    "label": "Fracture of rib"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:10509002",
+    "label": "Acute bronchitis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:64859006",
+    "label": "Osteoporosis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:230690007",
+    "label": "Cerebrovascular accident"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:422034002",
+    "label": "Retinopathy with type 2 diabetes mellitus"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:698754002",
+    "label": "Chronic paralysis due to lesion of spinal cord"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:82423001",
+    "label": "Chronic pain"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:58150001",
+    "label": "Fracture of clavicle"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:24079001",
+    "label": "Atopic dermatitis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:72892002",
+    "label": "Normal pregnancy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:88805009",
+    "label": "Chronic congestive heart failure"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:448813005",
+    "label": "Sepsis due to Pseudomonas"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:239720000",
+    "label": "Tear of meniscus of knee"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:95417003",
+    "label": "Primary fibromyalgia syndrome"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:126906006",
+    "label": "Neoplasm of prostate"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:87433001",
+    "label": "Pulmonary emphysema"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:9414007",
+    "label": "Impaired glucose tolerance"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:367498001",
+    "label": "Seasonal allergic rhinitis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:53741008",
+    "label": "Coronary arteriosclerosis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:59621000",
+    "label": "Essential hypertension"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:47505003",
+    "label": "Posttraumatic stress disorder"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:79586000",
+    "label": "Tubal pregnancy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:1734006",
+    "label": "Fracture of vertebral column with spinal cord injury"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:239873007",
+    "label": "Osteoarthritis of knee"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:65966004",
+    "label": "Fracture of forearm"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:6072007",
+    "label": "Bleeding from anus"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:84757009",
+    "label": "Epilepsy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:239872002",
+    "label": "Osteoarthritis of hip"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:90781000119102",
+    "label": "Microalbuminuria due to type 2 diabetes mellitus"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:713197008",
+    "label": "Recurrent rectal polyp"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:34095006",
+    "label": "Dehydration"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:44054006",
+    "label": "Type 2 diabetes mellitus"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:65275009",
+    "label": "Acute cholecystitis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:68496003",
+    "label": "Polyp of colon"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:370247008",
+    "label": "Facial laceration"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:92691004",
+    "label": "Carcinoma in situ of prostate"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:765480005",
+    "label": "Vomiting co-occurrent and due to infectious disease"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:314994000",
+    "label": "Metastasis from malignant tumor of prostate"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:7200002",
+    "label": "Alcoholism"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:230265002",
+    "label": "Familial Alzheimer's disease of early onset"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:109838007",
+    "label": "Overlapping malignant neoplasm of colon"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:185086009",
+    "label": "Emphysematous bronchitis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:406602003",
+    "label": "Infection due to Staphylococcus aureus"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:370143000",
+    "label": "Major depressive disorder"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:237602007",
+    "label": "Metabolic syndrome X"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:424132000",
+    "label": "Non-small cell carcinoma of lung, TNM stage 1"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:90560007",
+    "label": "Gout"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:69896004",
+    "label": "Rheumatoid arthritis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:433144002",
+    "label": "Chronic kidney disease stage 3"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:206523001",
+    "label": "Meconium ileus"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:233604007",
+    "label": "Pneumonia"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:201834006",
+    "label": "Localized, primary osteoarthritis of the hand"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:62564004",
+    "label": "Concussion with loss of consciousness"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:38822007",
+    "label": "Cystitis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:75498004",
+    "label": "Acute bacterial sinusitis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:195967001",
+    "label": "Asthma"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:55822004",
+    "label": "Hyperlipidemia"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:254637007",
+    "label": "Non-small cell lung cancer"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:196416002",
+    "label": "Impacted molars"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:39848009",
+    "label": "Whiplash injury to neck"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:65363002",
+    "label": "Otitis media"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:36923009",
+    "label": "Major depression, single episode"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:95516005",
+    "label": "Gastrointestinal irritation"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:40055000",
+    "label": "Chronic sinusitis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:444448004",
+    "label": "Injury of medial collateral ligament of knee"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:127295002",
+    "label": "Traumatic brain injury"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:94260004",
+    "label": "Secondary malignant neoplasm of colon"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:26929004",
+    "label": "Alzheimer's disease"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:110030002",
+    "label": "Concussion injury of brain"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:262574004",
+    "label": "Bullet wound"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:359817006",
+    "label": "Closed fracture of hip"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:49436004",
+    "label": "Atrial fibrillation"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:444470001",
+    "label": "Injury of anterior cruciate ligament"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:302870006",
+    "label": "Hypertriglyceridemia"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:195662009",
+    "label": "Acute viral pharyngitis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:431855005",
+    "label": "Chronic kidney disease stage 1"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:128613002",
+    "label": "Seizure disorder"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:263102004",
+    "label": "Fracture subluxation of wrist"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:40275004",
+    "label": "Contact dermatitis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:97331000119101",
+    "label": "Macular edema and retinopathy due to type 2 diabetes mellitus"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:267036007",
+    "label": "Dyspnea"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:410429000",
+    "label": "Cardiac arrest"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:448417001",
+    "label": "Sepsis due to Staphylococcus aureus"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:67811000119102",
+    "label": "Primary small cell malignant neoplasm of lung, TNM stage 1"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:284551006",
+    "label": "Laceration of foot"
+  },
+  {
+    "type": "ontology",
+    "id": "None:No matching concept",
+    "label": "No matching concept"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:271737000",
+    "label": "Anemia"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:45816000",
+    "label": "Pyelonephritis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:368581000119106",
+    "label": "Neuropathy due to type 2 diabetes mellitus"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:198992004",
+    "label": "Eclampsia in pregnancy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:386661006",
+    "label": "Fever"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:403190006",
+    "label": "Epidermal burn of skin"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:48387007",
+    "label": "Incision of trachea"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:38102005",
+    "label": "Cholecystectomy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:52734007",
+    "label": "Total replacement of hip"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:1571000087109",
+    "label": "Ultrasonography of bilateral breasts"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:74016001",
+    "label": "Radiologic examination of knee"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:31208007",
+    "label": "Medical induction of labor"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:430193006",
+    "label": "Medication Reconciliation"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:241615005",
+    "label": "MRI of breast"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:392021009",
+    "label": "Lumpectomy of breast"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:69031006",
+    "label": "Excision of breast tissue"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:18286008",
+    "label": "Catheter ablation of tissue of heart"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:387685009",
+    "label": "Surgical manipulation of shoulder joint"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:434158009",
+    "label": "Transthoracic three dimensional ultrasonography of heart"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:232657004",
+    "label": "Single lung transplant"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:68254000",
+    "label": "Removal of intrauterine device"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:715252007",
+    "label": "Depression screening using PHQ-9 (Patient Health Questionnaire 9) score"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:35025007",
+    "label": "Manual pelvic examination"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:236974004",
+    "label": "Instrumental delivery"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:433114000",
+    "label": "Human epidermal growth factor receptor 2 gene detection by immunohistochemistry"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:171207006",
+    "label": "Depression screening"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:82078001",
+    "label": "Collection of blood specimen for laboratory"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:180325003",
+    "label": "Direct current cardioversion"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:60151004",
+    "label": "Neonatal screening"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:384700001",
+    "label": "Injection of tetanus antitoxin"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:108290001",
+    "label": "Radiation oncology AND/OR radiotherapy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:265764009",
+    "label": "Renal dialysis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:443529005",
+    "label": "Detection of chromosomal aneuploidy in prenatal amniotic fluid specimen using FISH screening technique"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:703423002",
+    "label": "Combined chemotherapy and radiation therapy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:24623002",
+    "label": "Screening mammography"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:71651007",
+    "label": "Mammography"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:33195004",
+    "label": "Teleradiotherapy procedure"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:18946005",
+    "label": "Epidural anesthesia"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:371908008",
+    "label": "Oxygen administration by mask"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:426701000119108",
+    "label": "Ultrasonography of abdomen, right upper quadrant and epigastrium"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:122548005",
+    "label": "Biopsy of breast"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:52765003",
+    "label": "Intubation"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:180207008",
+    "label": "Intravenous blood transfusion of packed cells"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:301807007",
+    "label": "Removal of subcutaneous contraceptive"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:29303009",
+    "label": "Electrocardiographic procedure"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:45595009",
+    "label": "Laparoscopic cholecystectomy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:14152002",
+    "label": "Intravenous infusion"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:80146002",
+    "label": "Appendectomy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:76601001",
+    "label": "Intramuscular injection"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:433112001",
+    "label": "Percutaneous mechanical thrombectomy of portal vein using fluoroscopic guidance"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:443497002",
+    "label": "Excision of sentinel lymph node"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:699253003",
+    "label": "Surgical manipulation of joint of knee"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:274031008",
+    "label": "Rectal polypectomy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:1225002",
+    "label": "Radiography of humerus"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:16335031000119103",
+    "label": "High resolution computed tomography of chest without contrast"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:60027007",
+    "label": "Radiography of wrist"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:274474001",
+    "label": "Bone immobilization"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:418891003",
+    "label": "CT of chest and abdomen"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:11466000",
+    "label": "Cesarean section"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:15081005",
+    "label": "Pulmonary rehabilitation"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:46706006",
+    "label": "Replacement of intrauterine contraceptive device"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:65575008",
+    "label": "Biopsy of prostate"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:387607004",
+    "label": "Construction of diverting colostomy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:76164006",
+    "label": "Biopsy of colon"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:177157003",
+    "label": "Spontaneous breech delivery"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:698354004",
+    "label": "Magnetic resonance imaging for measurement of brain volume"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:91602002",
+    "label": "Thoracentesis"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:88039007",
+    "label": "Transplant of lung"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:51116004",
+    "label": "Passive immunization"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:288086009",
+    "label": "Suture open wound"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:65546002",
+    "label": "Extraction of wisdom tooth"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:232717009",
+    "label": "Coronary artery bypass graft"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:180256009",
+    "label": "Subcutaneous immunotherapy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:385892002",
+    "label": "Mental health screening"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:268425006",
+    "label": "Pelvis X-ray"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:112790001",
+    "label": "Nasal sinus endoscopy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:73761001",
+    "label": "Colonoscopy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:269911007",
+    "label": "Sputum examination"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:169230002",
+    "label": "Ultrasound scan for fetal viability"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:104435004",
+    "label": "Screening for occult blood in feces"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:168594001",
+    "label": "Plain X-ray of clavicle"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:225337009",
+    "label": "Suicide risk assessment"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:90470006",
+    "label": "Prostatectomy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:90226004",
+    "label": "Cytopathology procedure, preparation of smear, genital source"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:237001001",
+    "label": "Augmentation of labor"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:410006001",
+    "label": "Digital examination of rectum"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:85548006",
+    "label": "Episiotomy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:22523008",
+    "label": "Vasectomy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:447365002",
+    "label": "Insertion of biventricular implantable cardioverter defibrillator"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:65200003",
+    "label": "Insertion of intrauterine contraceptive device"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:398171003",
+    "label": "Hearing examination"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:274804006",
+    "label": "Evaluation of uterine fundal height"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:399208008",
+    "label": "Plain chest X-ray"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:415300000",
+    "label": "Review of systems"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:40701008",
+    "label": "Echocardiography"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:432231006",
+    "label": "Fine needle aspiration biopsy of lung"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:287664005",
+    "label": "Bilateral tubal ligation"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:445912000",
+    "label": "Excision of fallopian tube and surgical removal of ectopic pregnancy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:228557008",
+    "label": "Cognitive and behavioral therapy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:169553002",
+    "label": "Insertion of subcutaneous contraceptive"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:167995008",
+    "label": "Sputum microscopy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:367336001",
+    "label": "Chemotherapy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:384692006",
+    "label": "Intracavitary brachytherapy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:82433009",
+    "label": "Continuous negative pressure ventilation treatment"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:19490002",
+    "label": "Radiography of ankle"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:225158009",
+    "label": "Auscultation of the fetal heart"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:241055006",
+    "label": "Mammogram - symptomatic"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:396487001",
+    "label": "Sentinel lymph node biopsy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:399014008",
+    "label": "Vaccination for diphtheria, pertussis, and tetanus"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:173160006",
+    "label": "Diagnostic fiberoptic bronchoscopy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:79733001",
+    "label": "Amputation above-knee"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:171231001",
+    "label": "Asthma screening"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:714812005",
+    "label": "Induced termination of pregnancy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:429609002",
+    "label": "Lung volume reduction surgery"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:5880005",
+    "label": "Physical examination"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:433236007",
+    "label": "Transthoracic echocardiography"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:43075005",
+    "label": "Partial resection of colon"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:234262008",
+    "label": "Excision of axillary lymph node"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:281790008",
+    "label": "Intravenous antibiotic therapy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:447759004",
+    "label": "Brachytherapy of breast"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:312681000",
+    "label": "Bone density scan"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:395142003",
+    "label": "Allergy screening test"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:236931002",
+    "label": "Methotrexate injection into tubal pregnancy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:43060002",
+    "label": "Intravenous injection"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:314098000",
+    "label": "Rubella screening test"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:162676008",
+    "label": "Brief general examination"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:415070008",
+    "label": "Percutaneous coronary intervention"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:271442007",
+    "label": "Fetal anatomy study"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:313191000",
+    "label": "Injection of epinephrine"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:180030006",
+    "label": "Amputation of the foot"
+  },
+  {
+    "type": "ontology",
+    "id": "None:No matching concept",
+    "label": "No matching concept"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:10383002",
+    "label": "Counseling for termination of pregnancy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:54550000",
+    "label": "Electroencephalogram"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:609588000",
+    "label": "Total knee replacement"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:113120007",
+    "label": "Interstitial brachytherapy"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:5811-5",
+    "label": "Specific gravity of Urine by Test strip"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:252160004",
+    "label": "Standard pregnancy test"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:1742-6",
+    "label": "Alanine aminotransferase [Enzymatic activity/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:38483-4",
+    "label": "Creatinine [Mass/volume] in Blood"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:4548-4",
+    "label": "Hemoglobin A1c/Hemoglobin.total in Blood"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:127783003",
+    "label": "Spirometry"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:33037-3",
+    "label": "Anion gap in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:2708-6",
+    "label": "Oxygen saturation in Arterial blood"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:14804-9",
+    "label": "Lactate dehydrogenase [Enzymatic activity/volume] in Serum or Plasma by Lactate to pyruvate reaction"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:8302-2",
+    "label": "Body height"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:6246-3",
+    "label": "Shrimp IgE Ab [Units/volume] in Serum"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:2947-0",
+    "label": "Sodium [Moles/volume] in Blood"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:85344-0",
+    "label": "Lymph nodes with micrometastases [#] in Cancer specimen by Light microscopy"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:33728-7",
+    "label": "Size.maximum dimension in Tumor"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:2075-0",
+    "label": "Chloride [Moles/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:8462-4",
+    "label": "Diastolic blood pressure"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:2571-8",
+    "label": "Triglyceride [Mass/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:788-0",
+    "label": "Erythrocyte distribution width [Ratio] by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:30385-9",
+    "label": "Erythrocyte distribution width [Ratio]"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:5792-7",
+    "label": "Glucose [Mass/volume] in Urine by Test strip"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:80382-5",
+    "label": "Influenza virus A Ag [Presence] in Nasopharynx by Rapid immunoassay"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:10480-2",
+    "label": "Estrogen+Progesterone receptor Ag [Presence] in Tissue by Immune stain"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:1975-2",
+    "label": "Bilirubin.total [Mass/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:42719-5",
+    "label": "Bilirubin.total [Mass/volume] in Blood"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:80271-0",
+    "label": "Physical findings of Abdomen by Palpation"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:20570-8",
+    "label": "Hematocrit [Volume Fraction] of Blood"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:2951-2",
+    "label": "Sodium [Moles/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:38265-5",
+    "label": "DXA Radius and Ulna [T-score] Bone density"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:6248-9",
+    "label": "Soybean IgE Ab [Units/volume] in Serum"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:30428-7",
+    "label": "MCV [Entitic volume]"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:2823-3",
+    "label": "Potassium [Moles/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:32207-3",
+    "label": "Platelet distribution width [Entitic volume] in Blood by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:21000-5",
+    "label": "Erythrocyte distribution width [Entitic volume] by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:9279-1",
+    "label": "Respiratory rate"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:167271000",
+    "label": "Urine protein test"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:20505-4",
+    "label": "Bilirubin.total [Mass/volume] in Urine by Test strip"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:6298-4",
+    "label": "Potassium [Moles/volume] in Blood"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:731-0",
+    "label": "Lymphocytes [#/volume] in Blood by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:33762-6",
+    "label": "Natriuretic peptide.B prohormone N-Terminal [Mass/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:26515-7",
+    "label": "Platelets [#/volume] in Blood"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:8867-4",
+    "label": "Heart rate"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:1920-8",
+    "label": "Aspartate aminotransferase [Enzymatic activity/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:32623-1",
+    "label": "Platelet mean volume [Entitic volume] in Blood by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:57905-2",
+    "label": "Hemoglobin.gastrointestinal.lower [Presence] in Stool by Immunoassay --1st specimen"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:6085-5",
+    "label": "Common Ragweed IgE Ab [Units/volume] in Serum"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:704-7",
+    "label": "Basophils [#/volume] in Blood by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:26453-1",
+    "label": "Erythrocytes [#/volume] in Blood"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:20454-5",
+    "label": "Protein [Presence] in Urine by Test strip"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:6206-7",
+    "label": "Peanut IgE Ab [Units/volume] in Serum"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:92134-6",
+    "label": "Human metapneumovirus RNA [Presence] in Respiratory specimen by NAA with probe detection"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:6082-2",
+    "label": "Codfish IgE Ab [Units/volume] in Serum"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:2345-7",
+    "label": "Glucose [Mass/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:77606-2",
+    "label": "Weight-for-length Per age and sex"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:7258-7",
+    "label": "Cow milk IgE Ab [Units/volume] in Serum"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:2085-9",
+    "label": "Cholesterol in HDL [Mass/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:706-2",
+    "label": "Basophils/100 leukocytes in Blood by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:787-2",
+    "label": "MCV [Entitic volume] by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:5803-2",
+    "label": "pH of Urine by Test strip"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:169673001",
+    "label": "Antenatal RhD antibody screening"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:59576-9",
+    "label": "Body mass index (BMI) [Percentile] Per age and sex"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:117010004",
+    "label": "Urine culture"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:33756-8",
+    "label": "Polyp size greatest dimension"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:785-6",
+    "label": "MCH [Entitic mass] by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:6690-2",
+    "label": "Leukocytes [#/volume] in Blood by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:23426006",
+    "label": "Measurement of respiratory function"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:2885-2",
+    "label": "Protein [Mass/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:21908-9",
+    "label": "Stage group.clinical Cancer"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:444260001",
+    "label": "Cystic fibrosis 20 common mutation test"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:26464-8",
+    "label": "Leukocytes [#/volume] in Blood"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:104326007",
+    "label": "Measurement of Varicella-zoster virus antibody"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:39156-5",
+    "label": "Body mass index (BMI) [Ratio]"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:77147-7",
+    "label": "Glomerular filtration rate/1.73 sq M.predicted [Volume Rate/Area] in Serum, Plasma or Blood by Creatinine-based formula (MDRD)"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:92138-7",
+    "label": "Parainfluenza virus 3 RNA [Presence] in Respiratory specimen by NAA with probe detection"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:770-8",
+    "label": "Neutrophils/100 leukocytes in Blood by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:2276-4",
+    "label": "Ferritin [Mass/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:6075-6",
+    "label": "Cladosporium herbarum IgE Ab [Units/volume] in Serum"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:94040-3",
+    "label": "Adenovirus A+B+C+D+E DNA [Presence] in Respiratory specimen by NAA with probe detection"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:434363004",
+    "label": "Human epidermal growth factor receptor 2 gene detection by fluorescence in situ hybridization"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:275833003",
+    "label": "Alpha-fetoprotein test - antenatal"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:8480-6",
+    "label": "Systolic blood pressure"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:6299-2",
+    "label": "Urea nitrogen [Mass/volume] in Blood"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:5799-2",
+    "label": "Leukocyte esterase [Presence] in Urine by Test strip"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:18262-6",
+    "label": "Cholesterol in LDL [Mass/volume] in Serum or Plasma by Direct assay"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:19926-5",
+    "label": "FEV1/FVC"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:6095-4",
+    "label": "American house dust mite IgE Ab [Units/volume] in Serum"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:117015009",
+    "label": "Throat culture"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:6273-7",
+    "label": "Walnut IgE Ab [Units/volume] in Serum"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:713-8",
+    "label": "Eosinophils/100 leukocytes in Blood by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:4544-3",
+    "label": "Hematocrit [Volume Fraction] of Blood by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:6844-5",
+    "label": "Honey bee IgE Ab [Units/volume] in Serum"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:742-7",
+    "label": "Monocytes [#/volume] in Blood by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:751-8",
+    "label": "Neutrophils [#/volume] in Blood by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:21907-1",
+    "label": "Distant metastases.clinical [Class] Cancer"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:2069-3",
+    "label": "Chloride [Moles/volume] in Blood"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:9843-4",
+    "label": "Head Occipital-frontal circumference"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:47758006",
+    "label": "Hepatitis B surface antigen measurement"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:28163009",
+    "label": "Skin test for tuberculosis, Tine test"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:44667-4",
+    "label": "Site of distant metastasis in Breast tumor"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:26881-3",
+    "label": "Interleukin 6 [Mass/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:3024-7",
+    "label": "Thyroxine (T4) free [Mass/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:20565-8",
+    "label": "Carbon dioxide, total [Moles/volume] in Blood"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:10834-0",
+    "label": "Globulin [Mass/volume] in Serum by calculation"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:86964003",
+    "label": "Cystic fibrosis sweat test"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:6276-0",
+    "label": "Wheat IgE Ab [Units/volume] in Serum"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:2093-3",
+    "label": "Cholesterol [Mass/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:21905-5",
+    "label": "Primary tumor.clinical [Class] Cancer"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:6158-0",
+    "label": "Latex IgE Ab [Units/volume] in Serum"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:104375008",
+    "label": "Hepatitis C antibody, confirmatory test"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:711-2",
+    "label": "Eosinophils [#/volume] in Blood by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:21924-6",
+    "label": "Tumor marker Cancer"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:32465-7",
+    "label": "Physical findings of Prostate"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:92142-9",
+    "label": "Influenza virus A RNA [Presence] in Respiratory specimen by NAA with probe detection"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:5804-0",
+    "label": "Protein [Mass/volume] in Urine by Test strip"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:5770-3",
+    "label": "Bilirubin.total [Presence] in Urine by Test strip"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:92130-4",
+    "label": "Rhinovirus RNA [Presence] in Respiratory specimen by NAA with probe detection"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:6106-9",
+    "label": "Egg white IgE Ab [Units/volume] in Serum"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:2514-8",
+    "label": "Ketones [Presence] in Urine by Test strip"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:777-3",
+    "label": "Platelets [#/volume] in Blood by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:2857-1",
+    "label": "Prostate specific Ag [Mass/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:66534-9",
+    "label": "Percentage area affected by eczema Lower extremity - bilateral [PhenX]"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:85319-2",
+    "label": "HER2 [Presence] in Breast cancer specimen by Immune stain"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:49765-1",
+    "label": "Calcium [Mass/volume] in Blood"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:25428-4",
+    "label": "Glucose [Presence] in Urine by Test strip"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:5802-4",
+    "label": "Nitrite [Presence] in Urine by Test strip"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:31676001",
+    "label": "HIV antigen test"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:92141-1",
+    "label": "Influenza virus B RNA [Presence] in Respiratory specimen by NAA with probe detection"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:104173009",
+    "label": "Microbial culture of sputum"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:85339-0",
+    "label": "Progesterone receptor Ag [Presence] in Breast cancer specimen by Immune stain"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:2160-0",
+    "label": "Creatinine [Mass/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:92140-3",
+    "label": "Parainfluenza virus 1 RNA [Presence] in Respiratory specimen by NAA with probe detection"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:29463-7",
+    "label": "Body weight"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:84215-3",
+    "label": "Mental health Telehealth Note"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:44608003",
+    "label": "Blood group typing"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:74006-8",
+    "label": "Weight difference [Mass difference] --pre dialysis - post dialysis"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:718-7",
+    "label": "Hemoglobin [Mass/volume] in Blood"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:10230-1",
+    "label": "Left ventricular Ejection fraction"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:85318-4",
+    "label": "HER2 [Presence] in Breast cancer specimen by FISH"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:66524-0",
+    "label": "Percentage area affected by eczema Upper extremity - bilateral [PhenX]"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:113076002",
+    "label": "Glucose tolerance test"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:104091002",
+    "label": "Hemogram, automated, with RBC, WBC, Hgb, Hct, Indices, Platelet count, and manual WBC differential"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:17861-6",
+    "label": "Calcium [Mass/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:5778-6",
+    "label": "Color of Urine"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:72514-3",
+    "label": "Pain severity - 0-10 verbal numeric rating [Score] - Reported"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:6768-6",
+    "label": "Alkaline phosphatase [Enzymatic activity/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:2028-9",
+    "label": "Carbon dioxide, total [Moles/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:5794-3",
+    "label": "Hemoglobin [Presence] in Urine by Test strip"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:89579-7",
+    "label": "Troponin I.cardiac [Mass/volume] in Serum or Plasma by High sensitivity method"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:66519-0",
+    "label": "Percentage area affected by eczema Head and Neck [PhenX]"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:1751-7",
+    "label": "Albumin [Mass/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:789-8",
+    "label": "Erythrocytes [#/volume] in Blood by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:48065-7",
+    "label": "Fibrin D-dimer FEU [Mass/volume] in Platelet poor plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:3016-3",
+    "label": "Thyrotropin [Units/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:21906-3",
+    "label": "Regional lymph nodes.clinical [Class] Cancer"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:5767-9",
+    "label": "Appearance of Urine"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:118001005",
+    "label": "Streptococcus pneumoniae group B antigen assay"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:736-9",
+    "label": "Lymphocytes/100 leukocytes in Blood by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:5905-5",
+    "label": "Monocytes/100 leukocytes in Blood by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:310861008",
+    "label": "Chlamydia antigen test"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:14768001",
+    "label": "Peripheral blood smear interpretation"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:85352-3",
+    "label": "Lymph nodes with isolated tumor cells [#] in Cancer specimen by Light microscopy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:269828009",
+    "label": "Syphilis infectious titer test"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:75443-2",
+    "label": "Mental health Outpatient Note"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:66529-9",
+    "label": "Percentage area affected by eczema Trunk [PhenX]"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:32167-9",
+    "label": "Clarity of Urine"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:8310-5",
+    "label": "Body temperature"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:14959-1",
+    "label": "Microalbumin/Creatinine [Mass Ratio] in Urine"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:46288-7",
+    "label": "US Guidance for biopsy of Prostate"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:395123002",
+    "label": "Urine screening test for diabetes"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:165829005",
+    "label": "Gonorrhea infection titer test"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:85343-2",
+    "label": "Lymph nodes with macrometastases [#] in Cancer specimen by Light microscopy"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:85337-4",
+    "label": "Estrogen receptor Ag [Presence] in Breast cancer specimen by Immune stain"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:5797-6",
+    "label": "Ketones [Mass/volume] in Urine by Test strip"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:80383-3",
+    "label": "Influenza virus B Ag [Presence] in Nasopharynx by Rapid immunoassay"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:92139-5",
+    "label": "Parainfluenza virus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:59557-9",
+    "label": "Treatment status Cancer"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:268556000",
+    "label": "Urine screening for glucose"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:92131-2",
+    "label": "Respiratory syncytial virus RNA [Presence] in Respiratory specimen by NAA with probe detection"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:786-4",
+    "label": "MCHC [Mass/volume] by Automated count"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:3094-0",
+    "label": "Urea nitrogen [Mass/volume] in Serum or Plasma"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:6189-5",
+    "label": "White Oak IgE Ab [Units/volume] in Serum"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:2339-0",
+    "label": "Glucose [Mass/volume] in Blood"
+  },
+  {
+    "type": "ontology",
+    "id": "LOINC:6833-8",
+    "label": "Cat dander IgE Ab [Units/volume] in Serum"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:399211009",
+    "label": "History of myocardial infarction"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:424213003",
+    "label": "Allergy to bee venom"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:408512008",
+    "label": "Body mass index 40+ - severely obese"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:428251008",
+    "label": "History of appendectomy"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:449868002",
+    "label": "Smokes tobacco daily"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:418689008",
+    "label": "Allergy to grass pollen"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:232347008",
+    "label": "Allergy to animal dander"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:429007001",
+    "label": "History of cardiac arrest"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:420174000",
+    "label": "Allergy to wheat"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:91930004",
+    "label": "Allergy to edible egg"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:419474003",
+    "label": "Allergy to mold"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:161622006",
+    "label": "H/O: lower limb amputation"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:698423002",
+    "label": "History of disarticulation at wrist"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:429280009",
+    "label": "History of amputation of foot"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:300916003",
+    "label": "Allergy to latex"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:425525006",
+    "label": "Allergy to dairy foods"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:162864005",
+    "label": "Body mass index 30+ - obesity"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:417532002",
+    "label": "Allergy to fish"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:300913006",
+    "label": "Allergy to shellfish"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:703151001",
+    "label": "History of single seizure"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:782594005",
+    "label": "Allergy to soy protein"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:91935009",
+    "label": "Allergy to peanut"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:419263009",
+    "label": "Allergy to tree pollen"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:48333001",
+    "label": "Burn injury"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:232350006",
+    "label": "Allergy to dust mite protein"
+  },
+  {
+    "type": "ontology",
+    "id": "SNOMED:91934008",
+    "label": "Allergy to nut"
+  },
+  {
+    "type": "ontology",
+    "id": "None:No matching concept",
+    "label": "No matching concept"
+  }
+]
