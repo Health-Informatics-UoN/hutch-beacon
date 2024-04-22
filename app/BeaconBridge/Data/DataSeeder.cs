@@ -15,43 +15,37 @@ public class DataSeeder(BeaconContext db)
         {
           Type = "ontology",
           Id = "Gender:M",
-          Label = "MALE",
-          Scope = string.Empty
+          Label = "MALE"
         },
         new()
         {
           Type = "ontology",
           Id = "Gender:F",
-          Label = "FEMALE",
-          Scope = string.Empty
+          Label = "FEMALE"
         },
         new()
         {
           Type = "ontology",
           Id = "Race:2",
-          Label = "Asian",
-          Scope = string.Empty
+          Label = "Asian"
         },
         new()
         {
           Type = "ontology",
           Id = "Race:5",
-          Label = "White",
-          Scope = string.Empty
+          Label = "White"
         },
         new()
         {
           Type = "ontology",
           Id = "Race:3",
-          Label = "Black or African American",
-          Scope = string.Empty
+          Label = "Black or African American"
         },
         new()
         {
           Type = "ontology",
           Id = "None:No matching concept",
-          Label = "No matching concept",
-          Scope = string.Empty
+          Label = "No matching concept"
         }
       };
 
