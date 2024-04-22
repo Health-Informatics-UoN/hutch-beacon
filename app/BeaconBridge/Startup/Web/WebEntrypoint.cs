@@ -27,6 +27,9 @@ public static class WebEntrypoint
       await dbContext.Database.MigrateAsync();
     }
 
+    // Seed DB cache
+    await app.Initialise();
+
     // Run the app!
     await app.RunAsync();
   }
