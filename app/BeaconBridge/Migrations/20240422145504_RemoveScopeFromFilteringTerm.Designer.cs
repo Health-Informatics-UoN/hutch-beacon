@@ -2,6 +2,7 @@
 using BeaconBridge.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BeaconBridge.Migrations
 {
     [DbContext(typeof(BeaconContext))]
-    partial class BeaconContextModelSnapshot : ModelSnapshot
+    [Migration("20240422145504_RemoveScopeFromFilteringTerm")]
+    partial class RemoveScopeFromFilteringTerm
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.3");

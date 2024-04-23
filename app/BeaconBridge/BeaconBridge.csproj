@@ -34,5 +34,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\lib\FiveSafes.Net\FiveSafes.Net.csproj"/>
   </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Include="SampleData\filtering_terms.json" Pack="true" CopyToOutputDirectory="PreserveNewest"/>
+  </ItemGroup>
 
 </Project>
