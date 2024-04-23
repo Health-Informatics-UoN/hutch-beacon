@@ -21,11 +21,6 @@
   },
   {
     "type": "ontology",
-    "id": "None:No matching concept",
-    "label": "No matching concept"
-  },
-  {
-    "type": "ontology",
     "id": "SNOMED:43878008",
     "label": "Streptococcal sore throat"
   },
@@ -736,11 +731,6 @@
   },
   {
     "type": "ontology",
-    "id": "None:No matching concept",
-    "label": "No matching concept"
-  },
-  {
-    "type": "ontology",
     "id": "SNOMED:271737000",
     "label": "Anemia"
   },
@@ -1388,11 +1378,6 @@
     "type": "ontology",
     "id": "SNOMED:180030006",
     "label": "Amputation of the foot"
-  },
-  {
-    "type": "ontology",
-    "id": "None:No matching concept",
-    "label": "No matching concept"
   },
   {
     "type": "ontology",
