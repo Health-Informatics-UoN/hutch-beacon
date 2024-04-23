@@ -2,6 +2,7 @@ import os
 import sys
 import logging
 import beacon_omop_worker.config as config
+import json
 from beacon_omop_worker.db_manager import SyncDBManager
 from beacon_omop_worker import query_solvers
 
@@ -30,4 +31,27 @@ def main() -> None:
         schema=os.getenv("DATASOURCE_DB_SCHEMA"),
     )
     logger.info("Extracting filtering terms...")
-    query_solvers.solve_filters(db_manager=db_manager)
+    filtering_terms = query_solvers.solve_filters(db_manager=db_manager)
+    logger.info("Saving filtering terms to output.json...")
+    save_to_output(filtering_terms, "output.json")
+
+
+def save_to_output(filters, destination) -> None:
+    """Save the result to a JSON file.
+
+    Args:
+        filters: The object containing the result of a query.
+        destination: The name of the JSON file to save the results.
+
+    Raises:
+        ValueError: A path to a non-JSON file was passed as the destination.
+    """
+    if not destination.endswith(".json"):
+        raise ValueError("Please specify a JSON file (ending in '.json').")
+    logger = logging.getLogger(config.LOGGER_NAME)
+    try:
+        with open(destination, "w") as output_file:
+            file_body = json.dumps([filterTerm.__dict__ for filterTerm in filters])
+            output_file.write(file_body)
+    except Exception as e:
+        logger.error(str(e), exc_info=True)

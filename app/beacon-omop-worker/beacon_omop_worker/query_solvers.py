@@ -210,5 +210,6 @@ def solve_filters(db_manager: SyncDBManager):
     try:
         filters = solver.solve_concept_filters()
         logger.info("Successfully extracted filters.")
+        return filters
     except Exception as e:
         logger.error(str(e))
