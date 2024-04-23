@@ -3,15 +3,17 @@ import sys
 import logging
 import beacon_omop_worker.config as config
 from beacon_omop_worker.db_manager import SyncDBManager
+from beacon_omop_worker import query_solvers
+
 
 def main() -> None:
     # Set up the logger
-    LOG_FORMAT = logging.Formatter(
+    log_format = logging.Formatter(
         config.MSG_FORMAT,
         datefmt=config.DATE_FORMAT,
     )
     console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setFormatter(LOG_FORMAT)
+    console_handler.setFormatter(log_format)
     logger = logging.getLogger(config.LOGGER_NAME)
     logger.setLevel(logging.INFO)
     logger.addHandler(console_handler)
@@ -27,4 +29,5 @@ def main() -> None:
         drivername=os.getenv("DATASOURCE_DB_DRIVERNAME", config.DEFAULT_DB_DRIVER),
         schema=os.getenv("DATASOURCE_DB_SCHEMA"),
     )
-    print("Processing query...")
+    logger.info("Extracting filtering terms...")
+    query_solvers.solve_filters(db_manager=db_manager)
