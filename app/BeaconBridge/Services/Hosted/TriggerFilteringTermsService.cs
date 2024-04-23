@@ -45,7 +45,7 @@ public class TriggerFilteringTermsService(IOptions<FilteringTermsUpdateOptions> 
       }
       else
       {
-        logger.LogCritical("Cannot save Filtering Terms workflow. Object store does not exist");
+        logger.LogError("Cannot save Filtering Terms workflow. Object store does not exist");
         await delay;
         continue;
       }
