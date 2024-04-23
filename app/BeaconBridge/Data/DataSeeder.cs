@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using BeaconBridge.Constants;
 using BeaconBridge.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,7 +31,7 @@ public class DataSeeder(BeaconContext db)
     using var sr = new StreamReader(resource!, Encoding.UTF8);
     var jsonText = await sr.ReadToEndAsync();
 
-    var results = JsonSerializer.Deserialize<List<FilteringTerm>>(jsonText);
+    var results = JsonSerializer.Deserialize<List<FilteringTerm>>(jsonText, DefaultJsonOptions.Serializer);
     if (results is null) throw new NullReferenceException("Could not parse the sample data");
 
     return results;
