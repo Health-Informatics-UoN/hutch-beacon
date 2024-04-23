@@ -8,25 +8,23 @@
 
 import { referenceSecret } from 'br/DrsUtils:functions:v1'
 
-type ServiceNames = 'BeaconBridge'
+type ServiceNames = 'hutch-beacon'
 param serviceName ServiceNames
 
 type Environments = 'dev' | 'qa' | 'uat' | 'prod'
 param env Environments
 
-param directoryAppName string = '${env}-${serviceName}-directory'
-param directoryHostnames array = []
-param directoryAppSettings object = {}
+param beaconAppName string = '${env}-${serviceName}-beacon'
+param beaconHostnames array = []
+param beaconAppSettings object = {}
 param keyVaultName string = '${serviceName}-${env}-kv'
-
-param elasticUrl string
 
 param location string = resourceGroup().location
 
 param sharedEnv string = 'shared'
 var sharedPrefix = '${serviceName}-${sharedEnv}'
 
-param appServicePlanSku string = 'B1'
+param aspName string
 
 // Shared Resources
 
@@ -42,19 +40,6 @@ module la 'br/DrsComponents:log-analytics-workspace:v1' = {
   }
 }
 
-// App Service Plan
-module asp 'br/DrsComponents:app-service-plan:v1' = {
-  name: 'asp'
-  params: {
-    location: location
-    aspName: '${sharedPrefix}-asp'
-    sku: appServicePlanSku
-    tags: {
-      Environment: sharedEnv
-    }
-  }
-}
-
 // Per Environment Resources
 
 // Environment Key Vault pre-existing and populated
@@ -62,38 +47,19 @@ resource kv 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
   name: keyVaultName
 }
 
-var appName = directoryAppName
-
-// Create a storage account for worker operations
-// And add its connection string to keyvault :)
-// Blob and Queue reads/writes/triggers use this account
-module workerStorage 'br/DrsComponents:storage-account:v1' = {
-  name: 'storage-${uniqueString(appName)}'
-  params: {
-    location: location
-    baseAccountName: 'worker'
-    keyVaultName: kv.name
-    uniqueStringSource: appName
-    tags: {
-      Service: serviceName
-      Environment: env
-    }
-  }
-}
-
-// Create the Directory App and related bits
+// Create the Beacon App and related bits
 // App Insights
 // App Service
 // VNET Integration
 // Hostnames
-module directory 'br/DrsComponents:app-service:v1' = {
-  name: 'directory-${uniqueString(appName)}'
+module beacon 'br/DrsComponents:app-service:v1' = {
+  name: 'beacon-${uniqueString(beaconAppName)}'
   params: {
     location: location
-    appName: appName
-    aspName: asp.outputs.name
+    appName: beaconAppName
+    aspName: aspName
     logAnalyticsWorkspaceName: la.outputs.name
-    appHostnames: directoryHostnames
+    appHostnames: beaconHostnames
     tags: {
       Service: serviceName
       Environment: env
@@ -102,12 +68,12 @@ module directory 'br/DrsComponents:app-service:v1' = {
 }
 
 // Grant the app Key Vault access
-module directoryKvAccess 'br/DrsConfig:keyvault-access:v1' = {
-  name: 'kvAccess-${uniqueString(appName)}'
+module beaconKvAccess 'br/DrsConfig:keyvault-access:v1' = {
+  name: 'kvAccess-${uniqueString(beaconAppName)}'
   params: {
     keyVaultName: kv.name
-    tenantId: directory.outputs.identity.tenantId
-    objectId: directory.outputs.identity.principalId
+    tenantId: beacon.outputs.identity.tenantId
+    objectId: beacon.outputs.identity.principalId
   }
 }
 
@@ -133,44 +99,29 @@ var appInsightsSettings = {
 }
 
 
-var baseDirectorySettings = {
+var baseBeaconSettings = {
   DOTNET_Environment: friendlyEnvironmentNames[env]
 
   // App specific Azure/AI config
-  APPLICATIONINSIGHTS_CONNECTION_STRING: directory.outputs.appInsights.connectionString
+  APPLICATIONINSIGHTS_CONNECTION_STRING: beacon.outputs.appInsights.connectionString
   WEBSITE_RUN_FROM_PACKAGE: 1
 
   // Default App Settings
-  SiteProperties__GoogleRecaptchaSecret: referenceSecret(kv.name, 'google-recaptcha-secret')
-
-  OutboundEmail__Provider: 'sendgrid'
-  OutboundEmail__SendGridApiKey: referenceSecret(kv.name, 'sendgrid-api-key')
-
-  ElasticSearch__ApiBaseUrl: elasticUrl
-  ElasticSearch__Username: 'elastic'
-  ElasticSearch__Password: referenceSecret(kv.name, 'elastic-pw')
-  ElasticSearch__DefaultCollectionsSearchIndex: '${serviceName}-${env}-collections'
-  ElasticSearch__DefaultCapabilitiesSearchIndex: '${serviceName}-${env}-capabilities'
-
-  JWT__Secret: referenceSecret(kv.name, 'api-jwt-secret')
+  // TODO: add default settigns for BeaconBridge
 }
 
-module directoryConfig 'br/DrsConfig:webapp:v1' = {
-  name: 'siteConfig-${uniqueString(appName)}'
+module beaconConfig 'br/DrsConfig:webapp:v1' = {
+  name: 'siteConfig-${uniqueString(beaconAppName)}'
   params: {
-    appName: directory.outputs.name
+    appName: beacon.outputs.name
     appSettings: union(
       appInsightsSettings,
-      baseDirectorySettings,
-      directoryAppSettings)
+      baseBeaconSettings,
+      beaconAppSettings)
     connectionStrings: {
       Default: {
         type: 'SQLServer'
         value: referenceSecret(kv.name, 'db-connection-string')
-      }
-      AzureStorage: {
-        type: 'Custom'
-        value: referenceSecret(kv.name, workerStorage.outputs.connectionStringKvRef)
       }
     }
   }
@@ -179,12 +130,12 @@ module directoryConfig 'br/DrsConfig:webapp:v1' = {
 // Add SSL certificates
 // this needs to be done as a separate stage to creating the app with a bound hostname
 @batchSize(1) // also needs to be done serially to avoid concurrent updates to the app service
-module apiCert 'br/DrsComponents:managed-cert:v1' = [for hostname in directoryHostnames: {
+module apiCert 'br/DrsComponents:managed-cert:v1' = [for hostname in beaconHostnames: {
   name: 'api-cert-${uniqueString(hostname)}'
   params: {
     location: location
     hostname: hostname
-    appName: directory.outputs.name
-    aspId: directory.outputs.aspId
+    appName: beacon.outputs.name
+    aspId: beacon.outputs.aspId
   }
 }]
