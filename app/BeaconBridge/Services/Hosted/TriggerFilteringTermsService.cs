@@ -1,6 +1,7 @@
 using BeaconBridge.Config;
 using BeaconBridge.Models.Submission.Tes;
 using Microsoft.Extensions.Options;
+using Minio.Exceptions;
 
 namespace BeaconBridge.Services.Hosted;
 
@@ -23,24 +24,36 @@ public class TriggerFilteringTermsService(IOptions<FilteringTermsUpdateOptions> 
       // Add the workflow crate to MinIO
       if (await minio.StoreExists())
       {
-        if (minio.ObjectIsInStore(objectName))
+        try
         {
-          logger.LogInformation("{Object} already exists",
-            Path.GetFileName(filteringTermsOptions.Value.PathToWorkflow));
-        }
-        else
-        {
-          logger.LogInformation("Saving Filtering Terms workflow to object store");
-          try
+          if (minio.ObjectIsInStore(objectName))
           {
+            logger.LogInformation("{Object} already exists",
+              Path.GetFileName(filteringTermsOptions.Value.PathToWorkflow));
+          }
+          else
+          {
+            logger.LogInformation("Saving Filtering Terms workflow to object store");
             await minio.WriteToStore(filteringTermsOptions.Value.PathToWorkflow);
           }
-          catch (Exception)
-          {
-            logger.LogError("Unable to write {Object} to store", filteringTermsOptions.Value.PathToWorkflow);
-            await delay;
-            continue;
-          }
+        }
+        catch (Exception e) when (e is MinioException or FileNotFoundException)
+        {
+          logger.LogError("Unable to write {Object} to store", filteringTermsOptions.Value.PathToWorkflow);
+          await delay;
+          continue;
+        }
+        catch (NullReferenceException)
+        {
+          logger.LogError("Unable to read objects in the store");
+          await delay;
+          continue;
+        }
+        catch (Exception)
+        {
+          logger.LogCritical("An unknown error occurred when trying to up load the workflow to the object store");
+          await delay;
+          continue;
         }
       }
       else
