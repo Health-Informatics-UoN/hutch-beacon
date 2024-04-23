@@ -38,14 +38,16 @@ public class TriggerFilteringTermsService(IOptions<FilteringTermsUpdateOptions> 
           catch (Exception)
           {
             logger.LogError("Unable to write {Object} to store", filteringTermsOptions.Value.PathToWorkflow);
+            await delay;
+            continue;
           }
         }
       }
       else
       {
-        const string message = "Cannot save Filtering Terms workflow. Object store does not exist";
-        logger.LogCritical(message);
-        throw new Exception(message);
+        logger.LogCritical("Cannot save Filtering Terms workflow. Object store does not exist");
+        await delay;
+        continue;
       }
 
       // Get the workflow URL
