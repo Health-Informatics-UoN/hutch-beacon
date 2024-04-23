@@ -17,9 +17,9 @@ public class FetchFilteringTermsService(IOptions<FilteringTermsUpdateOptions> fi
     while (!stoppingToken.IsCancellationRequested)
     {
       var delay = Task.Delay(TimeSpan.FromSeconds(filteringTermsOptions.Value.DelaySeconds), stoppingToken);
-      var objectNameOnDisk = string.Empty;
 
       // Download RO-Crate from MinIO
+      string objectNameOnDisk;
       if (await minio.StoreExists())
       {
         try
