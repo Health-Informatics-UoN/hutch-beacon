@@ -99,23 +99,23 @@ var appInsightsSettings = {
 
 var beaconAppSettings = {
   // Minio settings
-  Minio__AccessKey: referenceSecret(kv.name, 'minio-access-key')
-  Minio__SecretKey: referenceSecret(kv.name, 'minio-secret-key')
-  Minio__Host: referenceSecret(kv.name, 'minio-host')
-  Minio__Secure: referenceSecret(kv.name, 'minio-secure')
-  Minio__Bucket: referenceSecret(kv.name, 'minio-bucket')
+  // Minio__AccessKey: referenceSecret(kv.name, 'minio-access-key')
+  // Minio__SecretKey: referenceSecret(kv.name, 'minio-secret-key')
+  // Minio__Host: referenceSecret(kv.name, 'minio-host')
+  // Minio__Secure: referenceSecret(kv.name, 'minio-secure')
+  // Minio__Bucket: referenceSecret(kv.name, 'minio-bucket')
 
   // openid-connect settings
-  IdentityProvider__OpenIdBaseUrl: referenceSecret(kv.name, 'oidc-base-url')
-  IdentityProvider__ClientId: referenceSecret(kv.name, 'oidc-client-id')
-  IdentityProvider__ClientSecret: referenceSecret(kv.name, 'oidc-client-secret')
-  IdentityProvider__Username: referenceSecret(kv.name, 'oidc-username')
-  IdentityProvider__Password: referenceSecret(kv.name, 'oidc-password')
+  // IdentityProvider__OpenIdBaseUrl: referenceSecret(kv.name, 'oidc-base-url')
+  // IdentityProvider__ClientId: referenceSecret(kv.name, 'oidc-client-id')
+  // IdentityProvider__ClientSecret: referenceSecret(kv.name, 'oidc-client-secret')
+  // IdentityProvider__Username: referenceSecret(kv.name, 'oidc-username')
+  // IdentityProvider__Password: referenceSecret(kv.name, 'oidc-password')
 
   // Submission Layer settings
-  SubmissionLayer__ProjectName: referenceSecret(kv.name, 'submission-project-name')
-  SubmissionLayer__Tres__0: referenceSecret(kv.name, 'submission-tre-name')
-  SubmissionLayer__SubmissionLayerHost: referenceSecret(kv.name, 'submission-host')
+  // SubmissionLayer__ProjectName: referenceSecret(kv.name, 'submission-project-name')
+  // SubmissionLayer__Tres__0: referenceSecret(kv.name, 'submission-tre-name')
+  // SubmissionLayer__SubmissionLayerHost: referenceSecret(kv.name, 'submission-host')
 }
 
 
