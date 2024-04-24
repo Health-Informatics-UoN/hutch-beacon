@@ -29,7 +29,7 @@ public class EfCoreMigrations
             // if running migrations, `--connection` should be set on the command line
             // in real environments, connection string should be set via config
             // all other cases will error when db access is attempted.
-            o.UseSqlite(connectionString ?? "Data Source=BeaconBridge.db");
+            o.UseNpgsql(connectionString);
           });
       })
       .Build();

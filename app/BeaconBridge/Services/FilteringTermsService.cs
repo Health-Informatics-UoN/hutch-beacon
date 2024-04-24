@@ -35,8 +35,7 @@ public class FilteringTermsService(BeaconContext context, IMapper mapper)
         {
           Type = term.Type,
           Id = term.Id,
-          Label = term.Label,
-          Scope = term.Scope
+          Label = term.Label
         };
         await context.AddAsync(newEntity);
       }

@@ -1,5 +1,6 @@
 using System.IO.Abstractions;
 using BeaconBridge.Config;
+using BeaconBridge.Constants;
 using BeaconBridge.Data;
 using BeaconBridge.Services;
 using BeaconBridge.Services.Hosted;
@@ -12,14 +13,15 @@ public static class ConfigureWebService
 {
   public static WebApplicationBuilder ConfigureServices(this WebApplicationBuilder b)
   {
-    b.Services.AddControllers();
+    b.Services.AddControllers().AddJsonOptions(DefaultJsonOptions.Configure);
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     b.Services.AddEndpointsApiExplorer();
     b.Services.AddSwaggerGen();
     b.Services.AddDbContext<BeaconContext>(o =>
     {
       var connectionString = b.Configuration.GetConnectionString("BeaconBridgeDb");
-      o.UseSqlite(connectionString ?? "Data Source=BeaconBridge.db");
+      o.UseNpgsql(connectionString);
+      o.EnableSensitiveDataLogging();
     });
     b.Services
       .AddAutoMapper(typeof(Program).Assembly)
