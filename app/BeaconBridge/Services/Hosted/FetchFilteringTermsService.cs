@@ -17,9 +17,9 @@ public class FetchFilteringTermsService(IOptions<FilteringTermsUpdateOptions> fi
     while (!stoppingToken.IsCancellationRequested)
     {
       var delay = Task.Delay(TimeSpan.FromSeconds(filteringTermsOptions.Value.DelaySeconds), stoppingToken);
-      var objectNameOnDisk = string.Empty;
 
       // Download RO-Crate from MinIO
+      string objectNameOnDisk;
       if (await minio.StoreExists())
       {
         try
@@ -36,17 +36,20 @@ public class FetchFilteringTermsService(IOptions<FilteringTermsUpdateOptions> fi
         {
           logger.LogError("Unable to download results RO-Crate from the store");
           await delay;
+          continue;
         }
         catch (Exception)
         {
           logger.LogError("Unable to find the most recently uploaded workflow run results");
           await delay;
+          continue;
         }
       }
       else
       {
         logger.LogError("Minio bucket does not exist");
         await delay;
+        continue;
       }
 
       // Unzip RO-Crate
@@ -56,10 +59,11 @@ public class FetchFilteringTermsService(IOptions<FilteringTermsUpdateOptions> fi
       {
         ZipFile.ExtractToDirectory(objectNameOnDisk, filteringTermsOptions.Value.PathToResults);
       }
-      catch (Exception e) when (e is NullReferenceException or IOException)
+      catch (Exception e) when (e is NullReferenceException or IOException or ArgumentException)
       {
         logger.LogError("Unable to unzip results RO-Crate");
         await delay;
+        continue;
       }
 
       try
@@ -82,16 +86,19 @@ public class FetchFilteringTermsService(IOptions<FilteringTermsUpdateOptions> fi
       {
         logger.LogError("Unable to locate filtering terms RO-Crate or results file");
         await delay;
+        continue;
       }
       catch (Exception e) when (e is NullReferenceException or JsonException)
       {
         logger.LogError("Unable to deserialise filtering terms file");
         await delay;
+        continue;
       }
       catch (OperationCanceledException)
       {
         logger.LogError("Unable to read filtering terms JSON file");
         await delay;
+        continue;
       }
 
       // Clean up
