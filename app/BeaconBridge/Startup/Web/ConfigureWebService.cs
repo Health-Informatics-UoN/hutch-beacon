@@ -21,7 +21,6 @@ public static class ConfigureWebService
     {
       var connectionString = b.Configuration.GetConnectionString("BeaconBridgeDb");
       o.UseNpgsql(connectionString);
-      o.EnableSensitiveDataLogging();
     });
     b.Services
       .AddAutoMapper(typeof(Program).Assembly)
