@@ -11,6 +11,7 @@ on:
 
 env:
   AZURE_WEBAPP_PACKAGE_PATH: 'app/BeaconBridge'
+  AZURE_WEBAPP_BACKEND_NAME: 'hutch-beacon'
   DOTNET_VERSION: '8.x'
   WEB_APP_PROJECT: ./app/BeaconBridge/BeaconBridge.csproj
   DOTNET_BUILD_CONFIG: release
