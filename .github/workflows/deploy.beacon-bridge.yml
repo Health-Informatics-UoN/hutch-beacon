@@ -30,7 +30,9 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore repo dotnet tools
-        run: dotnet tool restore
+        run: |
+          dotnet tool install --global dotnet-ef
+          dotnet tool restore
         shell: bash
 
       - name: Build bundle
