@@ -139,7 +139,7 @@ module beaconConfig 'br/DrsConfig:webapp:v1' = {
       baseBeaconSettings,
       beaconAppSettings)
     connectionStrings: {
-      Default: {
+      BeaconBridgeDb: {
         type: 'SQLServer'
         value: referenceSecret(kv.name, 'db-connection-string')
       }
