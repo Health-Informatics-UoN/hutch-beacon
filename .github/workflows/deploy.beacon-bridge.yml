@@ -79,6 +79,8 @@ jobs:
     name: Deploy Production
     runs-on: ubuntu-latest
     environment: production
+    needs: 
+      - publish_DbMigrations
 
     steps:
       - uses: actions/checkout@v4
