@@ -7,6 +7,16 @@ import argparse
 from beacon_omop_worker.db_manager import SyncDBManager
 from beacon_omop_worker import query_solvers
 
+parser = argparse.ArgumentParser(
+    prog="beacon-omop-worker",
+    description="This program executes beacon queries against an OMOP database",
+)
+subparsers = parser.add_subparsers(
+    dest="command", help="Commands to run", required=True
+)
+filters = subparsers.add_parser("filteringterms", help="Extract filtering terms")
+filters.set_defaults()
+
 
 def save_to_output(filters, destination) -> None:
     """Save the result to a JSON file.
@@ -41,6 +51,9 @@ def main() -> None:
     logger.setLevel(logging.INFO)
     logger.addHandler(console_handler)
 
+    # Parse command line arguments
+    args = parser.parse_args()
+
     logger.info("Setting up database connection...")
     datasource_db_port = os.getenv("DATASOURCE_DB_PORT")
     db_manager = SyncDBManager(
@@ -52,19 +65,14 @@ def main() -> None:
         drivername=os.getenv("DATASOURCE_DB_DRIVERNAME", config.DEFAULT_DB_DRIVER),
         schema=os.getenv("DATASOURCE_DB_SCHEMA"),
     )
-
-    parser = argparse.ArgumentParser(
-        prog="beacon-omop-worker",
-        description="This program executes beacon queries against an OMOP database",
-    )
-    subparsers = parser.add_subparsers(
-        dest="command", help="Commands to run", required=True
-    )
-    filters = subparsers.add_parser("filters", help="Extract filtering terms")
-    filters.set_defaults()
-    args = parser.parse_args()
-    if args.command == "filters":
+    #
+    if args.command == "filteringterms":
+        output_file_name = "output.json"
         logger.info("Extracting filtering terms...")
         filtering_terms = query_solvers.solve_filters(db_manager=db_manager)
-        logger.info("Saving filtering terms to file...")
-        save_to_output(filtering_terms, "output.json")
+        try:
+            logger.info("Saving filtering terms to file...")
+            save_to_output(filtering_terms, output_file_name)
+            logger.info(f"Saved results to {output_file_name}")
+        except ValueError as e:
+            logger.error(str(e), exc_info=True)
