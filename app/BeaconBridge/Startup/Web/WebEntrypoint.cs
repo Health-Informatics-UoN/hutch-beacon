@@ -1,6 +1,3 @@
-using BeaconBridge.Data;
-using Microsoft.EntityFrameworkCore;
-
 namespace BeaconBridge.Startup.Web;
 
 public static class WebEntrypoint
@@ -17,15 +14,6 @@ public static class WebEntrypoint
 
     // Configure the HTTP Request Pipeline
     app.UseWebPipeline();
-
-    // Automatic Migrations
-
-    using (var scope = app.Services.CreateScope())
-    {
-      var dbContext = scope.ServiceProvider.GetRequiredService<BeaconContext>();
-
-      await dbContext.Database.MigrateAsync();
-    }
 
     // Seed DB cache
     await app.Initialise();
