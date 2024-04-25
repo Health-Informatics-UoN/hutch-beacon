@@ -3,8 +3,30 @@ import sys
 import logging
 import beacon_omop_worker.config as config
 import json
+import argparse
 from beacon_omop_worker.db_manager import SyncDBManager
 from beacon_omop_worker import query_solvers
+
+
+def save_to_output(filters, destination) -> None:
+    """Save the result to a JSON file.
+
+    Args:
+        filters: The object containing the result of a query.
+        destination: The name of the JSON file to save the results.
+
+    Raises:
+        ValueError: A path to a non-JSON file was passed as the destination.
+    """
+    if not destination.endswith(".json"):
+        raise ValueError("Please specify a JSON file (ending in '.json').")
+    logger = logging.getLogger(config.LOGGER_NAME)
+    try:
+        with open(destination, "w") as output_file:
+            file_body = json.dumps([filterTerm.__dict__ for filterTerm in filters])
+            output_file.write(file_body)
+    except Exception as e:
+        logger.error(str(e), exc_info=True)
 
 
 def main() -> None:
@@ -30,28 +52,19 @@ def main() -> None:
         drivername=os.getenv("DATASOURCE_DB_DRIVERNAME", config.DEFAULT_DB_DRIVER),
         schema=os.getenv("DATASOURCE_DB_SCHEMA"),
     )
-    logger.info("Extracting filtering terms...")
-    filtering_terms = query_solvers.solve_filters(db_manager=db_manager)
-    logger.info("Saving filtering terms to output.json...")
-    save_to_output(filtering_terms, "output.json")
 
-
-def save_to_output(filters, destination) -> None:
-    """Save the result to a JSON file.
-
-    Args:
-        filters: The object containing the result of a query.
-        destination: The name of the JSON file to save the results.
-
-    Raises:
-        ValueError: A path to a non-JSON file was passed as the destination.
-    """
-    if not destination.endswith(".json"):
-        raise ValueError("Please specify a JSON file (ending in '.json').")
-    logger = logging.getLogger(config.LOGGER_NAME)
-    try:
-        with open(destination, "w") as output_file:
-            file_body = json.dumps([filterTerm.__dict__ for filterTerm in filters])
-            output_file.write(file_body)
-    except Exception as e:
-        logger.error(str(e), exc_info=True)
+    parser = argparse.ArgumentParser(
+        prog="beacon-omop-worker",
+        description="This program executes beacon queries against an OMOP database",
+    )
+    subparsers = parser.add_subparsers(
+        dest="command", help="Commands to run", required=True
+    )
+    filters = subparsers.add_parser("filters", help="Extract filtering terms")
+    filters.set_defaults()
+    args = parser.parse_args()
+    if args.command == "filters":
+        logger.info("Extracting filtering terms...")
+        filtering_terms = query_solvers.solve_filters(db_manager=db_manager)
+        logger.info("Saving filtering terms to file...")
+        save_to_output(filtering_terms, "output.json")
