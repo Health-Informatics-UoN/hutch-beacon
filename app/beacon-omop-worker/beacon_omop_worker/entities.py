@@ -223,3 +223,14 @@ class DrugExposure(Base):
     )
     route_source_value = Column(String(50), nullable=True)
     dose_unit_source_value = Column(String(50), nullable=True)
+
+
+class Vocabulary(Base):
+    __tablename__ = "vocabulary"
+    vocabulary_id = Column(String(20), primary_key=True)
+    vocabulary_name = Column(String(255), nullable=False)
+    vocabulary_reference = Column(String(255), nullable=False)
+    vocabulary_version = Column(String(255), nullable=True)
+    vocabulary_concept_id = Column(
+        Integer, ForeignKey("concept.concept_id"), nullable=False
+    )

@@ -9,6 +9,7 @@ from beacon_omop_worker.entities import (
     Observation,
     ProcedureOccurrence,
     Concept,
+    Vocabulary,
 )
 import beacon_omop_worker.config as config
 import logging
@@ -61,13 +62,12 @@ class FilterQuerySolver:
 
     def _get_concepts(self) -> pd.DataFrame:
         """
-        Select vocabulary_id,concept_code, concept_name, concept_id columns from Concept table
+        Select vocabulary_id, concept_name, concept_id columns from Concept table
         Returns:
         concepts_df (pd.DataFrame): Concept table with relevant columns as a pandas dataframe.
         """
         concept_query = select(
             Concept.vocabulary_id,
-            Concept.concept_code,
             Concept.concept_id,
             Concept.concept_name,
         ).distinct()
@@ -81,7 +81,7 @@ class FilterQuerySolver:
         """
         Given a SQL query execute it and return the results in a pandas dataframe.
         Args:
-            query (str): A SQL query to execute
+            query: A SQL query to execute
 
         Returns:
             table_concepts_df (pd.DataFrame): A pandas dataframe containing the results of the query.
@@ -93,8 +93,8 @@ class FilterQuerySolver:
 
     @staticmethod
     def _group_person_concepts(
-        concepts: pd.DataFrame, person_concepts: pd.DataFrame
-    ) -> List[FilteringTerm]():
+        concepts: pd.DataFrame, person_concepts: pd.DataFrame, vocabulary_dict: dict
+    ) -> List[FilteringTerm]:
         """
         Merge concepts dataframe with person dataframe on "race_concept_id" and "gender_concept_id".
         Args:
@@ -128,24 +128,27 @@ class FilterQuerySolver:
         for _, row in gender_df.iterrows():
             filters.append(
                 FilteringTerm(
-                    id_=f"{row['vocabulary_id']}:{row['concept_code']}",
+                    id_=f"{[row['vocabulary_id']]}:{row['concept_id']}",
                     label=row["concept_name"],
-                    type_="ontology",
+                    type_=vocabulary_dict[row["vocabulary_id"]],
                 )
             )
         for _, row in race_df.iterrows():
             filters.append(
                 FilteringTerm(
-                    id_=f"{row['vocabulary_id']}:{row['concept_code']}",
+                    id_=f"{row['vocabulary_id']}:{row['concept_id']}",
                     label=row["concept_name"],
-                    type_="ontology",
+                    type_=vocabulary_dict[row["vocabulary_id"]],
                 )
             )
         return filters
 
     @staticmethod
     def _group_filters(
-        concepts: pd.DataFrame, omop_table_df: pd.DataFrame, column: str
+        concepts: pd.DataFrame,
+        omop_table_df: pd.DataFrame,
+        column: str,
+        vocabulary_dict: dict,
     ) -> List[FilteringTerm]:
         """
         Merge two given dataframes on the concept_id column.
@@ -169,9 +172,9 @@ class FilterQuerySolver:
         for _, row in filters_df.iterrows():
             filters.append(
                 FilteringTerm(
-                    id_=f"{row['vocabulary_id']}:{row['concept_code']}",
+                    id_=f"{row['vocabulary_id']}:{row['concept_id']}",
                     label=row["concept_name"],
-                    type_="ontology",
+                    type_=vocabulary_dict[row["vocabulary_id"]],
                 )
             )
         return filters
@@ -185,6 +188,12 @@ class FilterQuerySolver:
         """
         concepts = self._get_concepts()
 
+        vocabulary_query = select(Vocabulary.vocabulary_id, Vocabulary.vocabulary_name)
+        vocabulary = self._get_table_concepts(vocabulary_query)
+        vocabulary_dict = {
+            str(vocabulary_id): vocabulary_name
+            for vocabulary_id, vocabulary_name in vocabulary.values
+        }
         person_query = select(
             Person.race_concept_id, Person.gender_concept_id
         ).distinct()
@@ -202,18 +211,20 @@ class FilterQuerySolver:
         observation_query = select(Observation.observation_concept_id).distinct()
         observation = self._get_table_concepts(observation_query)
 
-        person_filters = self._group_person_concepts(concepts, person_concepts)
+        person_filters = self._group_person_concepts(
+            concepts, person_concepts, vocabulary_dict
+        )
         condition_filters = self._group_filters(
-            concepts, condition, "condition_concept_id"
+            concepts, condition, "condition_concept_id", vocabulary_dict
         )
         procedure_filters = self._group_filters(
-            concepts, procedure, "procedure_concept_id"
+            concepts, procedure, "procedure_concept_id", vocabulary_dict
         )
         measurement_filters = self._group_filters(
-            concepts, measurement, "measurement_concept_id"
+            concepts, measurement, "measurement_concept_id", vocabulary_dict
         )
         observations_filters = self._group_filters(
-            concepts, observation, "observation_concept_id"
+            concepts, observation, "observation_concept_id", vocabulary_dict
         )
         final_filters = [
             *person_filters,
