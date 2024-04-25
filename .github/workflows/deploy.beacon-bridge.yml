@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    paths:
-      - app/BeaconBridge/**
-      - .github/workflows/build.beacon-bridge.yml
 
 env:
   AZURE_WEBAPP_PACKAGE_PATH: 'app/BeaconBridge'
