@@ -72,46 +72,15 @@ class FilterQuerySolver:
         )
         return concepts_df
 
-    def _get_person_concepts(self):
-        person_query = select(
-            Person.race_concept_id, Person.gender_concept_id
-        ).distinct()
-        person_concepts_df = pd.read_sql_query(
-            person_query, con=self.db_manager.engine.connect()
-        )
-        return person_concepts_df
+    def _get_table_concepts(self, query) -> pd.DataFrame:
 
-    def _get_condition_concepts(self):
-        condition_query = select(ConditionOccurrence.condition_concept_id).distinct()
-        condition_concepts_df = pd.read_sql_query(
-            condition_query, con=self.db_manager.engine.connect()
+        table_concepts_df = pd.read_sql_query(
+            query, con=self.db_manager.engine.connect()
         )
-        return condition_concepts_df
-
-    def _get_measurement_concepts(self):
-        measurement_query = select(Measurement.measurement_concept_id).distinct()
-        measurement_concepts_df = pd.read_sql_query(
-            measurement_query, con=self.db_manager.engine.connect()
-        )
-        return measurement_concepts_df
-
-    def _get_procedure_concepts(self):
-        procedure_query = select(ProcedureOccurrence.procedure_concept_id).distinct()
-        procedure_concepts_df = pd.read_sql_query(
-            procedure_query, con=self.db_manager.engine.connect()
-        )
-        return procedure_concepts_df
-
-    def _get_observation_concepts(self):
-        observation_query = select(Observation.observation_concept_id).distinct()
-        observation_concepts_df = pd.read_sql_query(
-            observation_query, con=self.db_manager.engine.connect()
-        )
-        # print("observation", observation_concepts_df.head())
-        return observation_concepts_df
+        return table_concepts_df
 
     @staticmethod
-    def group_person_concepts(concepts, person_concepts):
+    def _group_person_concepts(concepts, person_concepts):
         gender_df = (
             concepts.merge(
                 person_concepts,
@@ -152,13 +121,13 @@ class FilterQuerySolver:
         return filters
 
     @staticmethod
-    def group_filters(
-        concepts: pd.DataFrame, omop_df: pd.DataFrame, column
+    def _group_filters(
+        concepts: pd.DataFrame, omop_table_df: pd.DataFrame, column: str
     ) -> List[FilteringTerm]:
-        print("column", column)
+
         filters = list()
         filters_df = concepts.merge(
-            omop_df,
+            omop_table_df,
             how="inner",
             left_on=["concept_id"],
             right_on=[column],
@@ -176,22 +145,35 @@ class FilterQuerySolver:
     def solve_concept_filters(self) -> List[FilteringTerm]:
 
         concepts = self._get_concepts()
-        person_concepts = self._get_person_concepts()
-        condition = self._get_condition_concepts()
-        procedure = self._get_procedure_concepts()
-        measurement = self._get_measurement_concepts()
-        observation = self._get_observation_concepts()
-        person_filters = self.group_person_concepts(concepts, person_concepts)
-        condition_filters = self.group_filters(
+
+        person_query = select(
+            Person.race_concept_id, Person.gender_concept_id
+        ).distinct()
+        person_concepts = self._get_table_concepts(person_query)
+
+        condition_query = select(ConditionOccurrence.condition_concept_id).distinct()
+        condition = self._get_table_concepts(condition_query)
+
+        procedure_query = select(ProcedureOccurrence.procedure_concept_id).distinct()
+        procedure = self._get_table_concepts(procedure_query)
+
+        measurement_query = select(Measurement.measurement_concept_id).distinct()
+        measurement = self._get_table_concepts(measurement_query)
+
+        observation_query = select(Observation.observation_concept_id).distinct()
+        observation = self._get_table_concepts(observation_query)
+
+        person_filters = self._group_person_concepts(concepts, person_concepts)
+        condition_filters = self._group_filters(
             concepts, condition, "condition_concept_id"
         )
-        procedure_filters = self.group_filters(
+        procedure_filters = self._group_filters(
             concepts, procedure, "procedure_concept_id"
         )
-        measurement_filters = self.group_filters(
+        measurement_filters = self._group_filters(
             concepts, measurement, "measurement_concept_id"
         )
-        observations_filters = self.group_filters(
+        observations_filters = self._group_filters(
             concepts, observation, "observation_concept_id"
         )
         final_filters = [
