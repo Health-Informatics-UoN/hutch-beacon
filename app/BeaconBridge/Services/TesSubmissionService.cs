@@ -42,7 +42,7 @@ public class TesSubmissionService
     catch (FlurlHttpException e)
     {
       var error = await e.GetResponseStringAsync();
-      _logger.LogCritical("Could not submit TES Task to Submission Layer. Reason: {Message}", error);
+      _logger.LogError("Could not submit TES Task to Submission Layer. Reason: {Message}", error);
     }
   }
 
