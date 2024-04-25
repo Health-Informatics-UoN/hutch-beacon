@@ -20,42 +20,6 @@ from sqlalchemy import (
 
 
 class FilterQuerySolver:
-    subqueries = list()
-
-    concept_table_map = {
-        "Condition": ConditionOccurrence,
-        "Ethnicity": Person,
-        "Drug": DrugExposure,
-        "Gender": Person,
-        "Race": Person,
-        "Measurement": Measurement,
-        "Observation": Observation,
-        "Procedure": ProcedureOccurrence,
-    }
-    concept_time_column_map = {
-        "Condition": ConditionOccurrence.condition_start_date,
-        "Ethnicity": Person.birth_datetime,
-        "Drug": DrugExposure.drug_exposure_start_date,
-        "Gender": Person.birth_datetime,
-        "Race": Person.birth_datetime,
-        "Measurement": Measurement.measurement_date,
-        "Observation": Observation.observation_date,
-        "Procedure": ProcedureOccurrence.procedure_date,
-    }
-    numeric_rule_map = {
-        "Measurement": Measurement.value_as_number,
-        "Observation": Observation.value_as_number,
-    }
-    boolean_rule_map = {
-        "Condition": ConditionOccurrence.condition_concept_id,
-        "Ethnicity": Person.ethnicity_concept_id,
-        "Drug": DrugExposure.drug_concept_id,
-        "Gender": Person.gender_concept_id,
-        "Race": Person.race_concept_id,
-        "Measurement": Measurement.measurement_concept_id,
-        "Observation": Observation.observation_concept_id,
-        "Procedure": ProcedureOccurrence.procedure_concept_id,
-    }
 
     def __init__(self, db_manager: SyncDBManager) -> None:
         self.db_manager = db_manager
@@ -77,7 +41,7 @@ class FilterQuerySolver:
         )
         return concepts_df
 
-    def _get_table_concepts(self, query) -> pd.DataFrame:
+    def _get_table_concepts(self, query: select) -> pd.DataFrame:
         """
         Given a SQL query execute it and return the results in a pandas dataframe.
         Args:
@@ -91,15 +55,18 @@ class FilterQuerySolver:
         )
         return table_concepts_df
 
-    @staticmethod
     def _group_person_concepts(
-        concepts: pd.DataFrame, person_concepts: pd.DataFrame, vocabulary_dict: dict
+        self,
+        concepts: pd.DataFrame,
+        person_concepts: pd.DataFrame,
+        vocabulary_dict: dict,
     ) -> List[FilteringTerm]:
         """
         Merge concepts dataframe with person dataframe on "race_concept_id" and "gender_concept_id".
         Args:
-            concepts (pd.DataFrame): Dataframe containing all concept_ids
-            person_concepts (pd.DataFrame): Dataframe containing all concept_ids in the Person table
+            concepts (pd.DataFrame): Dataframe containing all concept_ids.
+            person_concepts (pd.DataFrame): Dataframe containing all concept_ids in the Person table.
+            vocabulary_dict (dict): A dictionary with the vocabulary id as key and vocabulary name as value.
 
         Returns:
         filters (List[FilteringTerm]) : A list of filtering terms.
@@ -143,8 +110,8 @@ class FilterQuerySolver:
             )
         return filters
 
-    @staticmethod
     def _group_filters(
+        self,
         concepts: pd.DataFrame,
         omop_table_df: pd.DataFrame,
         column: str,
@@ -236,7 +203,7 @@ class FilterQuerySolver:
         return final_filters
 
 
-def solve_filters(db_manager: SyncDBManager):
+def solve_filters(db_manager: SyncDBManager) -> List[FilteringTerm]:
     """
     Extract beacon filteringTerms from OMOP db.
     Args:

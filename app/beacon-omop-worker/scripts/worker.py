@@ -18,12 +18,12 @@ filters = subparsers.add_parser("filteringterms", help="Extract filtering terms"
 filters.set_defaults()
 
 
-def save_to_output(filters, destination) -> None:
+def save_to_output(filtering_terms: list, destination: str) -> None:
     """Save the result to a JSON file.
 
     Args:
-        filters: The object containing the result of a query.
-        destination: The name of the JSON file to save the results.
+        filtering_terms (list): The object containing the result of a query.
+        destination (str): The name of the JSON file to save the results.
 
     Raises:
         ValueError: A path to a non-JSON file was passed as the destination.
@@ -33,7 +33,9 @@ def save_to_output(filters, destination) -> None:
     logger = logging.getLogger(config.LOGGER_NAME)
     try:
         with open(destination, "w") as output_file:
-            file_body = json.dumps([filterTerm.__dict__ for filterTerm in filters])
+            file_body = json.dumps(
+                [filteringTerm.__dict__ for filteringTerm in filtering_terms]
+            )
             output_file.write(file_body)
     except Exception as e:
         logger.error(str(e), exc_info=True)
