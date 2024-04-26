@@ -77,6 +77,7 @@ jobs:
     environment: production
     needs: 
       - publish_DbMigrations
+      - publish_webapp
 
     steps:
       - uses: actions/checkout@v4
@@ -92,19 +93,6 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          path: migrations
-          name: migrations
-
-      - name: Run Migrations
-        run: |
-          chmod +x ./efbundle
-          ./efbundle --connection "${{ secrets.PROD_DB_CONNECTION_STRING }}"
-        working-directory: ${{ github.workspace }}/migrations
-        shell: bash
-
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
           path: webapp
           name: webapp
            
@@ -114,3 +102,16 @@ jobs:
           app-name: ${{ env.AZURE_WEBAPP_BACKEND_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_BACKEND_PUBLISH_PROFILE  }}
           package: ${{ github.workspace }}/webapp
+
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          path: migrations
+          name: migrations
+
+      - name: Run Migrations
+        run: |
+          chmod +x ./efbundle
+          ./efbundle --connection "${{ secrets.PROD_DB_CONNECTION_STRING }}"
+        working-directory: ${{ github.workspace }}/migrations
+        shell: bash

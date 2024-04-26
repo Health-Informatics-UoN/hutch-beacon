@@ -23,6 +23,8 @@ param location string = resourceGroup().location
 param sharedEnv string = 'shared'
 var sharedPrefix = '${serviceName}-${sharedEnv}'
 
+param beaconAppSettings object = {}
+
 param aspName string
 
 // Shared Resources
@@ -97,7 +99,16 @@ var appInsightsSettings = {
   XDT_MicrosoftApplicationInsights_BaseExtensions: '~1'
 }
 
-var beaconAppSettings = {
+var baseBeaconSettings = {
+  DOTNET_Environment: friendlyEnvironmentNames[env]
+
+  // App specific Azure/AI config
+  APPLICATIONINSIGHTS_CONNECTION_STRING: beacon.outputs.appInsights.connectionString
+  WEBSITE_RUN_FROM_PACKAGE: 1
+
+  // Default App Settings
+  // TODO: add default settigns for BeaconBridge
+
   // Minio settings
   // Minio__AccessKey: referenceSecret(kv.name, 'minio-access-key')
   // Minio__SecretKey: referenceSecret(kv.name, 'minio-secret-key')
@@ -118,18 +129,6 @@ var beaconAppSettings = {
   // SubmissionLayer__SubmissionLayerHost: referenceSecret(kv.name, 'submission-host')
 }
 
-
-var baseBeaconSettings = {
-  DOTNET_Environment: friendlyEnvironmentNames[env]
-
-  // App specific Azure/AI config
-  APPLICATIONINSIGHTS_CONNECTION_STRING: beacon.outputs.appInsights.connectionString
-  WEBSITE_RUN_FROM_PACKAGE: 1
-
-  // Default App Settings
-  // TODO: add default settigns for BeaconBridge
-}
-
 module beaconConfig 'br/DrsConfig:webapp:v1' = {
   name: 'siteConfig-${uniqueString(beaconAppName)}'
   params: {
@@ -139,7 +138,7 @@ module beaconConfig 'br/DrsConfig:webapp:v1' = {
       baseBeaconSettings,
       beaconAppSettings)
     connectionStrings: {
-      Default: {
+      BeaconBridgeDb: {
         type: 'SQLServer'
         value: referenceSecret(kv.name, 'db-connection-string')
       }
