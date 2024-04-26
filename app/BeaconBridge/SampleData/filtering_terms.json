@@ -635,11 +635,6 @@
     "label": "Viral sinusitis"
   },
   {
-    "type": "OMOP Standardized Vocabularies",
-    "id": "None:0",
-    "label": "No matching concept"
-  },
-  {
     "type": "Systematic Nomenclature of Medicine - Clinical Terms (IHTSDO)",
     "id": "SNOMED:261600",
     "label": "Acute pulmonary edema"
@@ -1278,11 +1273,6 @@
     "type": "Systematic Nomenclature of Medicine - Clinical Terms (IHTSDO)",
     "id": "SNOMED:4213045",
     "label": "Lumpectomy of breast"
-  },
-  {
-    "type": "OMOP Standardized Vocabularies",
-    "id": "None:0",
-    "label": "No matching concept"
   },
   {
     "type": "Systematic Nomenclature of Medicine - Clinical Terms (IHTSDO)",
@@ -2438,11 +2428,6 @@
     "type": "Systematic Nomenclature of Medicine - Clinical Terms (IHTSDO)",
     "id": "SNOMED:42709996",
     "label": "Smokes tobacco daily"
-  },
-  {
-    "type": "OMOP Standardized Vocabularies",
-    "id": "None:0",
-    "label": "No matching concept"
   },
   {
     "type": "Systematic Nomenclature of Medicine - Clinical Terms (IHTSDO)",
