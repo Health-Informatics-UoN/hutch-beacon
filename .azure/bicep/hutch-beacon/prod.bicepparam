@@ -19,7 +19,7 @@ param beaconAppSettings = {
     BeaconInfo__Environment: 'development'
     BeaconInfo__Description: 'This Beacon is based on the GA4GH Beacon standard v2.0 https://github.com/ga4gh-beacon/beacon-v2/'
     BeaconInfo__Version: 'v2.0.0'
-    BeaconInfo__WelcomeUrl: 'https://beacon.nottingham.ac.uk'
+    BeaconInfo__WelcomeUrl: 'https://beacon.nottingham.ac.uk/api'
 
     Organisation__Id: 'UNOTT'
     Organisation__Name: 'University of Nottingham - Centre for Health Informatics'
