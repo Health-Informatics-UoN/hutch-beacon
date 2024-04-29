@@ -25,7 +25,8 @@ public static class ConfigureWebService
       .AddAutoMapper(typeof(Program).Assembly)
       .AddSingleton<IFlurlClientFactory, PerBaseUrlFlurlClientFactory>()
       .AddHttpClient() // We prefer Flurl for most use cases, but IdentityModel has extensions for vanilla HttpClient
-      .AddTransient<IFileSystem, FileSystem>();
+      .AddTransient<IFileSystem, FileSystem>()
+      .AddMemoryCache();
 
     // Add Options
     b.Services
