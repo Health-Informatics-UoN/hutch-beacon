@@ -1,28 +1,30 @@
+using BeaconBridge.Models;
+
 namespace BeaconBridge.Constants;
 
 public class DefaultSchemas
 {
-  public Dictionary<string, string> Analyses = new()
-    { { "entityType", EntityTypes.Analyses }, { "schema", Schemas.Analyses } };
+  public ReturnedSchema Analyses = new()
+    { EntityType = EntityTypes.Analyses, Schema = Schemas.Analyses };
 
-  public Dictionary<string, string> BioSamples = new()
-    { { "entityType", EntityTypes.BioSamples }, { "schema", Schemas.BioSamples } };
-  
-  public Dictionary<string, string> Cohorts = new()
-    { { "entityType", EntityTypes.Cohorts }, { "schema", Schemas.Cohorts } };
-  
-  public Dictionary<string, string> Datasets = new()
-    { { "entityType", EntityTypes.Datasets }, { "schema", Schemas.Datasets } };
-  
-  public Dictionary<string, string> FilteringTerms = new()
-    { { "entityType", EntityTypes.FilteringTerms }, { "schema", Schemas.FilteringTerms } };
-  
-  public Dictionary<string, string> GenomicVariations = new()
-    { { "entityType", EntityTypes.GenomicVariations }, { "schema", Schemas.GenomicVariations } };
-  
-  public Dictionary<string, string> Individuals = new()
-    { { "entityType", EntityTypes.Individuals }, { "schema", Schemas.Individuals } };
-  
-  public Dictionary<string, string> Runs = new()
-    { { "entityType", EntityTypes.Runs }, { "schema", Schemas.Runs } };
+  public ReturnedSchema BioSamples = new()
+    { EntityType = EntityTypes.BioSamples, Schema = Schemas.BioSamples };
+
+  public ReturnedSchema Cohorts = new()
+    { EntityType = EntityTypes.Cohorts, Schema = Schemas.Cohorts };
+
+  public ReturnedSchema Datasets = new()
+    { EntityType = EntityTypes.Datasets, Schema = Schemas.Datasets };
+
+  public ReturnedSchema FilteringTerms = new()
+    { EntityType = EntityTypes.FilteringTerms, Schema = Schemas.FilteringTerms };
+
+  public ReturnedSchema GenomicVariations = new()
+    { EntityType = EntityTypes.GenomicVariations, Schema = Schemas.GenomicVariations };
+
+  public ReturnedSchema Individuals = new()
+    { EntityType = EntityTypes.Individuals, Schema = Schemas.Individuals };
+
+  public ReturnedSchema Runs = new()
+    { EntityType = EntityTypes.Runs, Schema = Schemas.Runs };
 }

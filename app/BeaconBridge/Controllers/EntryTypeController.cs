@@ -31,13 +31,10 @@ public class EntryTypeController(IOptions<BeaconInfoOptions> beaconInfoOptions, 
           ApiVersion = _beaconInfoOptions.ApiVersion,
           Pagination = new Pagination() { Limit = limit, Skip = skip }
         }
-      },
-      ReturnedSchemas =
-      {
-        EntityType = EntityTypes.Individuals,
-        Schema = Schemas.Individuals
       }
     };
+    individualsResponse.Meta.ReturnedSchemas.Add(new ReturnedSchema()
+      { EntityType = EntityTypes.Individuals, Schema = Schemas.Individuals });
     if (filters is not null)
     {
       // split filters
@@ -54,17 +51,19 @@ public class EntryTypeController(IOptions<BeaconInfoOptions> beaconInfoOptions, 
       {
         var random = new Random();
         // check if key in cache
-        if (!memoryCache.TryGetValue(filters, out var  randomBool))
+        if (!memoryCache.TryGetValue(filters, out var randomBool))
         {
           // set value
           randomBool = random.Next(2) == 1;
           // set data in cache
           memoryCache.Set(filters, randomBool);
         }
+
         Boolean.TryParse(memoryCache.Get(filters)?.ToString(), out var exists);
         individualsResponse.ResponseSummary.Exists = exists;
       }
     }
+
     return individualsResponse;
   }
 }

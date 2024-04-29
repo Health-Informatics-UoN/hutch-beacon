@@ -8,5 +8,5 @@ public class BaseMeta
   
   public string ApiVersion { get; set; } = string.Empty;
   
-  public List<Dictionary<string,string>> ReturnedSchemas { get; set; } = new();
+  public List<ReturnedSchema> ReturnedSchemas { get; set; } = new();
 }
