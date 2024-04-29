@@ -34,6 +34,7 @@ class FilterQuerySolver:
             Concept.vocabulary_id,
             Concept.concept_id,
             Concept.concept_name,
+            Concept.concept_code,
         ).distinct()
         concepts_df = pd.read_sql_query(
             concept_query,
@@ -95,7 +96,7 @@ class FilterQuerySolver:
         for _, row in gender_df.iterrows():
             filters.append(
                 FilteringTerm(
-                    id_=f"{[row['vocabulary_id']]}:{row['concept_id']}",
+                    id_=f"{[row['vocabulary_id']]}:{row['concept_code']}",
                     label=row["concept_name"],
                     type_=vocabulary_dict[row["vocabulary_id"]],
                 )
@@ -103,7 +104,7 @@ class FilterQuerySolver:
         for _, row in race_df.iterrows():
             filters.append(
                 FilteringTerm(
-                    id_=f"{row['vocabulary_id']}:{row['concept_id']}",
+                    id_=f"{row['vocabulary_id']}:{row['concept_code']}",
                     label=row["concept_name"],
                     type_=vocabulary_dict[row["vocabulary_id"]],
                 )
@@ -139,7 +140,7 @@ class FilterQuerySolver:
         for _, row in filters_df.iterrows():
             filters.append(
                 FilteringTerm(
-                    id_=f"{row['vocabulary_id']}:{row['concept_id']}",
+                    id_=f"{row['vocabulary_id']}:{row['concept_code']}",
                     label=row["concept_name"],
                     type_=vocabulary_dict[row["vocabulary_id"]],
                 )
