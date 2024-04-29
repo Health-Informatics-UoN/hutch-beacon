@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using BeaconBridge.Config;
 using BeaconBridge.Constants;
 using BeaconBridge.Models;
@@ -27,28 +28,35 @@ public class EntryTypeController(IOptions<BeaconInfoOptions> beaconInfoOptions )
         ReceivedRequestSummary = new RequestSummary()
         {
           ApiVersion = _beaconInfoOptions.ApiVersion,
-          Filters = null,
           Pagination = new Pagination() { Limit = limit, Skip = skip }
         }
       },
-      BeaconHandovers = new List<BeaconHandover>(),
       ReturnedSchemas =
       {
         EntityType = EntityTypes.Individuals,
         Schema = Schemas.Individuals
       }
     };
+    if (filters is not null)
+    {
+      // split filters
+      Regex regex = new Regex(",");
+      string[] filterList = regex.Split(filters);
+      
+      
+      individualsResponse.Meta.ReceivedRequestSummary.Filters.Add(filters);
+      
+      if (filters.Contains("Gender:F") && filters.Contains("SNOMED:386661006") && filters.Contains("SNOMED:271825005"))
+      {
+        individualsResponse.ResponseSummary.Exists = true;
+      }else
+      {
+        var random = new Random();
+        var randomBool = random.Next(2) == 1;
+        individualsResponse.ResponseSummary.Exists = randomBool;
+      }
+    }
     
-    if (filters is not null && filters.Contains("Gender:F") && filters.Contains("SNOMED:386661006") && filters.Contains("SNOMED:271825005"))
-    {
-      individualsResponse.ResponseSummary.Exists = true;
-    }
-    else
-    {
-      var random = new Random();
-      var randomBool = random.Next(2) == 1;
-      individualsResponse.ResponseSummary.Exists = randomBool;
-    }
     return individualsResponse;
   }
 }
