@@ -53,18 +53,18 @@ public class EntryTypeController(IOptions<BeaconInfoOptions> beaconInfoOptions, 
       else
       {
         var random = new Random();
-        var randomBool = random.Next(2) == 1;
-
-        memoryCache.GetOrCreate(key: filters, factory: cacheEntry =>
+        // check if key in cache
+        if (!memoryCache.TryGetValue(filters, out var  randomBool))
         {
-          cacheEntry.Value = randomBool;
-          return cacheEntry.Value;
-        });
+          // set value
+          randomBool = random.Next(2) == 1;
+          // set data in cache
+          memoryCache.Set(filters, randomBool);
+        }
         Boolean.TryParse(memoryCache.Get(filters)?.ToString(), out var exists);
         individualsResponse.ResponseSummary.Exists = exists;
       }
     }
-
     return individualsResponse;
   }
 }
