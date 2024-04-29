@@ -1,0 +1,40 @@
+
+
+namespace BeaconBridge.Models;
+
+public class EntryTypeResponse
+{
+  public Meta Meta { get; set; } = new();
+  
+  public ReturnedSchemas ReturnedSchemas { get; set; } = new();
+  
+  public ResponseSummary ResponseSummary { get; set; } = new();
+
+  public List<BeaconHandover>? BeaconHandovers { get; set; }
+
+}
+
+public class BeaconHandover
+{
+  public HandoverType HandoverType { get; set; } = new();
+
+  public string Url { get; set; } = string.Empty;
+}
+
+public class HandoverType
+{
+  public string Id { get; set; } = string.Empty;
+  
+  public string Label { get; set; } = string.Empty;
+}
+
+public class ResponseSummary
+{
+  public bool Exists { get; set; } = false;
+}
+
+public class ReturnedSchemas
+{
+  public string EntityType { get; set; } = string.Empty;
+  public string Schema { get; set; } = string.Empty;
+}
