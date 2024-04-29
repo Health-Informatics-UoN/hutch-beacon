@@ -42,9 +42,8 @@ public class EntryTypeController(IOptions<BeaconInfoOptions> beaconInfoOptions )
       // split filters
       Regex regex = new Regex(",");
       string[] filterList = regex.Split(filters);
-      
-      
-      individualsResponse.Meta.ReceivedRequestSummary.Filters.Add(filters);
+
+      foreach (var match in filterList) individualsResponse.Meta.ReceivedRequestSummary.Filters.Add(match);
       
       if (filters.Contains("Gender:F") && filters.Contains("SNOMED:386661006") && filters.Contains("SNOMED:271825005"))
       {
