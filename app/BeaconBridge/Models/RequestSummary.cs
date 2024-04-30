@@ -10,9 +10,9 @@ public class RequestSummary
   
   [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]  
   public string? Schemas { get; set; }
-  
-  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]  
-  public List<string>? Filters { get; set; }
+
+  [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+  public List<string> Filters { get; set; } = new();
   
   [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]  
   public string? Parameters { get; set; }
