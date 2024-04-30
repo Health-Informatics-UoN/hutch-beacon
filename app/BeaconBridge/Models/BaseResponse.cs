@@ -32,10 +32,10 @@ public class BaseResponse
   [JsonPropertyName("alternativeUrl")] 
   public string AlternativeUrl { get; set; } = string.Empty;
   [JsonPropertyName("createDateTime")] 
-  public DateTime CreateDateTime { get; set; } = new();
+  public DateTime CreateDateTime { get; set; } = new DateTime(2023, 10, 1, 15, 24, 16);
   
   [JsonPropertyName("updateDateTime")] 
-  public DateTime UpdateDateTime { get; set; } = new();
+  public DateTime UpdateDateTime { get; set; } = new DateTime(2023, 10, 18, 11, 30, 12);
 
   [JsonPropertyName("datasets")] 
   public List<string> Datasets { get; set; } = new();
