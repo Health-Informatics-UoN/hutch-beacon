@@ -14,9 +14,85 @@ from beacon_omop_worker.entities import (
 import beacon_omop_worker.config as config
 import logging
 import pandas as pd
-from sqlalchemy import (
-    select,
-)
+from sqlalchemy import select, and_, func
+
+
+class IndividualQuerySolver:
+
+    def __init__(self, db_manager: SyncDBManager) -> None:
+        self.db_manager = db_manager
+
+    def _get_person_concept(self, vocab, concept_code) -> int:
+        query = select(Concept.concept_id).where(
+            and_(
+                Concept.vocabulary_id == vocab,
+                Concept.concept_code == concept_code,
+            )
+        )
+        code = pd.read_sql(query, con=self.db_manager.engine.connect())
+        final_code = int(code["concept_id"].values[0])
+        return final_code
+
+    def solve_individual_query(self, query_terms: str) -> bool:
+        terms = query_terms.split(",")
+        concept_codes = list()
+        person_codes = list()
+        for term in terms:
+            filtering_term = term.split(":")
+            if filtering_term[0] == "SNOMED":
+                concept_codes.append(filtering_term[1])
+            if filtering_term[0] == "Gender":
+                gender_concept_id = self._get_person_concept(
+                    vocab=filtering_term[0], concept_code=filtering_term[1]
+                )
+                gender_query = select(Person.person_id).where(
+                    Person.gender_concept_id == gender_concept_id
+                )
+                gender_ids = pd.read_sql(
+                    gender_query, con=self.db_manager.engine.connect()
+                )
+                gender_ids = [str(concept) for concept, in gender_ids.values]
+                print("Gender ids {}".format(gender_ids))
+            if filtering_term[0] == "Race":
+                race_concept_id = self._get_person_concept(
+                    vocab=filtering_term[0], concept_code=filtering_term[1]
+                )
+                race_query = select(Person.person_id).where(
+                    Person.gender_concept_id == race_concept_id
+                )
+                race_ids = pd.read_sql(race_query, con=self.db_manager.engine.connect())
+                print(race_ids)
+
+        sql_query = select(Concept.concept_id).where(
+            and_(
+                Concept.vocabulary_id == "SNOMED",
+                Concept.concept_code.in_(concept_codes),
+            )
+        )
+        concept_ids = pd.read_sql_query(sql_query, con=self.db_manager.engine.connect())
+        results = [str(concept) for concept, in concept_ids.values]
+
+        results_query = select(ConditionOccurrence.person_id).where(
+            ConditionOccurrence.condition_concept_id.in_(results)
+        )
+        condition_person_ids = pd.read_sql_query(
+            results_query, con=self.db_manager.engine.connect()
+        )
+
+        final_condition_person_ids = [
+            str(person_id) for person_id, in condition_person_ids.values
+        ]
+
+        final_query = select(Person).where(
+            Person.person_id.in_(gender_ids)
+            & Person.person_id.in_(final_condition_person_ids)
+        )
+
+        person_ids = pd.read_sql_query(
+            final_query, con=self.db_manager.engine.connect()
+        )
+        print(person_ids)
+        return True
 
 
 class FilterQuerySolver:
@@ -94,21 +170,23 @@ class FilterQuerySolver:
         )
         filters = list()
         for _, row in gender_df.iterrows():
-            filters.append(
-                FilteringTerm(
-                    id_=f"{[row['vocabulary_id']]}:{row['concept_code']}",
-                    label=row["concept_name"],
-                    type_=vocabulary_dict[row["vocabulary_id"]],
+            if row["gender_concept_id"] != 0:
+                filters.append(
+                    FilteringTerm(
+                        id_=f"{[row['vocabulary_id']]}:{row['concept_code']}",
+                        label=row["concept_name"],
+                        type_=vocabulary_dict[row["vocabulary_id"]],
+                    )
                 )
-            )
         for _, row in race_df.iterrows():
-            filters.append(
-                FilteringTerm(
-                    id_=f"{row['vocabulary_id']}:{row['concept_code']}",
-                    label=row["concept_name"],
-                    type_=vocabulary_dict[row["vocabulary_id"]],
+            if row["race_concept_id"] != 0:
+                filters.append(
+                    FilteringTerm(
+                        id_=f"{row['vocabulary_id']}:{row['concept_code']}",
+                        label=row["concept_name"],
+                        type_=vocabulary_dict[row["vocabulary_id"]],
+                    )
                 )
-            )
         return filters
 
     def _group_filters(
@@ -138,13 +216,14 @@ class FilterQuerySolver:
             right_on=[column],
         ).drop_duplicates()
         for _, row in filters_df.iterrows():
-            filters.append(
-                FilteringTerm(
-                    id_=f"{row['vocabulary_id']}:{row['concept_code']}",
-                    label=row["concept_name"],
-                    type_=vocabulary_dict[row["vocabulary_id"]],
+            if row[column] != 0:
+                filters.append(
+                    FilteringTerm(
+                        id_=f"{row['vocabulary_id']}:{row['concept_code']}",
+                        label=row["concept_name"],
+                        type_=vocabulary_dict[row["vocabulary_id"]],
+                    )
                 )
-            )
         return filters
 
     def solve_concept_filters(self) -> List[FilteringTerm]:
@@ -170,14 +249,14 @@ class FilterQuerySolver:
         condition_query = select(ConditionOccurrence.condition_concept_id).distinct()
         condition = self._get_table_concepts(condition_query)
 
-        procedure_query = select(ProcedureOccurrence.procedure_concept_id).distinct()
-        procedure = self._get_table_concepts(procedure_query)
-
-        measurement_query = select(Measurement.measurement_concept_id).distinct()
-        measurement = self._get_table_concepts(measurement_query)
-
-        observation_query = select(Observation.observation_concept_id).distinct()
-        observation = self._get_table_concepts(observation_query)
+        # procedure_query = select(ProcedureOccurrence.procedure_concept_id).distinct()
+        # procedure = self._get_table_concepts(procedure_query)
+        #
+        # measurement_query = select(Measurement.measurement_concept_id).distinct()
+        # measurement = self._get_table_concepts(measurement_query)
+        #
+        # observation_query = select(Observation.observation_concept_id).distinct()
+        # observation = self._get_table_concepts(observation_query)
 
         person_filters = self._group_person_concepts(
             concepts, person_concepts, vocabulary_dict
@@ -185,21 +264,21 @@ class FilterQuerySolver:
         condition_filters = self._group_filters(
             concepts, condition, "condition_concept_id", vocabulary_dict
         )
-        procedure_filters = self._group_filters(
-            concepts, procedure, "procedure_concept_id", vocabulary_dict
-        )
-        measurement_filters = self._group_filters(
-            concepts, measurement, "measurement_concept_id", vocabulary_dict
-        )
-        observations_filters = self._group_filters(
-            concepts, observation, "observation_concept_id", vocabulary_dict
-        )
+        # procedure_filters = self._group_filters(
+        #     concepts, procedure, "procedure_concept_id", vocabulary_dict
+        # )
+        # measurement_filters = self._group_filters(
+        #     concepts, measurement, "measurement_concept_id", vocabulary_dict
+        # )
+        # observations_filters = self._group_filters(
+        #     concepts, observation, "observation_concept_id", vocabulary_dict
+        # )
         final_filters = [
             *person_filters,
             *condition_filters,
-            *procedure_filters,
-            *measurement_filters,
-            *observations_filters,
+            # *procedure_filters,
+            # *measurement_filters,
+            # *observations_filters,
         ]
         return final_filters
 
@@ -219,5 +298,19 @@ def solve_filters(db_manager: SyncDBManager) -> List[FilteringTerm]:
         filters = solver.solve_concept_filters()
         logger.info("Successfully extracted filters.")
         return filters
+    except Exception as e:
+        logger.error(str(e))
+
+
+def solve_individuals(db_manager: SyncDBManager, query_terms: str):
+
+    logger = logging.getLogger(config.LOGGER_NAME)
+    # filter_solver = FilterQuerySolver(db_manager=db_manager)
+    query_solver = IndividualQuerySolver(db_manager=db_manager)
+    try:
+        # filters = filter_solver.solve_concept_filters()
+        query_result = query_solver.solve_individual_query(query_terms)
+        logger.info("Successfully executed query.")
+        # return filters
     except Exception as e:
         logger.error(str(e))
