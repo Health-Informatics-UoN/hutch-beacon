@@ -17,6 +17,12 @@ subparsers = parser.add_subparsers(
 filters = subparsers.add_parser("filteringterms", help="Extract filtering terms")
 filters.set_defaults()
 
+individuals = subparsers.add_parser(
+    "individuals", help="Execute queries on individuals"
+)
+individuals.set_defaults()
+individuals.add_argument("--filters", type=str, help="Filtering terms")
+
 
 def save_to_output(filtering_terms: list, destination: str) -> None:
     """Save the result to a JSON file.
@@ -78,3 +84,10 @@ def main() -> None:
             logger.info(f"Saved results to {output_file_name}")
         except ValueError as e:
             logger.error(str(e), exc_info=True)
+    if args.command == "individuals":
+        logger.info("Querying database...")
+        query_terms = args.filters
+
+        query_result = query_solvers.solve_individuals(
+            db_manager=db_manager, query_terms=query_terms
+        )
