@@ -14,7 +14,7 @@ from beacon_omop_worker.entities import (
 import beacon_omop_worker.config as config
 import logging
 import pandas as pd
-from sqlalchemy import select, and_, func
+from sqlalchemy import select, and_
 
 
 class IndividualQuerySolver:
@@ -22,7 +22,7 @@ class IndividualQuerySolver:
     def __init__(self, db_manager: SyncDBManager) -> None:
         self.db_manager = db_manager
 
-    def _get_person_concept(self, vocab, concept_code) -> int:
+    def _get_concept_id(self, vocab, concept_code) -> int:
         query = select(Concept.concept_id).where(
             and_(
                 Concept.vocabulary_id == vocab,
@@ -36,33 +36,38 @@ class IndividualQuerySolver:
     def solve_individual_query(self, query_terms: str) -> bool:
         terms = query_terms.split(",")
         concept_codes = list()
-        person_codes = list()
+        main_query = select(Person)
         for term in terms:
+
             filtering_term = term.split(":")
             if filtering_term[0] == "SNOMED":
                 concept_codes.append(filtering_term[1])
             if filtering_term[0] == "Gender":
-                gender_concept_id = self._get_person_concept(
+                gender_concept_id = self._get_concept_id(
                     vocab=filtering_term[0], concept_code=filtering_term[1]
                 )
+
                 gender_query = select(Person.person_id).where(
                     Person.gender_concept_id == gender_concept_id
                 )
                 gender_ids = pd.read_sql(
                     gender_query, con=self.db_manager.engine.connect()
                 )
-                gender_ids = [str(concept) for concept, in gender_ids.values]
-                print("Gender ids {}".format(gender_ids))
+
+                gender_id = [str(concept) for concept, in gender_ids.values]
+                main_query = main_query.where(Person.person_id.in_(gender_id))
             if filtering_term[0] == "Race":
-                race_concept_id = self._get_person_concept(
+                race_concept_id = self._get_concept_id(
                     vocab=filtering_term[0], concept_code=filtering_term[1]
                 )
                 race_query = select(Person.person_id).where(
-                    Person.gender_concept_id == race_concept_id
+                    Person.race_concept_id == race_concept_id
                 )
                 race_ids = pd.read_sql(race_query, con=self.db_manager.engine.connect())
-                print(race_ids)
+                race_id = [str(concept) for concept, in race_ids.values]
+                main_query = main_query.where(Person.person_id.in_(race_id))
 
+        # get concept ids from concept codes
         sql_query = select(Concept.concept_id).where(
             and_(
                 Concept.vocabulary_id == "SNOMED",
@@ -70,27 +75,21 @@ class IndividualQuerySolver:
             )
         )
         concept_ids = pd.read_sql_query(sql_query, con=self.db_manager.engine.connect())
+
         results = [str(concept) for concept, in concept_ids.values]
 
-        results_query = select(ConditionOccurrence.person_id).where(
-            ConditionOccurrence.condition_concept_id.in_(results)
-        )
-        condition_person_ids = pd.read_sql_query(
-            results_query, con=self.db_manager.engine.connect()
-        )
+        final = list()
+        for result in results:
+            results_query = select(ConditionOccurrence.person_id).where(
+                ConditionOccurrence.condition_concept_id == result
+            )
+            final.append(results_query)
 
-        final_condition_person_ids = [
-            str(person_id) for person_id, in condition_person_ids.values
-        ]
+        for query in final:
+            main_query = main_query.where(Person.person_id.in_(query))
 
-        final_query = select(Person).where(
-            Person.person_id.in_(gender_ids)
-            & Person.person_id.in_(final_condition_person_ids)
-        )
+        person_ids = pd.read_sql_query(main_query, con=self.db_manager.engine.connect())
 
-        person_ids = pd.read_sql_query(
-            final_query, con=self.db_manager.engine.connect()
-        )
         print(person_ids)
         return True
 
