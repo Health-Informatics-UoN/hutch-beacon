@@ -41,7 +41,7 @@ class IndividualQuerySolver:
 
     def solve_individual_query(self, query_terms: str) -> ResponseSummary:
         """
-
+        Build sql query based on query terms, run query and return response summary.
         Args:
             query_terms (str): Query filter terms
 
@@ -100,7 +100,7 @@ class IndividualQuerySolver:
             main_query = main_query.where(Person.person_id.in_(results_query))
         # execute main query
         person_ids = pd.read_sql_query(main_query, con=self.db_manager.engine.connect())
-
+        print(person_ids)
         if person_ids.empty:
             # if no matching records found return false
             return ResponseSummary(exists=False)
