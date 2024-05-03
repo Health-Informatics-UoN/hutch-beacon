@@ -21,7 +21,7 @@ individuals = subparsers.add_parser(
     "individuals", help="Execute queries on individuals"
 )
 individuals.set_defaults()
-individuals.add_argument("--filters", type=str, help="Filtering terms")
+individuals.add_argument("-f", "--filters", type=str, help="Filtering terms")
 
 
 def save_filtering_terms(filtering_terms: list, destination: str) -> None:
