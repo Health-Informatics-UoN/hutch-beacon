@@ -96,7 +96,7 @@ def main() -> None:
             logger.info(f"Saved results to {output_file_name}")
         except ValueError as e:
             logger.error(str(e), exc_info=True)
-
+        exit()
     if args.command == "individuals":
         logger.info("Querying database...")
         query_terms = args.filters
