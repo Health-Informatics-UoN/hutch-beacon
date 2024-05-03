@@ -110,3 +110,4 @@ def main() -> None:
             logger.info(f"Saved response summary to {output_file_name}")
         except ValueError as e:
             logger.error(str(e), exc_info=True)
+        exit()
