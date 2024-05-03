@@ -5,10 +5,6 @@ from beacon_omop_worker.db_manager import SyncDBManager
 from beacon_omop_worker.entities import (
     ConditionOccurrence,
     Person,
-    DrugExposure,
-    Measurement,
-    Observation,
-    ProcedureOccurrence,
     Concept,
     Vocabulary,
 )
@@ -23,7 +19,16 @@ class IndividualQuerySolver:
     def __init__(self, db_manager: SyncDBManager) -> None:
         self.db_manager = db_manager
 
-    def _get_concept_id(self, vocab, concept_code) -> int:
+    def _get_concept_id(self, vocab: str, concept_code: str) -> str:
+        """
+        Get concept id from vocabulary and concept code
+        Args:
+            vocab (str): vocabulary name
+            concept_code (str): concept code
+
+        Returns:
+
+        """
         query = select(Concept.concept_id).where(
             and_(
                 Concept.vocabulary_id == vocab,
@@ -31,12 +36,21 @@ class IndividualQuerySolver:
             )
         )
         code = pd.read_sql(query, con=self.db_manager.engine.connect())
-        final_code = int(code["concept_id"].values[0])
+        final_code = str(code["concept_id"].values[0])
         return final_code
 
     def solve_individual_query(self, query_terms: str) -> ResponseSummary:
+        """
+
+        Args:
+            query_terms (str): Query filter terms
+
+        Returns:
+        response_summary (ResponseSummary): Response summary object
+        """
         terms = query_terms.split(",")
         concept_codes = list()
+        # build main query
         main_query = select(Person)
         for term in terms:
 
@@ -54,8 +68,8 @@ class IndividualQuerySolver:
                 gender_ids = pd.read_sql(
                     gender_query, con=self.db_manager.engine.connect()
                 )
-
                 gender_id = [str(concept) for concept, in gender_ids.values]
+                # add to main query
                 main_query = main_query.where(Person.person_id.in_(gender_id))
             if filtering_term[0] == "Race":
                 race_concept_id = self._get_concept_id(
@@ -66,6 +80,7 @@ class IndividualQuerySolver:
                 )
                 race_ids = pd.read_sql(race_query, con=self.db_manager.engine.connect())
                 race_id = [str(concept) for concept, in race_ids.values]
+                # add to main query
                 main_query = main_query.where(Person.person_id.in_(race_id))
 
         # get concept ids from concept codes
@@ -76,22 +91,20 @@ class IndividualQuerySolver:
             )
         )
         concept_ids = pd.read_sql_query(sql_query, con=self.db_manager.engine.connect())
-
-        results = [str(concept) for concept, in concept_ids.values]
+        concept_id_list = [str(concept) for concept, in concept_ids.values]
 
         final = list()
-        for result in results:
+        for concept in concept_id_list:
             results_query = select(ConditionOccurrence.person_id).where(
-                ConditionOccurrence.condition_concept_id == result
+                ConditionOccurrence.condition_concept_id == concept
             )
-            final.append(results_query)
-
-        for query in final:
-            main_query = main_query.where(Person.person_id.in_(query))
-
+            # add to main query
+            main_query = main_query.where(Person.person_id.in_(results_query))
+        # execute main query
         person_ids = pd.read_sql_query(main_query, con=self.db_manager.engine.connect())
 
         if person_ids.empty:
+            # if no matching records found return false
             return ResponseSummary(exists=False)
         return ResponseSummary(exists=True)
 
@@ -250,37 +263,13 @@ class FilterQuerySolver:
         condition_query = select(ConditionOccurrence.condition_concept_id).distinct()
         condition = self._get_table_concepts(condition_query)
 
-        # procedure_query = select(ProcedureOccurrence.procedure_concept_id).distinct()
-        # procedure = self._get_table_concepts(procedure_query)
-        #
-        # measurement_query = select(Measurement.measurement_concept_id).distinct()
-        # measurement = self._get_table_concepts(measurement_query)
-        #
-        # observation_query = select(Observation.observation_concept_id).distinct()
-        # observation = self._get_table_concepts(observation_query)
-
         person_filters = self._group_person_concepts(
             concepts, person_concepts, vocabulary_dict
         )
         condition_filters = self._group_filters(
             concepts, condition, "condition_concept_id", vocabulary_dict
         )
-        # procedure_filters = self._group_filters(
-        #     concepts, procedure, "procedure_concept_id", vocabulary_dict
-        # )
-        # measurement_filters = self._group_filters(
-        #     concepts, measurement, "measurement_concept_id", vocabulary_dict
-        # )
-        # observations_filters = self._group_filters(
-        #     concepts, observation, "observation_concept_id", vocabulary_dict
-        # )
-        final_filters = [
-            *person_filters,
-            *condition_filters,
-            # *procedure_filters,
-            # *measurement_filters,
-            # *observations_filters,
-        ]
+        final_filters = [*person_filters, *condition_filters]
         return final_filters
 
 
@@ -304,7 +293,15 @@ def solve_filters(db_manager: SyncDBManager) -> List[FilteringTerm]:
 
 
 def solve_individuals(db_manager: SyncDBManager, query_terms: str):
+    """
+    Solve individual query
+    Args:
+        db_manager (SyncDBManager): The database manager
+        query_terms (str): The query terms
 
+    Returns:
+
+    """
     logger = logging.getLogger(config.LOGGER_NAME)
     query_solver = IndividualQuerySolver(db_manager=db_manager)
     try:
