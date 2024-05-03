@@ -92,8 +92,6 @@ class IndividualQuerySolver:
         )
         concept_ids = pd.read_sql_query(sql_query, con=self.db_manager.engine.connect())
         concept_id_list = [str(concept) for concept, in concept_ids.values]
-
-        final = list()
         for concept in concept_id_list:
             results_query = select(ConditionOccurrence.person_id).where(
                 ConditionOccurrence.condition_concept_id == concept
