@@ -1,5 +1,6 @@
 from typing import List
 from beacon_omop_worker.beacon_dto.filtering_term import FilteringTerm
+from beacon_omop_worker.beacon_dto.response_summary import ResponseSummary
 from beacon_omop_worker.db_manager import SyncDBManager
 from beacon_omop_worker.entities import (
     ConditionOccurrence,
@@ -33,7 +34,7 @@ class IndividualQuerySolver:
         final_code = int(code["concept_id"].values[0])
         return final_code
 
-    def solve_individual_query(self, query_terms: str) -> bool:
+    def solve_individual_query(self, query_terms: str) -> ResponseSummary:
         terms = query_terms.split(",")
         concept_codes = list()
         main_query = select(Person)
@@ -90,8 +91,9 @@ class IndividualQuerySolver:
 
         person_ids = pd.read_sql_query(main_query, con=self.db_manager.engine.connect())
 
-        print(person_ids)
-        return True
+        if person_ids.empty:
+            return ResponseSummary(exists=False)
+        return ResponseSummary(exists=True)
 
 
 class FilterQuerySolver:
@@ -304,12 +306,10 @@ def solve_filters(db_manager: SyncDBManager) -> List[FilteringTerm]:
 def solve_individuals(db_manager: SyncDBManager, query_terms: str):
 
     logger = logging.getLogger(config.LOGGER_NAME)
-    # filter_solver = FilterQuerySolver(db_manager=db_manager)
     query_solver = IndividualQuerySolver(db_manager=db_manager)
     try:
-        # filters = filter_solver.solve_concept_filters()
-        query_result = query_solver.solve_individual_query(query_terms)
+        response_summary = query_solver.solve_individual_query(query_terms)
         logger.info("Successfully executed query.")
-        # return filters
+        return response_summary
     except Exception as e:
         logger.error(str(e))
