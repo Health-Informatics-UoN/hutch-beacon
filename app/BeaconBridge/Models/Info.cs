@@ -1,8 +1,10 @@
+using System.Text.Json.Serialization;
+
 namespace BeaconBridge.Models;
 
 public class Info
 {
-  public BaseMeta BaseMeta { get; set; } = new();
+  [JsonPropertyName("meta")] public BaseMeta BaseMeta { get; set; } = new();
 
-  public BaseResponse BaseResponse { get; set; } = new();
+  [JsonPropertyName("response")] public BaseResponse BaseResponse { get; set; } = new();
 }
