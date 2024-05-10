@@ -184,7 +184,7 @@ class FilterQuerySolver:
             if row["gender_concept_id"] != 0:
                 filters.append(
                     FilteringTerm(
-                        id_=f"{[row['vocabulary_id']]}:{row['concept_code']}",
+                        id_=f"{row['vocabulary_id']}:{row['concept_code']}",
                         label=row["concept_name"],
                         type_=vocabulary_dict[row["vocabulary_id"]],
                     )
