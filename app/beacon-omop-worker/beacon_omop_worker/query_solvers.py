@@ -256,14 +256,13 @@ class FilterQuerySolver:
             Person.race_concept_id, Person.gender_concept_id
         ).distinct()
         person_concepts = self._get_table_concepts(person_query)
-        print(person_concepts)
+
         condition_query = select(ConditionOccurrence.condition_concept_id).distinct()
         condition = self._get_table_concepts(condition_query)
 
         person_filters = self._group_person_concepts(
             concepts, person_concepts, vocabulary_dict
         )
-        print(person_filters)
         condition_filters = self._group_filters(
             concepts, condition, "condition_concept_id", vocabulary_dict
         )
