@@ -1,14 +1,88 @@
+"use client";
+
 import Header from "@/app/components/Header";
+import Button from "@/app/components/Button";
+import SearchDropdown from "@/app/components/SearchDropdown";
+import SelectedOption from "@/app/components/SelectedOption";
+import { FcSearch } from "react-icons/fc";
+import { useState } from "react";
 
 export default function About() {
+  const icon = new FcSearch()
+  var filteringTerms = [
+    {
+      "type": "Logical Observation Identifiers Names and Codes (Regenstrief Institute)",
+      "id": "LOINC:10230-1",
+      "label": "Left ventricular Ejection fraction"
+    },
+    {
+      "type": "Logical Observation Identifiers Names and Codes (Regenstrief Institute)",
+      "id": "LOINC:10480-2",
+      "label": "Estrogen+Progesterone receptor Ag [Presence] in Tissue by Immune stain"
+    },
+    {
+      "type": "Logical Observation Identifiers Names and Codes (Regenstrief Institute)",
+      "id": "LOINC:10834-0",
+      "label": "Globulin [Mass/volume] in Serum by calculation"
+    },
+    {
+      "type": "Logical Observation Identifiers Names and Codes (Regenstrief Institute)",
+      "id": "LOINC:14804-9",
+      "label": "Lactate dehydrogenase [Enzymatic activity/volume] in Serum or Plasma by Lactate to pyruvate reaction"
+    }
+  ]
+  var [selections, setSelections] = useState([])
+
+  /**
+   * Add a filtering term the list of selected terms.
+   * @param {string} termId The id of the term to add to the selected list.
+   */
+  function addSelection(termId) {
+    let term = filteringTerms.find(ft => ft.id === termId)
+    setSelections(previous => [term, ...previous])
+  }
+
+  /**
+   * Remove a filtering term from the list of selected terms.
+   * @param {object} term The term to remove from the list of selected terms.
+   */
+  function removeSelection(term) {
+    let selectionsCopy = [...selections]
+    let termIndex = selectionsCopy.indexOf(term)
+    if (termIndex > -1) {
+      selectionsCopy.splice(termIndex, 1)
+      setSelections(selectionsCopy)
+    }
+  }
+
   return(
     <div>
       <Header />
       <div>
         <h1>About</h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum commodo vel nibh at varius. Nam mattis enim ut massa auctor sodales. Nullam viverra dui aliquam purus laoreet, in tincidunt sapien lobortis. Aenean rhoncus neque quis volutpat hendrerit. Suspendisse potenti. Fusce pellentesque libero metus, ut semper metus rutrum non. In sit amet eros placerat, ullamcorper purus egestas, volutpat sem. Sed ac dictum urna, non interdum nibh. Suspendisse a congue orci. Aenean nec blandit nisl, at faucibus lacus. Vestibulum porta eu lectus non feugiat. Vivamus congue libero sed rhoncus porttitor.</p>
-        <p>Quisque a tincidunt lorem. Nullam justo est, scelerisque a consequat at, aliquet et mauris. Donec quis odio turpis. Praesent ut tellus a arcu rhoncus eleifend. Aenean at ipsum non neque sollicitudin accumsan non eget tortor. Sed porta sem in rhoncus ultricies. Quisque mi nisl, accumsan vel metus eu, tincidunt rutrum ligula. Aliquam luctus ligula nec fermentum luctus. Pellentesque vestibulum quam id laoreet scelerisque. In vel lectus suscipit, semper metus in, volutpat felis. Nulla euismod erat in tincidunt accumsan. Suspendisse pellentesque lorem porttitor, volutpat lectus a, efficitur dui. Quisque aliquam mi arcu, nec feugiat nulla facilisis ac.</p>
+        <p>This Beacon uses the GA4GH Beacon v2 API specification and is provided by the Centre for Health Informatics and Digital Research Service at the University of Nottingham.</p>
+        <p>Beacon filters can be used to query a backend OMOP database of synthetic COVID-19 patient EHRs (electronic health records).</p>
+        <p>The Beacon will return <span className="text-green-400">yes</span> or <span className="text-red-400">no</span> to indicate if the filters have been observed in any individuals.</p>
       </div>
+      <div>
+        <h1>Query</h1>
+        <SearchDropdown
+          id={"filtering-terms"}
+          label={"Filtering terms"}
+          options={filteringTerms}
+          onChange={addSelection} />
+        <Button icon={icon} text={"Search"}/>
+      </div>
+      {selections.length > 0 &&
+        <div>
+          <h2>Selected</h2>
+          {
+            selections.map((s, key) => {
+              return <SelectedOption key={key} option={s} removeFunction={removeSelection}/>
+            })
+          }
+        </div>
+      }
     </div>
   )
 }
