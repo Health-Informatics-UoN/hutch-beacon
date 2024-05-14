@@ -1,4 +1,5 @@
 import { apiUrl as apiUrl } from "@/constants";
+import { ApiError } from "./error";
 
 /**
  * Base request function to query the backend API with a users access token
