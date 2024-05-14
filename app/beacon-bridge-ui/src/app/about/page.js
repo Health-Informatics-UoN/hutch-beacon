@@ -5,33 +5,23 @@ import Button from "@/app/components/Button";
 import SearchDropdown from "@/app/components/SearchDropdown";
 import SelectedOption from "@/app/components/SelectedOption";
 import { FcSearch } from "react-icons/fc";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getFilteringTerms } from "@/app/actions";
 
 export default function About() {
   const icon = new FcSearch()
-  var filteringTerms = [
-    {
-      "type": "Logical Observation Identifiers Names and Codes (Regenstrief Institute)",
-      "id": "LOINC:10230-1",
-      "label": "Left ventricular Ejection fraction"
-    },
-    {
-      "type": "Logical Observation Identifiers Names and Codes (Regenstrief Institute)",
-      "id": "LOINC:10480-2",
-      "label": "Estrogen+Progesterone receptor Ag [Presence] in Tissue by Immune stain"
-    },
-    {
-      "type": "Logical Observation Identifiers Names and Codes (Regenstrief Institute)",
-      "id": "LOINC:10834-0",
-      "label": "Globulin [Mass/volume] in Serum by calculation"
-    },
-    {
-      "type": "Logical Observation Identifiers Names and Codes (Regenstrief Institute)",
-      "id": "LOINC:14804-9",
-      "label": "Lactate dehydrogenase [Enzymatic activity/volume] in Serum or Plasma by Lactate to pyruvate reaction"
-    }
-  ]
-  var [selections, setSelections] = useState([])
+  
+  const [filteringTerms, setFilteringTerms] = useState([])
+
+  useEffect(
+    () => {
+      getFilteringTerms()
+      .then(res => setFilteringTerms(res))
+      .catch(error => console.error(error))
+    }, []
+  )
+  
+  const [selections, setSelections] = useState([])
 
   /**
    * Add a filtering term the list of selected terms.
