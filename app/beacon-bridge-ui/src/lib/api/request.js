@@ -1,3 +1,5 @@
+import { apiUrl as apiUrl } from "@/constants";
+
 /**
  * Base request function to query the backend API with a users access token
  * @param url URL to query.
@@ -9,11 +11,11 @@ export const request = async (
   options = {}
 ) => {
   // Get the KeyCloak id_token
-  const session = await getServerSession(authOptions);
-  const token = session?.access_token;
+  // const session = await getServerSession(authOptions);
+  // const token = session?.access_token;
 
   const headers = {
-    Authorization: `Bearer ${token}`,
+    // Authorization: `Bearer ${token}`,
     ...(options.headers || {}),
   };
 
