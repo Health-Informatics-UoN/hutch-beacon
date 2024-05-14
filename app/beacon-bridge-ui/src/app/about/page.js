@@ -7,7 +7,7 @@ import SelectedOption from "@/app/components/SelectedOption";
 import { FcSearch } from "react-icons/fc";
 import { useState, useEffect } from "react";
 import { getFilteringTerms, getIndividuals } from "@/app/actions";
-import InfoPopup from "../components/InfoPopup";
+import InfoPopup from "@/app/components/InfoPopup";
 
 export default function About() {
   const icon = new FcSearch()
