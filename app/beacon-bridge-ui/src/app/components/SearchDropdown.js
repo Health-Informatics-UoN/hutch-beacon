@@ -1,8 +1,14 @@
-export default function SearchDropdown({id, label, options}) {
+export default function SearchDropdown({id, label, options, onChange}) {
   return (
     <div className="space-x-2">
       <label htmlFor={id}>{label}</label>
-      <select id={id} className="bg-transparent border-2 border-white border-solid">
+      <select
+        id={id}
+        onChange={(event) => {
+          onChange(event.target.value)}
+        }
+        className="bg-transparent border-2 border-white border-solid"
+      >
         {
           options.map((opt, key)=>{
             let name = `${opt.id} - ${opt.label}`;
