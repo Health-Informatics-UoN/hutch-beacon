@@ -52,6 +52,14 @@ module.exports = {
         20: "#CCEBF3",
         5: "#F2FAFC"
       },
+      "uon-forest": {
+        100: "#005F36",
+        80: "#337F5E",
+        60: "#669F86",
+        40: "#99BFAF",
+        20: "#CCDFD7",
+        5: "#F2F7F5"
+      },
       white: colors.white
     },
     backgroundImage: {
