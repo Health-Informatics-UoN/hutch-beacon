@@ -1,3 +1,5 @@
+const colors = require('tailwindcss/colors')
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -41,7 +43,20 @@ module.exports = {
         40: "#E3A4AB",
         20: "#F1D2D5",
         5: "#FCF4F5"
-      }
+      },
+      "uon-sky": {
+        100: "#009BC1",
+        80: "#33AFCD",
+        60: "#66C3DA",
+        40: "#99D7E6",
+        20: "#CCEBF3",
+        5: "#F2FAFC"
+      },
+      white: colors.white
+    },
+    backgroundImage: {
+      "uon-gradient":
+        "linear-gradient(90deg, #10263B 55%, #405162, #009BC1 97%, #33AFCD)",
     }
   },
   plugins: [],
