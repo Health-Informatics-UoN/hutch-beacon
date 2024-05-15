@@ -6,12 +6,14 @@ import SearchDropdown from "@/app/components/SearchDropdown";
 import SelectedOption from "@/app/components/SelectedOption";
 import { FcSearch } from "react-icons/fc";
 import { useState, useEffect } from "react";
-import { getFilteringTerms } from "@/app/actions";
+import { getFilteringTerms, getIndividuals } from "@/app/actions";
+import InfoPopup from "@/app/components/InfoPopup";
 
 export default function About() {
   const icon = new FcSearch()
   
   const [filteringTerms, setFilteringTerms] = useState([])
+  const [hasResults, setHasResults] = useState()
 
   useEffect(
     () => {
@@ -45,6 +47,18 @@ export default function About() {
     }
   }
 
+  /**
+   * Handle fetching individuals on search button click.
+   */
+  function fetchIndividuals() {
+    getIndividuals(selections)
+    .then(res => {setHasResults(res["exists"])})
+    .catch(err => console.error(err))
+    
+    // Clear selections
+    setSelections([])
+  }
+
   return(
     <div>
       <Header />
@@ -61,7 +75,13 @@ export default function About() {
           label={"Filtering terms"}
           options={filteringTerms}
           onChange={addSelection} />
-        <Button icon={icon} text={"Search"}/>
+        <Button icon={icon} text={"Search"} onClick={fetchIndividuals}/>
+        {hasResults !== undefined && 
+        <InfoPopup
+          isWarning={!hasResults}
+          text={hasResults ? 
+          "There are individuals matching your query."
+          : "There are no individuals matching your query."}/>}
       </div>
       {selections.length > 0 &&
         <div>
