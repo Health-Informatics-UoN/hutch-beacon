@@ -64,7 +64,7 @@ export default function About() {
         <h1 className="mb-4 text-xl md:text-2xl">About</h1>
         <p>This Beacon uses the GA4GH Beacon v2 API specification and is provided by the Centre for Health Informatics and Digital Research Service at the University of Nottingham.</p>
         <p>Beacon filters can be used to query a backend OMOP database of synthetic COVID-19 patient EHRs (electronic health records).</p>
-        <p>The Beacon will return <span className="text-green-400">yes</span> or <span className="text-red-400">no</span> to indicate if the filters have been observed in any individuals.</p>
+        <p>The Beacon will return <span className="text-uon-bramley-100">yes</span> or <span className="text-uon-red-100">no</span> to indicate if the filters have been observed in any individuals.</p>
       </div>
       <div className="py-4">
         <h1 className="text-xl md:text-2xl">Query</h1>
