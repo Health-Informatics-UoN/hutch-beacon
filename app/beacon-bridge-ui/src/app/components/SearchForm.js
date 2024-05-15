@@ -59,12 +59,6 @@ export default function SearchForm({ filteringTerms }) {
           options={filteringTerms}
           onChange={addSelection}
         />
-        <Button
-          icon={<FcSearch />}
-          text={"Search"}
-          onClick={fetchIndividuals}
-          className="w-24 bg-uon-sky-100 px-2 py-2 rounded-lg"
-        />
         {hasResults !== undefined && (
           <InfoPopup
             isWarning={!hasResults}
@@ -73,8 +67,15 @@ export default function SearchForm({ filteringTerms }) {
                 ? "There are individuals matching your query."
                 : "There are no individuals matching your query."
             }
+            className="rounded-lg border-2 border-white border-solid mb-4"
           />
         )}
+        <Button
+          icon={<FcSearch />}
+          text={"Search"}
+          onClick={fetchIndividuals}
+          className="w-24 bg-uon-sky-100 px-2 py-2 rounded-lg"
+        />
       </div>
       {selections.length > 0 && (
         <div>
