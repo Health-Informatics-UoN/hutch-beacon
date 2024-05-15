@@ -1,7 +1,6 @@
 "use server";
 
 import { request } from "@/lib/api";
-import { apiUrl as apiUrl } from "@/constants";
 
 /**
  * Get the list of filtering terms from the Beacon.
