@@ -1,6 +1,6 @@
 export default function SearchDropdown({id, label, options, onChange}) {
   return (
-    <div className="space-x-2 mb-4">
+    <div className="flex flex-wrap space-x-2 mb-4 items-baseline">
       <label htmlFor={id}>{label}</label>
       <select
         id={id}
