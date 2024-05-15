@@ -5,13 +5,13 @@ import { referenceSecret } from 'br/DrsUtils:functions:v1'
 param serviceName = 'hutch-beacon'
 
 param env = 'prod'
-param beaconHostnames = ['beacon.nottingham.ac.uk']
-param beaconAppName = 'hutch-beacon'
+param frontendHostnames = ['beacon.nottingham.ac.uk']
+param frontendAppName = 'hutch-beacon'
 param aspName = 'linuxapps'
 
 param keyVaultName = '${serviceName}-${env}-kv'
 
-param beaconAppSettings = {
+param backendAppSettings = {
     BeaconInfo__BeaconId: 'uk.unott.demo'
     BeaconInfo__ApiVersion: 'v2.0.0'
     BeaconInfo__Granularity: 'boolean'
