@@ -7,7 +7,7 @@ export default function SearchDropdown({id, label, options, onChange}) {
         onChange={(event) => {
           onChange(event.target.value)}
         }
-        className="bg-transparent border-2 border-uon-blue-60 border-solid"
+        className="rounded-lg bg-transparent border-2 border-uon-blue-60 border-solid py-2"
       >
         {
           options.map((opt, key)=>{
