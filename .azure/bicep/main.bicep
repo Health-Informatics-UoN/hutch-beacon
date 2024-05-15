@@ -14,8 +14,9 @@ param serviceName ServiceNames
 type Environments = 'dev' | 'qa' | 'uat' | 'prod'
 param env Environments
 
-param beaconAppName string = '${env}-${serviceName}-beacon'
-param beaconHostnames array = []
+param frontendAppName string = '${env}-${serviceName}'
+param frontendHostnames array = []
+param backendAppName string = '${env}-${serviceName}-api'
 param keyVaultName string = '${serviceName}-${env}-kv'
 
 param location string = resourceGroup().location
@@ -23,7 +24,8 @@ param location string = resourceGroup().location
 param sharedEnv string = 'shared'
 var sharedPrefix = '${serviceName}-${sharedEnv}'
 
-param beaconAppSettings object = {}
+param frontendAppSettings object = {}
+param backendAppSettings object = {}
 
 param aspName string
 
@@ -53,14 +55,28 @@ resource kv 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
 // App Service
 // VNET Integration
 // Hostnames
-module beacon 'br/DrsComponents:app-service:v1' = {
-  name: 'beacon-${uniqueString(beaconAppName)}'
+module frontend 'br/DrsComponents:app-service:v1' = {
+  name: 'beacon-${uniqueString(frontendAppName)}'
   params: {
     location: location
-    appName: beaconAppName
+    appName: frontendAppName
     aspName: aspName
     logAnalyticsWorkspaceName: la.outputs.name
-    appHostnames: beaconHostnames
+    appHostnames: frontendHostnames
+    tags: {
+      Service: serviceName
+      Environment: env
+    }
+  }
+}
+
+module backend 'br/DrsComponents:app-service:v1' = {
+  name: 'beacon-${uniqueString(backendAppName)}'
+  params: {
+    location: location
+    appName: backendAppName
+    aspName: aspName
+    logAnalyticsWorkspaceName: la.outputs.name
     tags: {
       Service: serviceName
       Environment: env
@@ -69,12 +85,12 @@ module beacon 'br/DrsComponents:app-service:v1' = {
 }
 
 // Grant the app Key Vault access
-module beaconKvAccess 'br/DrsConfig:keyvault-access:v1' = {
-  name: 'kvAccess-${uniqueString(beaconAppName)}'
+module backendKvAccess 'br/DrsConfig:keyvault-access:v1' = {
+  name: 'kvAccess-${uniqueString(backendAppName)}'
   params: {
     keyVaultName: kv.name
-    tenantId: beacon.outputs.identity.tenantId
-    objectId: beacon.outputs.identity.principalId
+    tenantId: backend.outputs.identity.tenantId
+    objectId: backend.outputs.identity.principalId
   }
 }
 
@@ -99,11 +115,11 @@ var appInsightsSettings = {
   XDT_MicrosoftApplicationInsights_BaseExtensions: '~1'
 }
 
-var baseBeaconSettings = {
+var baseBackendSettings = {
   DOTNET_Environment: friendlyEnvironmentNames[env]
 
   // App specific Azure/AI config
-  APPLICATIONINSIGHTS_CONNECTION_STRING: beacon.outputs.appInsights.connectionString
+  APPLICATIONINSIGHTS_CONNECTION_STRING: backend.outputs.appInsights.connectionString
   WEBSITE_RUN_FROM_PACKAGE: 1
 
   // Default App Settings
@@ -129,14 +145,23 @@ var baseBeaconSettings = {
   // SubmissionLayer__SubmissionLayerHost: referenceSecret(kv.name, 'submission-host')
 }
 
-module beaconConfig 'br/DrsConfig:webapp:v1' = {
-  name: 'siteConfig-${uniqueString(beaconAppName)}'
+var baseFrontendSettings = {
+  // App specific Azure/AI config
+  APPLICATIONINSIGHTS_CONNECTION_STRING: frontend.outputs.appInsights.connectionString
+  WEBSITE_RUN_FROM_PACKAGE: 1
+
+  // Default App Settings
+  BACKEND_URL: backend.outputs.defaultUrl
+}
+
+module backendConfig 'br/DrsConfig:webapp:v1' = {
+  name: 'siteConfig-${uniqueString(backendAppName)}'
   params: {
-    appName: beacon.outputs.name
+    appName: backend.outputs.name
     appSettings: union(
       appInsightsSettings,
-      baseBeaconSettings,
-      beaconAppSettings)
+      baseBackendSettings,
+      backendAppSettings)
     connectionStrings: {
       BeaconBridgeDb: {
         type: 'SQLServer'
@@ -146,15 +171,28 @@ module beaconConfig 'br/DrsConfig:webapp:v1' = {
   }
 }
 
+module frontendConfig 'br/DrsConfig:webapp:v1' = {
+  name: 'siteConfig-${uniqueString(frontendAppName)}'
+  params: {
+    appName: frontend.outputs.name
+    appSettings: union(
+      appInsightsSettings,
+      baseFrontendSettings,
+      frontendAppSettings)
+    appFramework: 'NODE|20-lts'
+    startCommand: 'server.js'
+  }
+}
+
 // Add SSL certificates
 // this needs to be done as a separate stage to creating the app with a bound hostname
 @batchSize(1) // also needs to be done serially to avoid concurrent updates to the app service
-module apiCert 'br/DrsComponents:managed-cert:v1' = [for hostname in beaconHostnames: {
+module apiCert 'br/DrsComponents:managed-cert:v1' = [for hostname in frontendHostnames: {
   name: 'api-cert-${uniqueString(hostname)}'
   params: {
     location: location
     hostname: hostname
-    appName: beacon.outputs.name
-    aspId: beacon.outputs.aspId
+    appName: frontend.outputs.name
+    aspId: frontend.outputs.aspId
   }
 }]
