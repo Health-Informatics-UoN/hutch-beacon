@@ -7,7 +7,7 @@ import { request } from "@/lib/api";
  * @returns The filtering terms.
  */
 export async function getFilteringTerms() {
-  var filteringTermsResponse = await request("filtering_terms")
+  const filteringTermsResponse = await request("filtering_terms", {cache: "no-store"})
   return filteringTermsResponse["response"]
 }
 
