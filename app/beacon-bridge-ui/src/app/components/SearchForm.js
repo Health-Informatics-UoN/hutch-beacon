@@ -6,6 +6,7 @@ import Button from "@/app/components/Button";
 import SearchDropdown from "@/app/components/SearchDropdown";
 import SelectedOption from "@/app/components/SelectedOption";
 import { FcSearch } from "react-icons/fc";
+import { FcFullTrash } from "react-icons/fc";
 import { getIndividuals } from "@/app/actions";
 
 export default function SearchForm({ filteringTerms }) {
@@ -17,13 +18,11 @@ export default function SearchForm({ filteringTerms }) {
    */
   async function fetchIndividuals() {
     try {
+      setHasResults(undefined)
       var res = await getIndividuals(selections);
       setHasResults(res["exists"]);
     } catch (error) {
       console.error(error);
-    } finally {
-      // Clear selections
-      setSelections([]);
     }
   }
 
@@ -49,6 +48,14 @@ export default function SearchForm({ filteringTerms }) {
     }
   }
 
+  /**
+   * Clear current search selections and cause the results box to vanish.
+   */
+  function clearSelected() {
+    setSelections([]);
+    setHasResults(undefined)
+  }
+
   return (
     <>
       <div>
@@ -70,12 +77,20 @@ export default function SearchForm({ filteringTerms }) {
             className="rounded-lg border-2 border-uon-blue-60 border-solid mb-4"
           />
         )}
+        <span className="flex space-x-2">
         <Button
           icon={<FcSearch />}
           text={"Search"}
           onClick={fetchIndividuals}
           className="w-24 bg-uon-sky-100 px-2 py-2 rounded-lg text-white"
         />
+        <Button
+          icon={<FcFullTrash />}
+          text={"Clear"}
+          onClick={clearSelected}
+          className="w-24 bg-uon-red-100 px-2 py-2 rounded-lg text-white"
+        />
+        </span>
       </div>
       {selections.length > 0 && (
         <div>
