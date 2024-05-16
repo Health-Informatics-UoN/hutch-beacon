@@ -1,13 +1,13 @@
 export default function SearchDropdown({id, label, options, onChange}) {
   return (
-    <div className="space-x-2">
+    <div className="flex flex-wrap space-x-2 mb-4 items-baseline">
       <label htmlFor={id}>{label}</label>
       <select
         id={id}
         onChange={(event) => {
           onChange(event.target.value)}
         }
-        className="bg-transparent border-2 border-white border-solid"
+        className="rounded-lg bg-transparent border-2 border-uon-blue-60 border-solid py-2 grow max-w-full"
       >
         {
           options.map((opt, key)=>{

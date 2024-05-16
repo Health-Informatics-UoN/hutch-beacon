@@ -52,17 +52,12 @@ export default function SearchForm({ filteringTerms }) {
   return (
     <>
       <div>
-        <h1>Query</h1>
+        <h1 className="mb-4 text-xl md:text-2xl">Query</h1>
         <SearchDropdown
           id={"filtering-terms"}
-          label={"Filtering terms"}
+          label={"Select filtering terms"}
           options={filteringTerms}
           onChange={addSelection}
-        />
-        <Button
-          icon={<FcSearch />}
-          text={"Search"}
-          onClick={fetchIndividuals}
         />
         {hasResults !== undefined && (
           <InfoPopup
@@ -72,12 +67,19 @@ export default function SearchForm({ filteringTerms }) {
                 ? "There are individuals matching your query."
                 : "There are no individuals matching your query."
             }
+            className="rounded-lg border-2 border-white border-solid mb-4"
           />
         )}
+        <Button
+          icon={<FcSearch />}
+          text={"Search"}
+          onClick={fetchIndividuals}
+          className="w-24 bg-uon-sky-100 px-2 py-2 rounded-lg"
+        />
       </div>
       {selections.length > 0 && (
         <div>
-          <h2>Selected</h2>
+          <h2 className="mb-4 text-lg md:text-xl">Selected</h2>
           {selections.map((s, key) => {
             return (
               <SelectedOption
