@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 env:
   AZURE_WEBAPP_PACKAGE_PATH: app/beacon-bridge-ui
@@ -22,6 +25,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: npm install and build
+        env: 
+          BACKEND_URL: https://prod-hutch-beacon-api.azurewebsites.net
         run: |
           npm i --workspaces=false
         working-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }} 
