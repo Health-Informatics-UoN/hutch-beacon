@@ -5,8 +5,8 @@ import Header from "@/app/components/Header";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "BEACON",
-  description: "BEACON by University of Nottingham",
+  title: "Beacon",
+  description: "Beacon by University of Nottingham",
 };
 
 export default function RootLayout({ children }) {
