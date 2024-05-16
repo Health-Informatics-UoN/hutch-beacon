@@ -31,6 +31,7 @@ export default function SearchForm({ filteringTerms }) {
    * @param {string} termId The id of the term to add to the selected list.
    */
   function addSelection(termId) {
+    setHasResults(undefined) // modified the query to reset the results box
     let term = filteringTerms.find((ft) => ft.id === termId);
     setSelections((previous) => [term, ...previous]);
   }
@@ -40,6 +41,7 @@ export default function SearchForm({ filteringTerms }) {
    * @param {object} term The term to remove from the list of selected terms.
    */
   function removeSelection(term) {
+    setHasResults(undefined) // modified the query to reset the results box
     let selectionsCopy = [...selections];
     let termIndex = selectionsCopy.indexOf(term);
     if (termIndex > -1) {
@@ -53,7 +55,7 @@ export default function SearchForm({ filteringTerms }) {
    */
   function clearSelected() {
     setSelections([]);
-    setHasResults(undefined)
+    setHasResults(undefined) // modified the query to reset the results box
   }
 
   return (
