@@ -11,7 +11,7 @@ export default function SelectedOption({ option, removeFunction }) {
           icon={deleteIcon}
           text={"Remove"}
           onClick={() => removeFunction(option)}
-          className="w-24 bg-uon-red-100 px-2 py-2 rounded-lg"
+          className="w-24 bg-uon-red-100 px-2 py-2 rounded-lg text-white"
         />
       </span>
     </div>

@@ -67,14 +67,14 @@ export default function SearchForm({ filteringTerms }) {
                 ? "There are individuals matching your query."
                 : "There are no individuals matching your query."
             }
-            className="rounded-lg border-2 border-white border-solid mb-4"
+            className="rounded-lg border-2 border-uon-blue-60 border-solid mb-4"
           />
         )}
         <Button
           icon={<FcSearch />}
           text={"Search"}
           onClick={fetchIndividuals}
-          className="w-24 bg-uon-sky-100 px-2 py-2 rounded-lg"
+          className="w-24 bg-uon-sky-100 px-2 py-2 rounded-lg text-white"
         />
       </div>
       {selections.length > 0 && (
