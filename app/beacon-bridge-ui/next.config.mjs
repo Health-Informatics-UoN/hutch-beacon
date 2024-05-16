@@ -8,6 +8,14 @@ const nextConfig = {
         headers: [{ key: "x-clacks-overhead", value: "GNU Terry Pratchett" }]
       }
     ];
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${process.env.BACKEND_URL}/api/:path*`
+      }
+    ]
   }
 };
 
