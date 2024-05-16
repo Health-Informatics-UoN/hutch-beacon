@@ -4,10 +4,13 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 env:
   AZURE_WEBAPP_PACKAGE_PATH: 'app/BeaconBridge'
-  AZURE_WEBAPP_BACKEND_NAME: 'hutch-beacon'
+  AZURE_WEBAPP_BACKEND_NAME: 'prod-hutch-beacon-api'
   DOTNET_VERSION: '8.x'
   WEB_APP_PROJECT: ./app/BeaconBridge/BeaconBridge.csproj
   DOTNET_BUILD_CONFIG: release
