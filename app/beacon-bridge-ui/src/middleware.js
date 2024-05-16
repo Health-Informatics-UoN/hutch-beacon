@@ -2,8 +2,14 @@ import { NextResponse } from "next/server";
 
 // This function can be marked `async` if using `await` inside
 export function middleware(request) {
+  const newUrl = request.nextUrl.search
+    ? `${process.env.BACKEND_URL}${request.nextUrl.pathname}${request.nextUrl.search}`
+    : `${process.env.BACKEND_URL}${request.nextUrl.pathname}`;
   return NextResponse.rewrite(
-    new URL(`${process.env.BACKEND_URL}${request.nextUrl.pathname}`, request.url),
+    new URL(
+      newUrl,
+      request.url,
+    ),
   );
 }
 
