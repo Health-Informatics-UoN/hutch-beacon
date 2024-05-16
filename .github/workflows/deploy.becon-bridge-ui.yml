@@ -25,8 +25,6 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: npm install and build
-        env: 
-          BACKEND_URL: https://prod-hutch-beacon-api.azurewebsites.net
         run: |
           npm i --workspaces=false
         working-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }} 
@@ -40,6 +38,8 @@ jobs:
           key: nextjs | $(Agent.OS) | ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/package-lock.json
 
       - name: Build
+        env: 
+          BACKEND_URL: https://prod-hutch-beacon-api.azurewebsites.net
         run: npm run build --workspaces=false
         working-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
