@@ -8,8 +8,9 @@ export default function SearchDropdown({id, label, options, onChange}) {
           onChange(event.target.value)}
         }
         className="rounded-lg bg-transparent border-2 border-uon-blue-60 border-solid py-2 grow max-w-full"
+        defaultValue={""}
       >
-        <option value="" disabled selected></option>
+        <option value="" disabled></option>
         {
           options.map((opt, key)=>{
             let name = `${opt.id} - ${opt.label}`;
