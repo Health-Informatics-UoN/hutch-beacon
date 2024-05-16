@@ -3,6 +3,7 @@ using BeaconBridge.Config;
 using BeaconBridge.Constants;
 using BeaconBridge.Data;
 using BeaconBridge.Services;
+using BeaconBridge.Services.Hosted;
 using Flurl.Http.Configuration;
 using Microsoft.EntityFrameworkCore;
 
@@ -42,20 +43,23 @@ public static class ConfigureWebService
       .Configure<AgreementPolicyOptions>(b.Configuration.GetSection("AgreementPolicy"))
       .Configure<AssessActionsOptions>(b.Configuration.GetSection("AssessActions"))
       .Configure<FilteringTermsUpdateOptions>(b.Configuration.GetSection("FilteringTerms"))
+      .Configure<WorkflowCrateOptions>(b.Configuration.GetSection("WorkflowCrate"))
       .Configure<SubmissionOptions>(b.Configuration.GetSection("SubmissionLayer"));
     // Add HttpClients
 
     // Add Services
     b.Services
       // .AddTransient<UserHelper>()  // Not used at the moment
-      // .AddTransient<OpenIdIdentityService>()
-      // .AddTransient<MinioService>()
+      .AddTransient<OpenIdIdentityService>()
+      .AddTransient<MinioService>()
       .AddTransient<CrateGenerationService>()
-      .AddTransient<FilteringTermsService>();
-    // .AddSingleton<TesSubmissionService>()
-    // .AddSingleton<SubmissionStatusService>()
-    // .AddHostedService<TriggerFilteringTermsService>()
-    // .AddHostedService<FetchFilteringTermsService>();
+      .AddTransient<FilteringTermsService>()
+      .AddSingleton<TesSubmissionService>()
+      // .AddSingleton<SubmissionStatusService>()
+      // .AddHostedService<TriggerFilteringTermsService>()
+      // .AddHostedService<FetchFilteringTermsService>();
+      .AddHostedService<FetchCrateService>()
+      .AddHostedService<TriggerCrateSubmission>();
 
     return b;
   }
