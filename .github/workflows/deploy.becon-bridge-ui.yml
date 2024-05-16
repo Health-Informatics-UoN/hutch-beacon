@@ -55,6 +55,8 @@ jobs:
     name: Deploy Production
     runs-on: ubuntu-latest
     environment: production
+    needs:
+      - publish_WebFrontend
     steps:
       - uses: actions/checkout@v4
 
