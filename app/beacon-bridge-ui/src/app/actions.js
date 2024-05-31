@@ -7,7 +7,13 @@ import { request } from "@/lib/api";
  * @returns The filtering terms.
  */
 export async function getFilteringTerms() {
-  const filteringTermsResponse = await request("filtering_terms", {cache: "no-store"})
+  var searchParam = new URLSearchParams()
+  searchParam.set("skip", 0)
+  searchParam.set("limit", 0)
+  const filteringTermsResponse = await request(
+    `filtering_terms?${searchParam}`, 
+    {cache: "no-store"}
+  )
   return filteringTermsResponse["response"]
 }
 
