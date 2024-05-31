@@ -83,6 +83,7 @@ public class InfoController(IOptions<BeaconInfoOptions> beaconInfoOptions,
     [FromQuery] int limit = 10)
   {
     var terms = await filteringTerms.List();
+    if (limit > 0) terms = terms.Slice(skip * limit, limit);
     var filterResponse = new FilterResponse()
     {
       Meta = new()
@@ -111,6 +112,7 @@ public class InfoController(IOptions<BeaconInfoOptions> beaconInfoOptions,
   public async Task<ActionResult<FilterResponse>> PostFilteringTerms([FromBody] FilteringTermsRequestBody body)
   {
     var terms = await filteringTerms.List();
+    if (body.Limit > 0) terms = terms.Slice(body.Skip * body.Limit, body.Limit);
     var filterResponse = new FilterResponse()
     {
       Meta = new()
