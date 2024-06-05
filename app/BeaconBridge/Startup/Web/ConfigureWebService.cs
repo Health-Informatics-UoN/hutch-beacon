@@ -6,6 +6,7 @@ using BeaconBridge.Services;
 using BeaconBridge.Services.Hosted;
 using Flurl.Http.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.FeatureManagement;
 
 namespace BeaconBridge.Startup.Web;
 
@@ -17,6 +18,8 @@ public static class ConfigureWebService
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     b.Services.AddEndpointsApiExplorer();
     b.Services.AddSwaggerGen();
+    b.Services.AddFeatureManagement(
+      b.Configuration.GetSection("Flags"));
     b.Services.AddDbContext<BeaconContext>(o =>
     {
       var connectionString = b.Configuration.GetConnectionString("BeaconBridgeDb");
