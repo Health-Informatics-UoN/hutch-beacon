@@ -57,12 +57,11 @@ public static class ConfigureWebService
       .AddTransient<MinioService>()
       .AddTransient<CrateGenerationService>()
       .AddTransient<FilteringTermsService>()
-      .AddSingleton<TesSubmissionService>()
+      .AddTransient<CrateSubmissionService>()
+      .AddSingleton<TesSubmissionService>();
       // .AddSingleton<SubmissionStatusService>()
       // .AddHostedService<TriggerFilteringTermsService>()
       // .AddHostedService<FetchFilteringTermsService>();
-      .AddHostedService<FetchCrateService>()
-      .AddHostedService<TriggerCrateSubmission>();
 
     return b;
   }

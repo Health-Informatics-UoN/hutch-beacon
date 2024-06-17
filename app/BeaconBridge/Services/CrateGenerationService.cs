@@ -13,7 +13,9 @@ using File = System.IO.File;
 
 namespace BeaconBridge.Services;
 
-public class CrateGenerationService(ILogger<CrateGenerationService> logger,
+public class CrateGenerationService(
+  ILogger<CrateGenerationService> logger,
+  IOptions<BridgeOptions> bridgeOptions,
   IOptions<CratePublishingOptions> publishingOptions,
   IOptions<CrateAgentOptions> agentOptions,
   IOptions<CrateProjectOptions> projectOptions,
@@ -22,28 +24,28 @@ public class CrateGenerationService(ILogger<CrateGenerationService> logger,
   IOptions<AssessActionsOptions> assessActions,
   IOptions<AgreementPolicyOptions> agreementPolicy)
 {
+  private readonly BridgeOptions _bridgeOptions = bridgeOptions.Value;
   private readonly AgreementPolicyOptions _agreementPolicyOptions = agreementPolicy.Value;
   private readonly AssessActionsOptions _assessActionsOptions = assessActions.Value;
   private readonly CrateAgentOptions _crateAgentOptions = agentOptions.Value;
   private readonly CrateOrganizationOptions _crateOrganizationOptions = organizationOptions.Value;
   private readonly CrateProjectOptions _crateProjectOptions = projectOptions.Value;
   private readonly CratePublishingOptions _publishingOptions = publishingOptions.Value;
-  private readonly string _tmpFileName = "tmp-name.txt";
+  // private readonly string _tmpFileName = "tmp-name.txt";
   private readonly WorkflowOptions _workflowOptions = workflowOptions.Value;
 
   /// <summary>
   /// Build an RO-Crate.
   /// </summary>
   /// <param name="bagItPath">The BagItArchive path to save the crate to.</param>
+  /// <param name="input">The inputs for the crate.</param>
   /// <returns></returns>
   /// <exception cref="NotImplementedException">Query type is unavailable.</exception>
-  public async Task<BagItArchive> BuildCrate(string bagItPath)
+  public async Task<BagItArchive> BuildCrate(string input, string bagItPath)
   {
     var workflowUri = GetWorkflowUrl();
     var archive = await BuildBagIt(bagItPath, workflowUri);
-    var payloadDestination = Path.Combine(archive.PayloadDirectoryPath, _tmpFileName);
-    logger.LogInformation("Saved query JSON to {PayloadDestination}", payloadDestination);
-
+    
     // Generate ROCrate metadata
     logger.LogInformation("Building Five Safes ROCrate...");
     var builder = new RoCrateBuilder(_workflowOptions, _publishingOptions, _crateAgentOptions,
