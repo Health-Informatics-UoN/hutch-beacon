@@ -3,7 +3,6 @@ using BeaconBridge.Config;
 using BeaconBridge.Constants;
 using BeaconBridge.Data;
 using BeaconBridge.Services;
-using BeaconBridge.Services.Hosted;
 using Flurl.Http.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.FeatureManagement;
@@ -59,9 +58,6 @@ public static class ConfigureWebService
       .AddTransient<FilteringTermsService>()
       .AddTransient<CrateSubmissionService>()
       .AddSingleton<TesSubmissionService>();
-      // .AddSingleton<SubmissionStatusService>()
-      // .AddHostedService<TriggerFilteringTermsService>()
-      // .AddHostedService<FetchFilteringTermsService>();
 
     return b;
   }
