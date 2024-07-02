@@ -5,6 +5,7 @@ using BeaconBridge.Data;
 using BeaconBridge.Services;
 using Flurl.Http.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.FeatureManagement;
 
 namespace BeaconBridge.Startup.Web;
 
@@ -16,6 +17,8 @@ public static class ConfigureWebService
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     b.Services.AddEndpointsApiExplorer();
     b.Services.AddSwaggerGen();
+    b.Services.AddFeatureManagement(
+      b.Configuration.GetSection("Flags"));
     b.Services.AddDbContext<BeaconContext>(o =>
     {
       var connectionString = b.Configuration.GetConnectionString("BeaconBridgeDb");
@@ -42,14 +45,18 @@ public static class ConfigureWebService
       .Configure<AgreementPolicyOptions>(b.Configuration.GetSection("AgreementPolicy"))
       .Configure<AssessActionsOptions>(b.Configuration.GetSection("AssessActions"))
       .Configure<FilteringTermsUpdateOptions>(b.Configuration.GetSection("FilteringTerms"))
-      .Configure<SubmissionOptions>(b.Configuration.GetSection("SubmissionLayer"));
+      .Configure<SubmissionOptions>(b.Configuration.GetSection("SubmissionLayer"))
+      .Configure<BridgeOptions>(b.Configuration.GetSection("Bridge"))
+      .Configure<HutchDatabaseConnectionDetails>(b.Configuration.GetSection("HutchAgent:DBConnection"))
+      .Configure<HutchAgentOptions>(b.Configuration.GetSection("HutchAgent:API"));
+    
     // Add HttpClients
-
+    b.Services.AddHttpClient<HutchApiClient>();
     // Add Services
     b.Services
       // .AddTransient<UserHelper>()  // Not used at the moment
       // .AddTransient<OpenIdIdentityService>()
-      // .AddTransient<MinioService>()
+      .AddTransient<MinioService>()
       .AddTransient<CrateGenerationService>()
       .AddTransient<FilteringTermsService>();
     // .AddSingleton<TesSubmissionService>()
