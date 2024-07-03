@@ -89,15 +89,9 @@ public class MinioService
   /// <returns>The object's download URL.</returns>
   public string GetObjectDownloadUrl(string objectName)
   {
-    var hostAndPort = _options.Host.Split(':');
-    var uriBuilder = new UriBuilder
-    {
-      Host = hostAndPort[0],
-      Path = Path.Combine("browser", _options.Bucket, objectName),
-      Scheme = _options.Secure ? Uri.UriSchemeHttps : Uri.UriSchemeHttp,
-    };
-    if (hostAndPort.Length > 1) uriBuilder.Port = int.Parse(hostAndPort[1]);
-    return uriBuilder.Uri.ToString();
+    var args = new PresignedGetObjectArgs().WithBucket(_options.Bucket).WithObject(objectName).WithExpiry(60 * 60 * 24);
+    var url =_minioClient.PresignedGetObjectAsync(args:args);
+    return url.Result;
   }
 
   /// <summary>
