@@ -38,10 +38,10 @@ public class CrateGenerationService(
   /// Build an RO-Crate.
   /// </summary>
   /// <param name="bagItPath">The BagItArchive path to save the crate to.</param>
-  /// <param name="input">The inputs for the crate.</param>
+  /// <param name="filters">The input filters for the crate.</param>
   /// <returns></returns>
   /// <exception cref="NotImplementedException">Query type is unavailable.</exception>
-  public async Task<BagItArchive> BuildCrate(string input, string bagItPath)
+  public async Task<BagItArchive> BuildCrate(string filters, string bagItPath)
   {
     var workflowUri = GetWorkflowUrl();
     var archive = await BuildBagIt(bagItPath, workflowUri);
@@ -50,7 +50,7 @@ public class CrateGenerationService(
     logger.LogInformation("Building Five Safes ROCrate...");
     var builder = new RoCrateBuilder(_workflowOptions, _publishingOptions, _crateAgentOptions,
       _crateProjectOptions, _crateOrganizationOptions, archive.PayloadDirectoryPath, _agreementPolicyOptions);
-    var crate = BuildFiveSafesCrate(builder);
+    var crate = BuildFiveSafesCrate(builder,filters);
     crate.Save(archive.PayloadDirectoryPath);
     logger.LogInformation("Saved Five Safes ROCrate to {ArchivePayloadDirectoryPath}", archive.PayloadDirectoryPath);
     await archive.WriteManifestSha512();
@@ -74,10 +74,10 @@ public class CrateGenerationService(
     return builder.GetArchive();
   }
 
-  public ROCrate BuildFiveSafesCrate(RoCrateBuilder builder)
+  public ROCrate BuildFiveSafesCrate(RoCrateBuilder builder, string filters)
   {
     builder.AddLicense();
-    builder.AddCreateAction();
+    builder.AddCreateAction(filters);
     builder.AddAgent();
     builder.UpdateMainEntity();
     return builder.GetROCrate();

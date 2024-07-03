@@ -158,7 +158,7 @@ public class RoCrateBuilder
   /// <summary>
   /// <para>Add the <c>CreateAction</c> to the RO-Crate.</para>
   /// </summary>
-  public void AddCreateAction()
+  public void AddCreateAction(string filters)
   {
     var createActionId = $"#query-{Guid.NewGuid()}";
     var createAction = new ContextEntity(_crate, createActionId);
@@ -168,8 +168,40 @@ public class RoCrateBuilder
     _crate.Entities.TryGetValue(GetWorkflowUrl(), out var workflow);
     if (workflow is not null) createAction.SetProperty("instrument", new Part { Id = workflow.Id });
     createAction.SetProperty("name", "Beacon Request");
-
+    // input filters
+    var inputFiltersEntity = AddQueryTypeMetadata(filters);
+    createAction.AppendTo("object", inputFiltersEntity);
+    
     _crate.Add(createAction);
+    _crate.RootDataset.AppendTo("mentions", createAction);
+
+  }
+  
+  /// <summary>
+  /// Add the metadata for the input query filters
+  /// </summary>
+  /// <param name="filters">The input query filters</param>
+  /// <returns>The entity detailing the input query filters.</returns>
+  private ContextEntity AddQueryTypeMetadata(string filters)
+  {
+    var paramId = "#{0}-inputs-{1}";
+    var entityId = "#input_{0}";
+
+    var inputFiltersParam =
+      new ContextEntity(null,
+        string.Format(paramId, _workflowOptions.Name, "filters"));
+    inputFiltersParam.SetProperty("@type", "FormalParameter");
+    inputFiltersParam.SetProperty("name","filters");
+    inputFiltersParam.SetProperty("dct:conformsTo", "https://bioschemas.org/profiles/FormalParameter/1.0-RELEASE/");
+    var inputFiltersEntity = new ContextEntity(null,
+      string.Format(entityId, "filters"));
+    inputFiltersEntity.SetProperty("@type", "PropertyValue");
+    inputFiltersEntity.SetProperty("name", "filters");
+    inputFiltersEntity.SetProperty("value",filters );
+    inputFiltersEntity.SetProperty("exampleOfWork", new Part { Id = inputFiltersParam.Id });
+
+    _crate.Add(inputFiltersParam, inputFiltersEntity);
+    return inputFiltersEntity;
   }
 
   public void AddCheckValueAssessAction(string status, DateTime startTime, Part validator)
