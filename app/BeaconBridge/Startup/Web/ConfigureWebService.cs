@@ -45,7 +45,6 @@ public static class ConfigureWebService
       .Configure<AgreementPolicyOptions>(b.Configuration.GetSection("AgreementPolicy"))
       .Configure<AssessActionsOptions>(b.Configuration.GetSection("AssessActions"))
       .Configure<FilteringTermsUpdateOptions>(b.Configuration.GetSection("FilteringTerms"))
-      .Configure<WorkflowCrateOptions>(b.Configuration.GetSection("WorkflowCrate"))
       .Configure<SubmissionOptions>(b.Configuration.GetSection("SubmissionLayer"));
     // Add HttpClients
 
