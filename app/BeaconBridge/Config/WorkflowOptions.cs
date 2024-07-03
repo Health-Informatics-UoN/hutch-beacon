@@ -8,5 +8,5 @@ public class WorkflowOptions
 
   public string BaseUrl { get; set; } = "https://workflowhub.eu/workflows";
 
-  public string Name { get; set; } = string.Empty;
+  public string Name { get; set; } = "beacon-omop-worker-workflows";
 }
