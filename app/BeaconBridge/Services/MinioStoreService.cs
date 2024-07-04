@@ -89,9 +89,19 @@ public class MinioService
   /// <returns>The object's download URL.</returns>
   public string GetObjectDownloadUrl(string objectName)
   {
-    var args = new PresignedGetObjectArgs().WithBucket(_options.Bucket).WithObject(objectName).WithExpiry(60 * 60 * 24);
-    var url =_minioClient.PresignedGetObjectAsync(args:args);
-    return url.Result;
+    try
+    {
+      var args = new PresignedGetObjectArgs().WithBucket(_options.Bucket).WithObject(objectName)
+        .WithExpiry(60 * 60 * 24);
+      var url = _minioClient.PresignedGetObjectAsync(args: args);
+      return url.Result;
+    }
+    catch(MinioException)
+    {
+      _logger.LogError("Unable to get Pre-signed Object URL");
+      throw;
+    }
+    
   }
 
   /// <summary>

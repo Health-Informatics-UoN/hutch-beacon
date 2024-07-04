@@ -31,7 +31,6 @@ public class CrateGenerationService(
   private readonly CrateOrganizationOptions _crateOrganizationOptions = organizationOptions.Value;
   private readonly CrateProjectOptions _crateProjectOptions = projectOptions.Value;
   private readonly CratePublishingOptions _publishingOptions = publishingOptions.Value;
-  // private readonly string _tmpFileName = "tmp-name.txt";
   private readonly WorkflowOptions _workflowOptions = workflowOptions.Value;
 
   /// <summary>
@@ -45,12 +44,12 @@ public class CrateGenerationService(
   {
     var workflowUri = GetWorkflowUrl();
     var archive = await BuildBagIt(bagItPath, workflowUri);
-    
+
     // Generate ROCrate metadata
     logger.LogInformation("Building Five Safes ROCrate...");
     var builder = new RoCrateBuilder(_workflowOptions, _publishingOptions, _crateAgentOptions,
       _crateProjectOptions, _crateOrganizationOptions, archive.PayloadDirectoryPath, _agreementPolicyOptions);
-    var crate = BuildFiveSafesCrate(builder,filters);
+    var crate = BuildFiveSafesCrate(builder, filters);
     crate.Save(archive.PayloadDirectoryPath);
     logger.LogInformation("Saved Five Safes ROCrate to {ArchivePayloadDirectoryPath}", archive.PayloadDirectoryPath);
     await archive.WriteManifestSha512();
