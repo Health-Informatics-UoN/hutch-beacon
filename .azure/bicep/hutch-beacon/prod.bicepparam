@@ -46,4 +46,4 @@ param backendAppSettings = {
     Crate__Organisation__Id: 'https://ror.org/01ee9ar58'
     Crate__Organisation__Type: 'Organisation'
     Crate__Organisation__Name: 'The University of Nottingham'
-    }
+}
