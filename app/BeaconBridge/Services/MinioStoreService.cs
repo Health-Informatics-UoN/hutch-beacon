@@ -83,7 +83,7 @@ public class MinioService
   }
 
   /// <summary>
-  /// Get the download URL to an object in MinIO.
+  /// Get the pre-signed download URL to an object in MinIO.
   /// </summary>
   /// <param name="objectName">The name of the object to download.</param>
   /// <returns>The object's download URL.</returns>
@@ -96,12 +96,11 @@ public class MinioService
       var url = _minioClient.PresignedGetObjectAsync(args: args);
       return url.Result;
     }
-    catch(MinioException)
+    catch (MinioException)
     {
       _logger.LogError("Unable to get Pre-signed Object URL");
       throw;
     }
-    
   }
 
   /// <summary>

@@ -30,8 +30,6 @@ public class EntryTypeController(
     [FromQuery] string? requestedSchema,
     [FromQuery] int skip = 0, [FromQuery] int limit = 10)
   {
-    
-    
     var individualsResponse = new EntryTypeResponse()
     {
       Meta =
@@ -49,10 +47,9 @@ public class EntryTypeController(
       { EntityType = EntityTypes.Individuals, Schema = Schemas.Individuals });
     if (filters is not null)
     {
-      
-      var bagItPath = Path.Combine(_bridgeOptions.WorkingDirectoryBase, Guid.NewGuid().ToString());
+      var bagItPath = Path.Combine(_bridgeOptions.WorkingDirectoryBase,Guid.NewGuid().ToString());
       // Build RO-Crate
-      var archive = await crateGenerationService.BuildCrate(filters,bagItPath);
+      var archive = await crateGenerationService.BuildCrate(filters, bagItPath);
       // Assess RO-Crate
       if (await featureFlags.IsEnabledAsync(FeatureFlags.MakeAssessActions))
         await crateGenerationService.AssessBagIt(archive);
@@ -61,35 +58,37 @@ public class EntryTypeController(
         Directory.CreateDirectory(bagItPath);
       var fileName = bagItPath + ".zip";
       ZipFile.CreateFromDirectory(bagItPath, fileName);
+      // Turn off crate submission temporarily
+      // await crateSubmissionService.SubmitCrate(bagItPath);
+      
+      // Continue to calculate and return individuals response
+      // split filters
+      Regex regex = new Regex(",");
+      string[] filterList = regex.Split(filters);
 
-      await crateSubmissionService.SubmitCrate(bagItPath);
-      //     // split filters
-      //     Regex regex = new Regex(",");
-      //     string[] filterList = regex.Split(filters);
-      //
-      //     foreach (var match in filterList) individualsResponse.Meta.ReceivedRequestSummary.Filters.Add(match);
-      //
-      //     if (filters.Contains("Gender:F") && filters.Contains("SNOMED:386661006") && filters.Contains("SNOMED:271825005"))
-      //     {
-      //       individualsResponse.ResponseSummary.Exists = true;
-      //     }
-      //     else
-      //     {
-      //       var random = new Random();
-      //       // check if key in cache
-      //       if (!memoryCache.TryGetValue(filters, out var randomBool))
-      //       {
-      //         // set value
-      //         randomBool = random.Next(2) == 1;
-      //         // set data in cache
-      //         memoryCache.Set(filters, randomBool);
-      //       }
-      //
-      //       Boolean.TryParse(memoryCache.Get(filters)?.ToString(), out var exists);
-      //       individualsResponse.ResponseSummary.Exists = exists;
-      //     }
+      foreach (var match in filterList) individualsResponse.Meta.ReceivedRequestSummary.Filters.Add(match);
+
+      if (filters.Contains("Gender:F") && filters.Contains("SNOMED:386661006") && filters.Contains("SNOMED:271825005"))
+      {
+        individualsResponse.ResponseSummary.Exists = true;
+      }
+      else
+      {
+        var random = new Random();
+        // check if key in cache
+        if (!memoryCache.TryGetValue(filters, out var randomBool))
+        {
+          // set value
+          randomBool = random.Next(2) == 1;
+          // set data in cache
+          memoryCache.Set(filters, randomBool);
+        }
+
+        Boolean.TryParse(memoryCache.Get(filters)?.ToString(), out var exists);
+        individualsResponse.ResponseSummary.Exists = exists;
+      }
     }
-    
+
     return individualsResponse;
   }
 }
