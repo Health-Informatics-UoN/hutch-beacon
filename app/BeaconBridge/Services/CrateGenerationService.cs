@@ -21,7 +21,6 @@ namespace BeaconBridge.Services;
 
 public class CrateGenerationService(
   ILogger<CrateGenerationService> logger,
-  IOptions<BridgeOptions> bridgeOptions,
   IOptions<CratePublishingOptions> publishingOptions,
   IOptions<CrateAgentOptions> agentOptions,
   IOptions<CrateProjectOptions> projectOptions,
@@ -32,7 +31,6 @@ public class CrateGenerationService(
   IFeatureManager featureFlags
 )
 {
-  private readonly BridgeOptions _bridgeOptions = bridgeOptions.Value;
   private readonly AgreementPolicyOptions _agreementPolicyOptions = agreementPolicy.Value;
   private readonly AssessActionsOptions _assessActionsOptions = assessActions.Value;
   private readonly CrateAgentOptions _crateAgentOptions = agentOptions.Value;

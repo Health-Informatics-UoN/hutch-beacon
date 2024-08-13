@@ -14,15 +14,12 @@ namespace BeaconBridge.Controllers;
 [Route("api/")]
 public class EntryTypeController(
   IOptions<BeaconInfoOptions> beaconInfoOptions,
-  IOptions<BridgeOptions> bridgeoptions,
   IMemoryCache memoryCache,
   CrateGenerationService crateGenerationService,
-  IFeatureManager featureFlags,
   CrateSubmissionService crateSubmissionService
 )
 {
   private readonly BeaconInfoOptions _beaconInfoOptions = beaconInfoOptions.Value;
-  private readonly BridgeOptions _bridgeOptions = bridgeoptions.Value;
 
   [HttpGet("individuals")]
   public async Task<ActionResult<EntryTypeResponse>> GetIndividuals([FromQuery] string? filters,
