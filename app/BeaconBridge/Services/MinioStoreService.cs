@@ -43,11 +43,11 @@ public class MinioService
   /// <exception cref="BucketNotFoundException">Thrown when the given bucket doesn't exists.</exception>
   /// <exception cref="MinioException">Thrown when any other error related to MinIO occurs.</exception>
   /// <exception cref="FileNotFoundException">Thrown when the file to be uploaded does not exist.</exception>
-  public async Task WriteToStore(string filePath,byte[] zipFile)
+  public async Task WriteToStore(string filePath, byte[] zipFile)
   {
     if (!await StoreExists())
       throw new BucketNotFoundException(_options.Bucket, $"No such bucket: {_options.Bucket}");
-    
+
     var objectName = Path.GetFileName(filePath);
     var putObjectArgs = new PutObjectArgs()
       .WithBucket(_options.Bucket)
