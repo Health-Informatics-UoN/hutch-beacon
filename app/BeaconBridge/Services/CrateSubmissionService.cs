@@ -18,11 +18,10 @@ public class CrateSubmissionService(
   /// Get Download url, create TesTask & submit to submission layer.
   /// </summary>
   /// <param name="bagItPath">Path to BagIt directory</param>
-  public async Task SubmitCrate(string bagItPath)
+  /// <param name="zip">Zip file byte array.</param>
+  public async Task SubmitCrate(string bagItPath, byte[] zip)
   {
     var fileName = bagItPath + ".zip";
-    var objectName = Path.GetFileName(fileName);
-
     // Add the workflow crate to MinIO
     if (await minioService.StoreExists())
     {
@@ -36,7 +35,7 @@ public class CrateSubmissionService(
         else
         {
           logger.LogInformation("Saving Beacon workflow to object store");
-          await minioService.WriteToStore(fileName);
+          await minioService.WriteToStore(fileName, zip);
         }
       }
       catch (Exception e) when (e is MinioException or FileNotFoundException)
@@ -59,7 +58,7 @@ public class CrateSubmissionService(
 
 
     // Get the workflow URL
-    var downloadUrl = minioService.GetObjectDownloadUrl(objectName);
+    var downloadUrl = minioService.GetObjectDownloadUrl(fileName);
     logger.LogInformation("Download URL found:{url}", downloadUrl);
     // Get directory name 
     var name = Path.GetFileNameWithoutExtension(bagItPath);

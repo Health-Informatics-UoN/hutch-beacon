@@ -1,4 +1,3 @@
-using System.IO.Compression;
 using System.Text.RegularExpressions;
 using BeaconBridge.Config;
 using BeaconBridge.Constants;
@@ -45,22 +44,16 @@ public class EntryTypeController(
     };
     individualsResponse.Meta.ReturnedSchemas.Add(new ReturnedSchema()
       { EntityType = EntityTypes.Individuals, Schema = Schemas.Individuals });
+
     if (filters is not null)
     {
-      var bagItPath = Path.Combine(_bridgeOptions.WorkingDirectoryBase,Guid.NewGuid().ToString());
+      var bagItPath = Guid.NewGuid().ToString();
       // Build RO-Crate
-      var archive = await crateGenerationService.BuildCrate(filters, bagItPath);
-      // Assess RO-Crate
-      if (await featureFlags.IsEnabledAsync(FeatureFlags.MakeAssessActions))
-        await crateGenerationService.AssessBagIt(archive);
-      // Zip the BagIt package
-      if (!Directory.Exists(bagItPath))
-        Directory.CreateDirectory(bagItPath);
-      var fileName = bagItPath + ".zip";
-      ZipFile.CreateFromDirectory(bagItPath, fileName);
+      var zipBytes = await crateGenerationService.BuildCrate(filters, bagItPath);
+
       // Turn off crate submission temporarily
-      // await crateSubmissionService.SubmitCrate(bagItPath);
-      
+      // await crateSubmissionService.SubmitCrate(bagItPath, zipBytes);
+
       // Continue to calculate and return individuals response
       // split filters
       Regex regex = new Regex(",");
