@@ -1,6 +1,8 @@
+using System.Globalization;
 using System.Text.Json;
 using BeaconBridge.Config;
 using BeaconBridge.Constants;
+using FiveSafes.Net.Constants;
 using Flurl;
 using ROCrates;
 using ROCrates.Models;
@@ -15,12 +17,15 @@ public class RoCrateBuilder
   private readonly CrateProjectOptions _crateProjectOptions;
   private readonly CratePublishingOptions _publishingOptions;
   private readonly WorkflowOptions _workflowOptions;
+  private readonly AssessActionsOptions _assessActionsOptions;
+  private readonly FiveSafesProfile _profile = new();
   private ROCrate _crate = new();
 
   public RoCrateBuilder(WorkflowOptions workflowOptions, CratePublishingOptions publishingOptions,
     CrateAgentOptions crateAgentOptions, CrateProjectOptions crateProjectOptions,
     CrateOrganizationOptions crateOrganizationOptions,
-    string archivePayloadDirectoryPath, AgreementPolicyOptions agreementPolicy)
+    string archivePayloadDirectoryPath, AgreementPolicyOptions agreementPolicy,
+    AssessActionsOptions assessActionsOptions)
   {
     _workflowOptions = workflowOptions;
     _publishingOptions = publishingOptions;
@@ -28,6 +33,7 @@ public class RoCrateBuilder
     _crateProjectOptions = crateProjectOptions;
     _crateOrganizationOptions = crateOrganizationOptions;
     _agreementPolicy = agreementPolicy;
+    _assessActionsOptions = assessActionsOptions;
 
     _crate.Initialise(archivePayloadDirectoryPath);
     AddProject();
@@ -36,7 +42,8 @@ public class RoCrateBuilder
 
   public RoCrateBuilder(WorkflowOptions workflowOptions, CratePublishingOptions publishingOptions,
     CrateAgentOptions crateAgentOptions, CrateProjectOptions crateProjectOptions,
-    CrateOrganizationOptions crateOrganizationOptions, AgreementPolicyOptions agreementPolicy)
+    CrateOrganizationOptions crateOrganizationOptions, AgreementPolicyOptions agreementPolicy,
+    AssessActionsOptions assessActionsOptions)
   {
     _workflowOptions = workflowOptions;
     _publishingOptions = publishingOptions;
@@ -44,7 +51,10 @@ public class RoCrateBuilder
     _crateProjectOptions = crateProjectOptions;
     _crateOrganizationOptions = crateOrganizationOptions;
     _agreementPolicy = agreementPolicy;
-
+    _assessActionsOptions = assessActionsOptions;
+    AddRootDataset();
+    AddProfile();
+    AddMainEntity();
     AddProject();
     AddOrganisation();
   }
@@ -129,6 +139,49 @@ public class RoCrateBuilder
 
     _crate.RootDataset.SetProperty("license", new Part { Id = licenseEntity.Id });
   }
+  
+  /// <summary>
+  /// Add RootDataset entity to Five Safes RO-Crate
+  /// </summary>
+  private void AddRootDataset()
+  {
+    _crate.RootDataset.SetProperty("conformsTo", new Part
+    {
+      Id = _profile.Id,
+    });
+    _crate.RootDataset.SetProperty("datePublished", DateTimeOffset.UtcNow.ToString("o", CultureInfo.InvariantCulture));
+  }
+  
+  /// <summary>
+  /// Add Profile entity to Five Safes RO-Crate
+  /// </summary>
+  private void AddProfile()
+  {
+    var profileEntity = new Entity(identifier: _profile.Id);
+    profileEntity.SetProperty("@type", _profile.Type);
+    profileEntity.SetProperty("name", _profile.Name);
+    _crate.Add(profileEntity);
+  }
+
+  /// <summary>
+  /// Add mainEntity to Five Safes RO-Crate.
+  /// </summary>
+  /// <exception cref="InvalidDataException">mainEntity not found in RO-Crate.</exception>
+  public void AddMainEntity()
+  {
+    var workflowUri = GetWorkflowUrl();
+    var mainEntity = new Dataset(identifier: workflowUri);
+
+    mainEntity.SetProperty("name", _workflowOptions.Name);
+
+    mainEntity.SetProperty("distribution", new Part
+    {
+      Id = Url.Combine(_workflowOptions.BaseUrl, _workflowOptions.Id.ToString(), "ro_crate")
+        .SetQueryParam("version", _workflowOptions.Version.ToString())
+    });
+    _crate.Add(mainEntity);
+    _crate.RootDataset.SetProperty("mainEntity", new Part { Id = mainEntity.Id });
+  }
 
   /// <summary>
   /// Update mainEntity to Five Safes RO-Crate.
@@ -171,12 +224,11 @@ public class RoCrateBuilder
     // input filters
     var inputFiltersEntity = AddQueryTypeMetadata(filters);
     createAction.AppendTo("object", inputFiltersEntity);
-    
+
     _crate.Add(createAction);
     _crate.RootDataset.AppendTo("mentions", createAction);
-
   }
-  
+
   /// <summary>
   /// Add the metadata for the input query filters
   /// </summary>
@@ -191,13 +243,13 @@ public class RoCrateBuilder
       new ContextEntity(null,
         string.Format(paramId, _workflowOptions.Name, "filters"));
     inputFiltersParam.SetProperty("@type", "FormalParameter");
-    inputFiltersParam.SetProperty("name","filters");
+    inputFiltersParam.SetProperty("name", "filters");
     inputFiltersParam.SetProperty("dct:conformsTo", "https://bioschemas.org/profiles/FormalParameter/1.0-RELEASE/");
     var inputFiltersEntity = new ContextEntity(null,
       string.Format(entityId, "filters"));
     inputFiltersEntity.SetProperty("@type", "PropertyValue");
     inputFiltersEntity.SetProperty("name", "filters");
-    inputFiltersEntity.SetProperty("value",filters );
+    inputFiltersEntity.SetProperty("value", filters);
     inputFiltersEntity.SetProperty("exampleOfWork", new Part { Id = inputFiltersParam.Id });
 
     _crate.Add(inputFiltersParam, inputFiltersEntity);
@@ -295,5 +347,27 @@ public class RoCrateBuilder
       ActionStatus.PotentialActionStatus => "potential",
       _ => ""
     };
+  }
+
+  /// <summary>
+  /// Add AssessActions to RO-Crate if configured
+  /// </summary>
+  public void AssessBagIt()
+  {
+    var validator = new Part() { Id = $"validator-{Guid.NewGuid()}" };
+    if (_assessActionsOptions.CheckValue)
+    {
+      AddCheckValueAssessAction(ActionStatus.CompletedActionStatus, DateTime.Now, validator);
+    }
+
+    if (_assessActionsOptions.Validate)
+    {
+      AddValidateCheck(ActionStatus.CompletedActionStatus, validator);
+    }
+
+    if (_assessActionsOptions.SignOff)
+    {
+      AddSignOff();
+    }
   }
 }
