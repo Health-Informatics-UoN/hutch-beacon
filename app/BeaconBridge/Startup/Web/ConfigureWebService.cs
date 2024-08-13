@@ -5,6 +5,7 @@ using BeaconBridge.Data;
 using BeaconBridge.Services;
 using Flurl.Http.Configuration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.FeatureManagement;
 
 namespace BeaconBridge.Startup.Web;
 
@@ -16,6 +17,8 @@ public static class ConfigureWebService
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     b.Services.AddEndpointsApiExplorer();
     b.Services.AddSwaggerGen();
+    b.Services.AddFeatureManagement(
+      b.Configuration.GetSection("Flags"));
     b.Services.AddDbContext<BeaconContext>(o =>
     {
       var connectionString = b.Configuration.GetConnectionString("BeaconBridgeDb");
@@ -48,14 +51,12 @@ public static class ConfigureWebService
     // Add Services
     b.Services
       // .AddTransient<UserHelper>()  // Not used at the moment
-      // .AddTransient<OpenIdIdentityService>()
-      // .AddTransient<MinioService>()
+      .AddTransient<OpenIdIdentityService>()
+      .AddTransient<MinioService>()
       .AddTransient<CrateGenerationService>()
-      .AddTransient<FilteringTermsService>();
-    // .AddSingleton<TesSubmissionService>()
-    // .AddSingleton<SubmissionStatusService>()
-    // .AddHostedService<TriggerFilteringTermsService>()
-    // .AddHostedService<FetchFilteringTermsService>();
+      .AddTransient<FilteringTermsService>()
+      .AddTransient<CrateSubmissionService>()
+      .AddSingleton<TesSubmissionService>();
 
     return b;
   }

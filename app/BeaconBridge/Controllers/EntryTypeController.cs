@@ -2,21 +2,27 @@ using System.Text.RegularExpressions;
 using BeaconBridge.Config;
 using BeaconBridge.Constants;
 using BeaconBridge.Models;
+using BeaconBridge.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 
 namespace BeaconBridge.Controllers;
 
 [ApiController]
 [Route("api/")]
-public class EntryTypeController(IOptions<BeaconInfoOptions> beaconInfoOptions, IMemoryCache memoryCache
+public class EntryTypeController(
+  IOptions<BeaconInfoOptions> beaconInfoOptions,
+  IMemoryCache memoryCache,
+  CrateGenerationService crateGenerationService,
+  CrateSubmissionService crateSubmissionService
 )
 {
   private readonly BeaconInfoOptions _beaconInfoOptions = beaconInfoOptions.Value;
 
   [HttpGet("individuals")]
-  public ActionResult<EntryTypeResponse> GetIndividuals([FromQuery] string? filters,
+  public async Task<ActionResult<EntryTypeResponse>> GetIndividuals([FromQuery] string? filters,
     [FromQuery] string? requestedSchema,
     [FromQuery] int skip = 0, [FromQuery] int limit = 10)
   {
@@ -35,8 +41,17 @@ public class EntryTypeController(IOptions<BeaconInfoOptions> beaconInfoOptions, 
     };
     individualsResponse.Meta.ReturnedSchemas.Add(new ReturnedSchema()
       { EntityType = EntityTypes.Individuals, Schema = Schemas.Individuals });
+
     if (filters is not null)
     {
+      var bagItPath = Guid.NewGuid().ToString();
+      // Build RO-Crate
+      var zipBytes = await crateGenerationService.BuildCrate(filters, bagItPath);
+
+      // Turn off crate submission temporarily
+      // await crateSubmissionService.SubmitCrate(bagItPath, zipBytes);
+
+      // Continue to calculate and return individuals response
       // split filters
       Regex regex = new Regex(",");
       string[] filterList = regex.Split(filters);
