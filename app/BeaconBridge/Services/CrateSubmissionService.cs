@@ -9,7 +9,7 @@ public class CrateSubmissionService(MinioService minioService, ILogger<CrateSubm
 {
   private readonly SubmissionOptions _submissionOptions = submissionOptions.Value;
 
-  public async Task SubmitCrate(string bagItPath)
+  public async Task<Models.TesTask> SubmitCrate(string bagItPath, string beaconTaskId)
   {
       var fileName = bagItPath + ".zip";
       var objectName = Path.GetFileName(fileName);
@@ -57,7 +57,7 @@ public class CrateSubmissionService(MinioService minioService, ILogger<CrateSubm
       var tesTask = new TesTask
       {
         Id = null,
-        Name = Guid.NewGuid().ToString(),
+        Name = beaconTaskId,
         Executors = new List<TesExecutor>
         {
           new()
@@ -73,6 +73,7 @@ public class CrateSubmissionService(MinioService minioService, ILogger<CrateSubm
       };
       logger.LogInformation("TesTask ready for submission:{task}",tesTask.ToJson());
       // Submit to submission layer
-      await submissionService.SubmitTesTask(tesTask);
+      var task = await submissionService.SubmitTesTask(tesTask);
+      return task;
   }
 }
