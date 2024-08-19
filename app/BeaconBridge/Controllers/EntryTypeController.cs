@@ -8,7 +8,6 @@ using BeaconBridge.Models;
 using BeaconBridge.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.FeatureManagement;
 
 namespace BeaconBridge.Controllers;
 
@@ -16,14 +15,11 @@ namespace BeaconBridge.Controllers;
 [Route("api/")]
 public class EntryTypeController(
   IOptions<BeaconInfoOptions> beaconInfoOptions,
-  IOptions<BridgeOptions> bridgeOptions,
   CrateGenerationService crateGenerationService,
-  IFeatureManager featureFlags,
   CrateSubmissionService crateSubmissionService,
   TesSubmissionService tesSubmissionService)
 {
   private readonly BeaconInfoOptions _beaconInfoOptions = beaconInfoOptions.Value;
-  private readonly BridgeOptions _bridgeOptions = bridgeOptions.Value;
 
   [HttpGet("individuals")]
   public async Task<ActionResult<EntryTypeResponse>> GetIndividuals([FromQuery] string? filters,
@@ -45,25 +41,15 @@ public class EntryTypeController(
     };
     individualsResponse.Meta.ReturnedSchemas.Add(new ReturnedSchema()
       { EntityType = EntityTypes.Individuals, Schema = Schemas.Individuals });
-    
+
     if (filters is not null)
     {
-      var beaconTaskId = Guid.NewGuid().ToString();
-      var bagItPath = Path.Combine(_bridgeOptions.WorkingDirectoryBase, beaconTaskId);
+      var bagItPath = Guid.NewGuid().ToString();
       // Build RO-Crate
-      var archive = await crateGenerationService.BuildCrate(filters, bagItPath);
-      // Assess RO-Crate
-      if (await featureFlags.IsEnabledAsync(FeatureFlags.MakeAssessActions))
-        await crateGenerationService.AssessBagIt(archive);
-      // Zip the BagIt package
-      if (!Directory.Exists(bagItPath))
-        Directory.CreateDirectory(bagItPath);
-      var fileName = bagItPath + ".zip";
-      ZipFile.CreateFromDirectory(bagItPath, fileName);
+      var zipBytes = await crateGenerationService.BuildCrate(filters, bagItPath);
 
-      //Submit Crate
-      var tesTask = await crateSubmissionService.SubmitCrate(bagItPath, beaconTaskId);
-      // await tesTaskService.Create(tesTask);
+      // Submit Crate
+      var tesTask = await crateSubmissionService.SubmitCrate(bagItPath, zipBytes, bagItPath);
 
       // Poll for results
       // Start 5-minute timer

@@ -39,25 +39,25 @@ public class MinioService
   /// Upload a file to an S3 bucket.
   /// </summary>
   /// <param name="filePath">The path of the file to be uploaded.</param>
+  /// <param name="zipFile">Zip file as byte array.</param>
   /// <exception cref="BucketNotFoundException">Thrown when the given bucket doesn't exists.</exception>
   /// <exception cref="MinioException">Thrown when any other error related to MinIO occurs.</exception>
   /// <exception cref="FileNotFoundException">Thrown when the file to be uploaded does not exist.</exception>
-  public async Task WriteToStore(string filePath)
+  public async Task WriteToStore(string filePath, byte[] zipFile)
   {
     if (!await StoreExists())
       throw new BucketNotFoundException(_options.Bucket, $"No such bucket: {_options.Bucket}");
 
-    if (!File.Exists(filePath)) throw new FileNotFoundException();
-
     var objectName = Path.GetFileName(filePath);
     var putObjectArgs = new PutObjectArgs()
       .WithBucket(_options.Bucket)
-      .WithFileName(filePath)
-      .WithObject(objectName);
+      .WithObject(objectName)
+      .WithStreamData(new MemoryStream(zipFile))
+      .WithObjectSize(zipFile.Length);
 
-    _logger.LogInformation("Uploading {ObjectName} to {Bucket}...", objectName, _options.Bucket);
+    _logger.LogInformation("Uploading {ObjectName} to {Bucket}...", filePath, _options.Bucket);
     await _minioClient.PutObjectAsync(putObjectArgs);
-    _logger.LogInformation("Successfully uploaded {ObjectName} to {Bucket}", objectName, _options.Bucket);
+    _logger.LogInformation("Successfully uploaded {ObjectName} to {Bucket}", filePath, _options.Bucket);
   }
 
   /// <summary>
@@ -83,7 +83,7 @@ public class MinioService
   }
 
   /// <summary>
-  /// Get the download URL to an object in MinIO.
+  /// Get the pre-signed download URL to an object in MinIO.
   /// </summary>
   /// <param name="objectName">The name of the object to download.</param>
   /// <returns>The object's download URL.</returns>
@@ -96,12 +96,11 @@ public class MinioService
       var url = _minioClient.PresignedGetObjectAsync(args: args);
       return url.Result;
     }
-    catch(MinioException)
+    catch (MinioException)
     {
       _logger.LogError("Unable to get Pre-signed Object URL");
       throw;
     }
-    
   }
 
   /// <summary>

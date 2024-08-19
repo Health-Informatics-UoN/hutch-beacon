@@ -33,4 +33,17 @@ param backendAppSettings = {
     ServiceInfo__Type__Artifact: 'beacon'
     ServiceInfo__Type__Version: '1.0'
     ServiceInfo__DocumentationUrl: 'https://github.com/Health-Informatics-UoN/beacon-tools'
+    
+    Flags__MakeAssessActions: true
+    
+    AssessActions__CheckValue: true
+    AssessActions__Validate: true
+    AssessActions__SignOff: true
+    
+    Workflow__Version: 2
+    Workflow__Id: 882
+    
+    Crate__Organisation__Id: 'https://ror.org/01ee9ar58'
+    Crate__Organisation__Type: 'Organisation'
+    Crate__Organisation__Name: 'The University of Nottingham'
 }

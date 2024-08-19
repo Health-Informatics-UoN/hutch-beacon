@@ -1,3 +1,5 @@
+using System.Text;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using BeaconBridge.Config;
 using BeaconBridge.Constants;
@@ -7,24 +9,28 @@ using FiveSafes.Net.Constants;
 using FiveSafes.Net.Utilities;
 using Flurl;
 using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 using ROCrates;
 using ROCrates.Models;
+using Scriban;
+using UoN.ZipBuilder;
 using File = System.IO.File;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace BeaconBridge.Services;
 
 public class CrateGenerationService(
   ILogger<CrateGenerationService> logger,
-  IOptions<BridgeOptions> bridgeOptions,
   IOptions<CratePublishingOptions> publishingOptions,
   IOptions<CrateAgentOptions> agentOptions,
   IOptions<CrateProjectOptions> projectOptions,
   IOptions<CrateOrganizationOptions> organizationOptions,
   IOptions<WorkflowOptions> workflowOptions,
   IOptions<AssessActionsOptions> assessActions,
-  IOptions<AgreementPolicyOptions> agreementPolicy)
+  IOptions<AgreementPolicyOptions> agreementPolicy,
+  IFeatureManager featureFlags
+)
 {
-  private readonly BridgeOptions _bridgeOptions = bridgeOptions.Value;
   private readonly AgreementPolicyOptions _agreementPolicyOptions = agreementPolicy.Value;
   private readonly AssessActionsOptions _assessActionsOptions = assessActions.Value;
   private readonly CrateAgentOptions _crateAgentOptions = agentOptions.Value;
@@ -33,29 +39,62 @@ public class CrateGenerationService(
   private readonly CratePublishingOptions _publishingOptions = publishingOptions.Value;
   private readonly WorkflowOptions _workflowOptions = workflowOptions.Value;
 
+  private readonly string[] _tagFiles =
+    { BagItConstants.BagitTxtPath, BagItConstants.BagInfoTxtPath, BagItConstants.ManifestPath };
+
   /// <summary>
   /// Build an RO-Crate.
   /// </summary>
-  /// <param name="bagItPath">The BagItArchive path to save the crate to.</param>
   /// <param name="filters">The input filters for the crate.</param>
-  /// <returns></returns>
+  /// <param name="bagItPath">The BagItArchive path to save the crate to.</param>
+  /// <returns>Zip file as byte array</returns>
   /// <exception cref="NotImplementedException">Query type is unavailable.</exception>
-  public async Task<BagItArchive> BuildCrate(string filters, string bagItPath)
+  public async Task<byte[]> BuildCrate(string filters, string bagItPath)
   {
-    var workflowUri = GetWorkflowUrl();
-    var archive = await BuildBagIt(bagItPath, workflowUri);
-
     // Generate ROCrate metadata
     logger.LogInformation("Building Five Safes ROCrate...");
-    var builder = new RoCrateBuilder(_workflowOptions, _publishingOptions, _crateAgentOptions,
-      _crateProjectOptions, _crateOrganizationOptions, archive.PayloadDirectoryPath, _agreementPolicyOptions);
-    var crate = BuildFiveSafesCrate(builder, filters);
-    crate.Save(archive.PayloadDirectoryPath);
-    logger.LogInformation("Saved Five Safes ROCrate to {ArchivePayloadDirectoryPath}", archive.PayloadDirectoryPath);
-    await archive.WriteManifestSha512();
-    await archive.WriteTagManifestSha512();
 
-    return archive;
+    var builder = new RoCrateBuilder(_workflowOptions, _publishingOptions, _crateAgentOptions, _crateProjectOptions,
+      _crateOrganizationOptions, _agreementPolicyOptions, _assessActionsOptions);
+
+    var crate = await BuildFiveSafesCrate(builder, filters);
+
+    // Metadata
+    var jsonMetadata = ParseMetadata(crate);
+    var crateMetaPath = Path.Combine("data", "ro-crate-metadata.json");
+
+    // Preview
+    var contents = ParsePreview(crate);
+    var cratePreviewPath = Path.Combine("data", "ro-crate-preview.html");
+
+    var crateFiles = new Dictionary<string, byte[]>();
+    crateFiles.Add(crateMetaPath, JsonSerializer.SerializeToUtf8Bytes(jsonMetadata));
+    crateFiles.Add(cratePreviewPath, JsonSerializer.SerializeToUtf8Bytes(contents));
+
+    var zipBuilder = new ZipBuilder()
+      .CreateZipStream() // initialise the archive
+      .AddBytes(crateFiles[crateMetaPath], Path.Combine(bagItPath, crateMetaPath))
+      .AddBytes(crateFiles[cratePreviewPath], Path.Combine(bagItPath, cratePreviewPath));
+
+    logger.LogInformation("Created Five Safes ROCrate");
+    var bagitManifest = WriteManifestSha512(crateFiles);
+    var bagIt = WriteBagitTxt();
+    var bagItInfo = WriteBagInfoTxt();
+
+    var bagitFiles = new Dictionary<string, byte[]>();
+    bagitFiles.Add(BagItConstants.BagitTxtPath, JsonSerializer.SerializeToUtf8Bytes(bagIt));
+    bagitFiles.Add(BagItConstants.BagInfoTxtPath, JsonSerializer.SerializeToUtf8Bytes(bagItInfo));
+    bagitFiles.Add(BagItConstants.ManifestPath, JsonSerializer.SerializeToUtf8Bytes(bagitManifest));
+
+    zipBuilder.AddTextContent(bagIt, Path.Combine(bagItPath, BagItConstants.BagitTxtPath));
+    zipBuilder.AddTextContent(bagItInfo, Path.Combine(bagItPath, BagItConstants.BagInfoTxtPath));
+
+    zipBuilder.AddTextContent(bagitManifest,
+      Path.Combine(bagItPath, BagItConstants.ManifestPath));
+    zipBuilder.AddTextContent(WriteTagManifestSha512(bagitFiles),
+      Path.Combine(bagItPath, BagItConstants.TagManifestPath));
+
+    return zipBuilder.AsByteArray();
   }
 
   /// <summary>
@@ -66,19 +105,21 @@ public class CrateGenerationService(
   /// <returns></returns>
   public async Task<BagItArchive> BuildBagIt(string destination, string workflowUri)
   {
-    var builder = new FiveSafesBagItBuilder(destination);
+    var builder = new FiveSafesBagItBuilder();
     builder.BuildCrate(workflowUri);
     await builder.BuildChecksums();
     await builder.BuildTagFiles();
     return builder.GetArchive();
   }
 
-  public ROCrate BuildFiveSafesCrate(RoCrateBuilder builder, string filters)
+  public async Task<ROCrate> BuildFiveSafesCrate(RoCrateBuilder builder, string filters)
   {
     builder.AddLicense();
     builder.AddCreateAction(filters);
     builder.AddAgent();
     builder.UpdateMainEntity();
+    if (await featureFlags.IsEnabledAsync(FeatureFlags.MakeAssessActions))
+      builder.AssessBagIt();
     return builder.GetROCrate();
   }
 
@@ -90,46 +131,6 @@ public class CrateGenerationService(
   {
     return Url.Combine(_workflowOptions.BaseUrl, _workflowOptions.Id.ToString())
       .SetQueryParam("version", _workflowOptions.Version.ToString());
-  }
-
-  public async Task AssessBagIt(BagItArchive archive)
-  {
-    var builder = new RoCrateBuilder(_workflowOptions, _publishingOptions, _crateAgentOptions,
-      _crateProjectOptions, _crateOrganizationOptions, archive.PayloadDirectoryPath, _agreementPolicyOptions);
-    var validator = new Part() { Id = $"validator-{Guid.NewGuid()}" };
-    if (_assessActionsOptions.CheckValue)
-    {
-      var manifestPath = Path.Combine(archive.ArchiveRootPath, BagItConstants.ManifestPath);
-      var tagManifestPath = Path.Combine(archive.ArchiveRootPath, BagItConstants.TagManifestPath);
-
-      var bothFilesExist = File.Exists(manifestPath) && File.Exists(tagManifestPath);
-      var checkSumsMatch = await ChecksumsMatch(manifestPath, archive.ArchiveRootPath) &&
-                           await ChecksumsMatch(tagManifestPath, archive.ArchiveRootPath);
-
-      if (bothFilesExist && checkSumsMatch)
-      {
-        builder.AddCheckValueAssessAction(ActionStatus.CompletedActionStatus, DateTime.Now, validator);
-      }
-      else
-      {
-        builder.AddCheckValueAssessAction(ActionStatus.FailedActionStatus, DateTime.Now, validator);
-      }
-    }
-
-    if (_assessActionsOptions.Validate)
-    {
-      builder.AddValidateCheck(ActionStatus.CompletedActionStatus, validator);
-    }
-
-    if (_assessActionsOptions.SignOff)
-    {
-      builder.AddSignOff();
-    }
-
-    var crate = builder.GetROCrate();
-    crate.Save(archive.PayloadDirectoryPath);
-    await archive.WriteTagManifestSha512();
-    await archive.WriteManifestSha512();
   }
 
   /// <summary>
@@ -153,5 +154,93 @@ public class CrateGenerationService(
     }
 
     return true;
+  }
+
+  private JsonObject ParseMetadata(ROCrate crate)
+  {
+    // Parse Metadata
+    JsonObject jsonObject = new JsonObject()
+    {
+      {
+        "@context",
+        (JsonNode)"https://w3id.org/ro/crate/1.1/context"
+      }
+    };
+    JsonArray jsonArray = new JsonArray(new JsonNodeOptions?());
+    foreach (KeyValuePair<string, Entity> entity in crate.Entities)
+      jsonArray.Add(JsonNode.Parse(entity.Value.Serialize()));
+    jsonObject.Add("@graph", (JsonNode)jsonArray);
+    return jsonObject;
+  }
+
+  private string ParsePreview(ROCrate crate)
+  {
+    string contents;
+
+    using StreamReader streamReader =
+      new StreamReader(
+        typeof(Preview).Assembly.GetManifestResourceStream("ROCrates.Templates.ro-crate-preview.html")!,
+        Encoding.UTF8);
+    contents = Template.Parse(streamReader.ReadToEnd()).Render((object)new
+    {
+      data =
+        crate.Entities.Values.Select<Entity, JsonObject>((Func<Entity, JsonObject>)(entity => entity.Properties)),
+      root_dataset = crate?.RootDataset
+    });
+
+    return contents;
+  }
+
+  public string WriteManifestSha512(Dictionary<string, byte[]> entries)
+  {
+    var stringBuilder = new StringBuilder();
+    foreach (var entry in entries)
+    {
+      using var stream = new MemoryStream(entry.Value);
+      var checksum = ChecksumUtility.ComputeSha512(stream);
+      // Note there should be 2 spaces between the checksum and the file path
+      // The path should be relative to bagitDir
+      stringBuilder.Append($"{checksum}  {entry.Key} ");
+    }
+
+    return stringBuilder.ToString();
+  }
+
+  /// <summary>
+  /// Compute the SHA512 for the <c>bagit.txt</c>, <c>bag-info.txt</c> and <c>manifest-sha512.txt</c> and
+  /// write a <c>tagmanifest-sha512.txt</c> to the archive.
+  /// </summary>
+  public string WriteTagManifestSha512(Dictionary<string, byte[]> bagitFiles)
+  {
+    var stringBuilder = new StringBuilder();
+    foreach (var tagFile in _tagFiles)
+    {
+      using var stream = new MemoryStream(bagitFiles[tagFile]);
+      var checksum = ChecksumUtility.ComputeSha512(stream);
+      // // Note there should be 2 spaces between the checksum and the file path
+      stringBuilder.Append($"{checksum}  {tagFile}");
+      stringBuilder.AppendLine();
+    }
+
+    return stringBuilder.ToString();
+  }
+
+  public string WriteBagitTxt()
+  {
+    string[] contents = { "BagIt-Version: 1.0", "Tag-File-Character-Encoding: UTF-8" };
+    var stringBuilder = new StringBuilder();
+    foreach (var line in contents)
+    {
+      stringBuilder.Append(line);
+    }
+
+    return stringBuilder.ToString();
+  }
+
+  public string WriteBagInfoTxt()
+  {
+    var contents = "External-Identifier: urn:uuid:{0}";
+    var line = string.Format(contents, Guid.NewGuid().ToString());
+    return line;
   }
 }
