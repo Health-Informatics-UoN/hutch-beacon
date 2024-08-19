@@ -1,11 +1,12 @@
+using System.Diagnostics;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
 using BeaconBridge.Config;
 using BeaconBridge.Constants;
+using BeaconBridge.Constants.Submission;
 using BeaconBridge.Models;
 using BeaconBridge.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
 
@@ -15,23 +16,20 @@ namespace BeaconBridge.Controllers;
 [Route("api/")]
 public class EntryTypeController(
   IOptions<BeaconInfoOptions> beaconInfoOptions,
-  IOptions<BridgeOptions> bridgeoptions,
-  IMemoryCache memoryCache,
+  IOptions<BridgeOptions> bridgeOptions,
   CrateGenerationService crateGenerationService,
   IFeatureManager featureFlags,
-  CrateSubmissionService crateSubmissionService
-)
+  CrateSubmissionService crateSubmissionService,
+  TesSubmissionService tesSubmissionService)
 {
   private readonly BeaconInfoOptions _beaconInfoOptions = beaconInfoOptions.Value;
-  private readonly BridgeOptions _bridgeOptions = bridgeoptions.Value;
+  private readonly BridgeOptions _bridgeOptions = bridgeOptions.Value;
 
   [HttpGet("individuals")]
   public async Task<ActionResult<EntryTypeResponse>> GetIndividuals([FromQuery] string? filters,
     [FromQuery] string? requestedSchema,
     [FromQuery] int skip = 0, [FromQuery] int limit = 10)
   {
-    
-    
     var individualsResponse = new EntryTypeResponse()
     {
       Meta =
@@ -47,12 +45,13 @@ public class EntryTypeController(
     };
     individualsResponse.Meta.ReturnedSchemas.Add(new ReturnedSchema()
       { EntityType = EntityTypes.Individuals, Schema = Schemas.Individuals });
+    
     if (filters is not null)
     {
-      
-      var bagItPath = Path.Combine(_bridgeOptions.WorkingDirectoryBase, Guid.NewGuid().ToString());
+      var beaconTaskId = Guid.NewGuid().ToString();
+      var bagItPath = Path.Combine(_bridgeOptions.WorkingDirectoryBase, beaconTaskId);
       // Build RO-Crate
-      var archive = await crateGenerationService.BuildCrate(filters,bagItPath);
+      var archive = await crateGenerationService.BuildCrate(filters, bagItPath);
       // Assess RO-Crate
       if (await featureFlags.IsEnabledAsync(FeatureFlags.MakeAssessActions))
         await crateGenerationService.AssessBagIt(archive);
@@ -62,34 +61,35 @@ public class EntryTypeController(
       var fileName = bagItPath + ".zip";
       ZipFile.CreateFromDirectory(bagItPath, fileName);
 
-      await crateSubmissionService.SubmitCrate(bagItPath);
-      //     // split filters
-      //     Regex regex = new Regex(",");
-      //     string[] filterList = regex.Split(filters);
-      //
-      //     foreach (var match in filterList) individualsResponse.Meta.ReceivedRequestSummary.Filters.Add(match);
-      //
-      //     if (filters.Contains("Gender:F") && filters.Contains("SNOMED:386661006") && filters.Contains("SNOMED:271825005"))
-      //     {
-      //       individualsResponse.ResponseSummary.Exists = true;
-      //     }
-      //     else
-      //     {
-      //       var random = new Random();
-      //       // check if key in cache
-      //       if (!memoryCache.TryGetValue(filters, out var randomBool))
-      //       {
-      //         // set value
-      //         randomBool = random.Next(2) == 1;
-      //         // set data in cache
-      //         memoryCache.Set(filters, randomBool);
-      //       }
-      //
-      //       Boolean.TryParse(memoryCache.Get(filters)?.ToString(), out var exists);
-      //       individualsResponse.ResponseSummary.Exists = exists;
-      //     }
+      //Submit Crate
+      var tesTask = await crateSubmissionService.SubmitCrate(bagItPath, beaconTaskId);
+      // await tesTaskService.Create(tesTask);
+
+      // Poll for results
+      // Start 5-minute timer
+      Stopwatch timer = new Stopwatch();
+      timer.Start();
+      while (timer.Elapsed.TotalSeconds < 300)
+      {
+        var submissionStatus = await tesSubmissionService.CheckStatus(tesTask);
+        Thread.Sleep(1000);
+        if (submissionStatus == StatusType.Completed)
+        {
+          var responseSummary = await tesSubmissionService.DownloadResults(tesTask);
+          individualsResponse.ResponseSummary = responseSummary;
+          break;
+        }
+      }
+
+      timer.Stop();
+
+      // split filters
+      Regex regex = new Regex(",");
+      string[] filterList = regex.Split(filters);
+
+      foreach (var match in filterList) individualsResponse.Meta.ReceivedRequestSummary.Filters.Add(match);
     }
-    
+
     return individualsResponse;
   }
 }
