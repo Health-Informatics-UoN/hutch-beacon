@@ -73,8 +73,8 @@ public class CrateGenerationService(
 
     var zipBuilder = new ZipBuilder()
       .CreateZipStream() // initialise the archive
-      .AddBytes(crateFiles[crateMetaPath], Path.Combine(bagItPath, crateMetaPath))
-      .AddBytes(crateFiles[cratePreviewPath], Path.Combine(bagItPath, cratePreviewPath));
+      .AddBytes(crateFiles[crateMetaPath], crateMetaPath)
+      .AddBytes(crateFiles[cratePreviewPath], cratePreviewPath);
 
     logger.LogInformation("Created Five Safes ROCrate");
     var bagitManifest = WriteManifestSha512(crateFiles);
@@ -82,17 +82,15 @@ public class CrateGenerationService(
     var bagItInfo = WriteBagInfoTxt();
 
     var bagitFiles = new Dictionary<string, byte[]>();
-    bagitFiles.Add(BagItConstants.BagitTxtPath, JsonSerializer.SerializeToUtf8Bytes(bagIt));
-    bagitFiles.Add(BagItConstants.BagInfoTxtPath, JsonSerializer.SerializeToUtf8Bytes(bagItInfo));
-    bagitFiles.Add(BagItConstants.ManifestPath, JsonSerializer.SerializeToUtf8Bytes(bagitManifest));
+    bagitFiles.Add(BagItConstants.BagitTxtPath, bagIt);
+    bagitFiles.Add(BagItConstants.BagInfoTxtPath, bagItInfo);
+    bagitFiles.Add(BagItConstants.ManifestPath, bagitManifest);
 
-    zipBuilder.AddTextContent(bagIt, Path.Combine(bagItPath, BagItConstants.BagitTxtPath));
-    zipBuilder.AddTextContent(bagItInfo, Path.Combine(bagItPath, BagItConstants.BagInfoTxtPath));
+    zipBuilder.AddBytes(bagIt, BagItConstants.BagitTxtPath);
+    zipBuilder.AddBytes(bagItInfo, BagItConstants.BagInfoTxtPath);
 
-    zipBuilder.AddTextContent(bagitManifest,
-      Path.Combine(bagItPath, BagItConstants.ManifestPath));
-    zipBuilder.AddTextContent(WriteTagManifestSha512(bagitFiles),
-      Path.Combine(bagItPath, BagItConstants.TagManifestPath));
+    zipBuilder.AddBytes(bagitManifest, BagItConstants.ManifestPath);
+    zipBuilder.AddBytes(WriteTagManifestSha512(bagitFiles),BagItConstants.TagManifestPath);
 
     return zipBuilder.AsByteArray();
   }
@@ -191,56 +189,60 @@ public class CrateGenerationService(
     return contents;
   }
 
-  public string WriteManifestSha512(Dictionary<string, byte[]> entries)
+  public byte[] WriteManifestSha512(Dictionary<string, byte[]> entries)
   {
-    var stringBuilder = new StringBuilder();
+    var manifestStream = new MemoryStream();
     foreach (var entry in entries)
     {
       using var stream = new MemoryStream(entry.Value);
       var checksum = ChecksumUtility.ComputeSha512(stream);
       // Note there should be 2 spaces between the checksum and the file path
       // The path should be relative to bagitDir
-      stringBuilder.Append($"{checksum}  {entry.Key} ");
+      manifestStream.Write(Encoding.UTF8.GetBytes($"{checksum}  {entry.Key}"));
+      manifestStream.Write(Encoding.UTF8.GetBytes(Environment.NewLine));
     }
 
-    return stringBuilder.ToString();
+    return manifestStream.ToArray();
   }
 
   /// <summary>
   /// Compute the SHA512 for the <c>bagit.txt</c>, <c>bag-info.txt</c> and <c>manifest-sha512.txt</c> and
   /// write a <c>tagmanifest-sha512.txt</c> to the archive.
   /// </summary>
-  public string WriteTagManifestSha512(Dictionary<string, byte[]> bagitFiles)
+  public byte[] WriteTagManifestSha512(Dictionary<string, byte[]> bagitFiles)
   {
-    var stringBuilder = new StringBuilder();
+    var tagManifestStream = new MemoryStream();
     foreach (var tagFile in _tagFiles)
     {
       using var stream = new MemoryStream(bagitFiles[tagFile]);
       var checksum = ChecksumUtility.ComputeSha512(stream);
       // // Note there should be 2 spaces between the checksum and the file path
-      stringBuilder.Append($"{checksum}  {tagFile}");
-      stringBuilder.AppendLine();
+      tagManifestStream.Write(Encoding.UTF8.GetBytes($"{checksum}  {tagFile}"));
+      tagManifestStream.Write(Encoding.UTF8.GetBytes(Environment.NewLine));
     }
 
-    return stringBuilder.ToString();
+    return tagManifestStream.ToArray();
   }
 
-  public string WriteBagitTxt()
+  public byte[] WriteBagitTxt()
   {
     string[] contents = { "BagIt-Version: 1.0", "Tag-File-Character-Encoding: UTF-8" };
-    var stringBuilder = new StringBuilder();
+    using var stream = new MemoryStream();
     foreach (var line in contents)
     {
-      stringBuilder.Append(line);
+      stream.Write(Encoding.UTF8.GetBytes(line));
+      stream.Write(Encoding.UTF8.GetBytes(Environment.NewLine));
     }
 
-    return stringBuilder.ToString();
+    return stream.ToArray();
   }
 
-  public string WriteBagInfoTxt()
+  public byte[] WriteBagInfoTxt()
   {
     var contents = "External-Identifier: urn:uuid:{0}";
-    var line = string.Format(contents, Guid.NewGuid().ToString());
-    return line;
+    using var stream = new MemoryStream();
+    stream.Write(Encoding.UTF8.GetBytes(string.Format(contents, Guid.NewGuid().ToString())));
+    stream.Write(Encoding.UTF8.GetBytes(Environment.NewLine));
+    return stream.ToArray();
   }
 }
