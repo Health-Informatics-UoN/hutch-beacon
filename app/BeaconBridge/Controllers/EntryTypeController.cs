@@ -55,24 +55,27 @@ public class EntryTypeController(
       // Start 5-minute timer
       Stopwatch timer = new Stopwatch();
       timer.Start();
-      while (timer.Elapsed.TotalSeconds < 300)
+      // Wait for task to be created
+      await Task.Delay(5000);
+      while (timer.Elapsed.TotalSeconds < 480)
       {
+        // Poll Submission Layer API for task status every 5 seconds
+        await Task.Delay(5000);
         var submissionStatus = await tesSubmissionService.CheckStatus(tesTask);
-        Thread.Sleep(1000);
-        if (submissionStatus == StatusType.Completed)
+        
+        if (submissionStatus.Equals(StatusType.Failed)) break;
+        if (submissionStatus.Equals(StatusType.Completed))
         {
           var responseSummary = await tesSubmissionService.DownloadResults(tesTask);
           individualsResponse.ResponseSummary = responseSummary;
           break;
         }
       }
-
       timer.Stop();
 
       // split filters
       Regex regex = new Regex(",");
       string[] filterList = regex.Split(filters);
-
       foreach (var match in filterList) individualsResponse.Meta.ReceivedRequestSummary.Filters.Add(match);
     }
 
