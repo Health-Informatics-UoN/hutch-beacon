@@ -19,7 +19,8 @@ public class CrateSubmissionService(
   /// </summary>
   /// <param name="bagItPath">Path to BagIt directory</param>
   /// <param name="zip">Zip file byte array.</param>
-  public async Task SubmitCrate(string bagItPath, byte[] zip)
+  /// <param name="beaconTaskId">ID for beacon task</param>
+  public async Task<Models.TesTask> SubmitCrate(string bagItPath, byte[] zip, string beaconTaskId)
   {
     var fileName = bagItPath + ".zip";
     // Add the workflow crate to MinIO
@@ -60,13 +61,11 @@ public class CrateSubmissionService(
     // Get the workflow URL
     var downloadUrl = minioService.GetObjectDownloadUrl(fileName);
     logger.LogInformation("Download URL found:{url}", downloadUrl);
-    // Get directory name 
-    var name = Path.GetFileNameWithoutExtension(bagItPath);
     // Build the TES task
     var tesTask = new TesTask
     {
       Id = null,
-      Name = name,
+      Name = beaconTaskId,
       Executors = new List<TesExecutor>
       {
         new()
@@ -82,6 +81,7 @@ public class CrateSubmissionService(
     };
     logger.LogInformation("TesTask ready for submission:{task}", tesTask.ToJson());
     // Submit to submission layer
-    await submissionService.SubmitTesTask(tesTask);
+    var task = await submissionService.SubmitTesTask(tesTask);
+    return task;
   }
 }

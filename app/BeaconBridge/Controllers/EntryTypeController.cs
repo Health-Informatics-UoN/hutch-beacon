@@ -1,12 +1,12 @@
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using BeaconBridge.Config;
 using BeaconBridge.Constants;
+using BeaconBridge.Constants.Submission;
 using BeaconBridge.Models;
 using BeaconBridge.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using Microsoft.FeatureManagement;
 
 namespace BeaconBridge.Controllers;
 
@@ -14,10 +14,9 @@ namespace BeaconBridge.Controllers;
 [Route("api/")]
 public class EntryTypeController(
   IOptions<BeaconInfoOptions> beaconInfoOptions,
-  IMemoryCache memoryCache,
   CrateGenerationService crateGenerationService,
-  CrateSubmissionService crateSubmissionService
-)
+  CrateSubmissionService crateSubmissionService,
+  TesSubmissionService tesSubmissionService)
 {
   private readonly BeaconInfoOptions _beaconInfoOptions = beaconInfoOptions.Value;
 
@@ -48,35 +47,36 @@ public class EntryTypeController(
       // Build RO-Crate
       var zipBytes = await crateGenerationService.BuildCrate(filters, bagItPath);
 
-      // Turn off crate submission temporarily
-      // await crateSubmissionService.SubmitCrate(bagItPath, zipBytes);
+      // Submit Crate
+      var tesTask = await crateSubmissionService.SubmitCrate(bagItPath, zipBytes, bagItPath);
 
-      // Continue to calculate and return individuals response
+      // Poll for results
+      // Start 5-minute timer
+      Stopwatch timer = new Stopwatch();
+      timer.Start();
+      // Wait for task to be created
+      await Task.Delay(5000);
+      while (timer.Elapsed.TotalSeconds < 480)
+      {
+        // Poll Submission Layer API for task status every 5 seconds
+        await Task.Delay(5000);
+        var submissionStatus = await tesSubmissionService.CheckStatus(tesTask);
+
+        if (submissionStatus.Equals(StatusType.Failed)) break;
+        if (submissionStatus.Equals(StatusType.Completed))
+        {
+          var responseSummary = await tesSubmissionService.DownloadResults(tesTask);
+          individualsResponse.ResponseSummary = responseSummary;
+          break;
+        }
+      }
+
+      timer.Stop();
+
       // split filters
       Regex regex = new Regex(",");
       string[] filterList = regex.Split(filters);
-
       foreach (var match in filterList) individualsResponse.Meta.ReceivedRequestSummary.Filters.Add(match);
-
-      if (filters.Contains("Gender:F") && filters.Contains("SNOMED:386661006") && filters.Contains("SNOMED:271825005"))
-      {
-        individualsResponse.ResponseSummary.Exists = true;
-      }
-      else
-      {
-        var random = new Random();
-        // check if key in cache
-        if (!memoryCache.TryGetValue(filters, out var randomBool))
-        {
-          // set value
-          randomBool = random.Next(2) == 1;
-          // set data in cache
-          memoryCache.Set(filters, randomBool);
-        }
-
-        Boolean.TryParse(memoryCache.Get(filters)?.ToString(), out var exists);
-        individualsResponse.ResponseSummary.Exists = exists;
-      }
     }
 
     return individualsResponse;

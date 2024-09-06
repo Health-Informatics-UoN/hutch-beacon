@@ -4,7 +4,7 @@ public class EntryTypeResponse
 {
   public Meta Meta { get; set; } = new();
   
-  public ResponseSummary ResponseSummary { get; set; } = new();
+  public ResponseSummary? ResponseSummary { get; set; }
 
   public List<BeaconHandover>? BeaconHandovers { get; set; }
 }
@@ -23,7 +23,4 @@ public class HandoverType
   public string Label { get; set; } = string.Empty;
 }
 
-public class ResponseSummary
-{
-  public bool Exists { get; set; } = false;
-}
+
