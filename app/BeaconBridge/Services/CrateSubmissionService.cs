@@ -19,6 +19,7 @@ public class CrateSubmissionService(
   /// </summary>
   /// <param name="bagItPath">Path to BagIt directory</param>
   /// <param name="zip">Zip file byte array.</param>
+  /// <param name="beaconTaskId">ID for beacon task</param>
   public async Task<Models.TesTask> SubmitCrate(string bagItPath, byte[] zip, string beaconTaskId)
   {
     var fileName = bagItPath + ".zip";

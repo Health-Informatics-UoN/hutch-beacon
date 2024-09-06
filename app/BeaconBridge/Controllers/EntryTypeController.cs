@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.IO.Compression;
 using System.Text.RegularExpressions;
 using BeaconBridge.Config;
 using BeaconBridge.Constants;
@@ -62,7 +61,7 @@ public class EntryTypeController(
         // Poll Submission Layer API for task status every 5 seconds
         await Task.Delay(5000);
         var submissionStatus = await tesSubmissionService.CheckStatus(tesTask);
-        
+
         if (submissionStatus.Equals(StatusType.Failed)) break;
         if (submissionStatus.Equals(StatusType.Completed))
         {
@@ -71,6 +70,7 @@ public class EntryTypeController(
           break;
         }
       }
+
       timer.Stop();
 
       // split filters
