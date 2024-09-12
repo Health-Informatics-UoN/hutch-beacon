@@ -49,6 +49,7 @@ jobs:
         with:
           path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/.next/standalone
           name: frontendwebapp
+          include-hidden-files: true
 
   # Deploy Production
   deploy-prod:
