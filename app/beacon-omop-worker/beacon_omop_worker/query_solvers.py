@@ -11,7 +11,9 @@ from beacon_omop_worker.entities import (
 import beacon_omop_worker.config as config
 import logging
 import pandas as pd
-from sqlalchemy import select, and_
+from lifelines import KaplanMeierFitter
+import matplotlib.pyplot as plt
+from sqlalchemy import select, and_, text
 
 
 class IndividualQuerySolver:
@@ -307,3 +309,167 @@ def solve_individuals(db_manager: SyncDBManager, query_terms: str):
         return response_summary
     except Exception as e:
         logger.error(str(e))
+
+class KaplanMeierQuerySolver:
+
+    def __init__(self, db_manager) -> None:
+        self.db_manager = db_manager
+
+    def _get_concept_id(self, vocab: str, concept_code: str) -> str:
+        """
+        Get concept_id from vocabulary and concept code.
+        
+        Args:
+            vocab (str): The vocabulary name (e.g., 'SNOMED').
+            concept_code (str): The concept code (e.g., '386661006').
+        
+        Returns:
+            str: The concept_id corresponding to the vocabulary and concept code.
+        """
+        logger = logging.getLogger(config.LOGGER_NAME)
+        try:
+            query = select(Concept.concept_id).where(
+                and_(
+                    Concept.vocabulary_id == vocab,
+                    Concept.concept_code == concept_code
+                )
+            )
+            result = pd.read_sql(query, con=self.db_manager.engine.connect())
+            concept_id = str(result["concept_id"].values[0])
+            logger.info(f"Found concept_id {concept_id} for {vocab}:{concept_code}.")
+            return concept_id
+        except Exception as e:
+            logger.error(f"Error fetching concept_id for {vocab}:{concept_code}: {e}")
+            raise
+
+    def fetch_condition_data(self, concept_id: str) -> pd.DataFrame:
+        """
+        Fetch data from the OMOP database based on concept_id.
+        
+        Args:
+            concept_id (str): The concept_id for the condition.
+        
+        Returns:
+            pd.DataFrame: DataFrame containing the condition data.
+        """
+        logger = logging.getLogger(config.LOGGER_NAME)
+        query = text(
+            f"""
+            SELECT
+                condition_occurrence.condition_occurrence_id,
+                condition_occurrence.condition_concept_id,
+                concept.concept_name,
+                condition_occurrence.condition_start_date,
+                condition_occurrence.condition_end_date,
+                person.birth_datetime,
+                person.gender_source_value,
+                person.race_source_value,
+                location.city,
+                location.county, 
+                death.death_date,
+                death.cause_concept_id
+            FROM
+                condition_occurrence
+            JOIN
+                concept ON condition_occurrence.condition_concept_id = concept.concept_id
+            JOIN
+                person ON condition_occurrence.person_id = person.person_id
+            JOIN
+                location ON person.location_id = location.location_id
+            LEFT JOIN
+                death ON condition_occurrence.person_id = death.person_id
+            WHERE
+                condition_occurrence.condition_concept_id = :concept_id
+            """
+        )
+        try:
+            data = pd.read_sql(query, con=self.db_manager.engine.connect(), params={"concept_id": concept_id})
+            logger.info(f"Successfully fetched condition data for concept_id {concept_id}.")
+            return data
+        except Exception as e:
+            logger.error(f"Error fetching condition data: {e}")
+            raise
+
+    def plot_kaplan_meier_curve(self, data: pd.DataFrame, concept_id: str, file_path: str) -> None:
+        """
+        Plot the Kaplan-Meier curve for a specific medical condition and save it to a file.
+        
+        Args:
+            data (pd.DataFrame): The data containing condition information.
+            concept_id (str): The concept_id for the condition.
+            file_path (str): The file path where the plot will be saved.
+        
+        """
+        logger = logging.getLogger(config.LOGGER_NAME)
+        try:
+            # Drop entries without start_date
+            data = data.dropna(subset=['condition_start_date'])
+
+            # Ensure dates are in correct format
+            data['condition_start_date'] = pd.to_datetime(data['condition_start_date'])
+            data['condition_end_date'] = pd.to_datetime(data['condition_end_date'])
+
+            # Handle censored data
+            data['observed'] = data['condition_end_date'].isna().apply(lambda x: 0 if x else 1)
+            censored_date = pd.Timestamp('2023-12-31')
+            data['condition_end_date'] = data['condition_end_date'].fillna(censored_date)
+
+            # Calculate duration
+            data['duration'] = ((data['condition_end_date'] - data['condition_start_date']).dt.days)
+
+            # Kaplan-Meier estimator fitting
+            event_times = data['duration']
+            event_observed = data['observed']
+            kmf = KaplanMeierFitter()
+            kmf.fit(event_times, event_observed)
+
+            # Plot the Kaplan-Meier curve
+            ax = kmf.plot(ci_show=True)
+            plt.xlabel('Time (days)')
+            plt.ylabel('Survival Probability')
+            plt.title(f'Kaplan-Meier Curve for Concept ID: {concept_id}')
+
+            # Customize ticks and add median survival line
+            plt.xlim(0, 15)
+            plt.xticks(ticks=range(0, 15, 1))
+            plt.yticks(ticks=[0, 0.2, 0.4, 0.6, 0.8, 1])
+            median_survival_time = kmf.median_survival_time_
+            plt.axvline(median_survival_time, color='r', linestyle='--', label=f'Median: {median_survival_time:.2f}')
+            plt.legend()
+
+            # Save the plot to the specified file
+            plt.savefig(file_path, format='png')  # You can change 'png' to 'pdf' if you prefer
+            plt.close()  # Close the plot to prevent display issues in non-GUI environments
+
+            logger.info(f"Kaplan-Meier plot saved to {file_path} for concept_id {concept_id}.")
+        except Exception as e:
+            logger.error(f"Error while plotting and saving Kaplan-Meier curve: {e}")
+            raise
+
+
+# Main function to generate Kaplan-Meier analysis
+def generate_kaplan_meier_for_snomed_code(db_manager, snomed_code: str, output_file: str):
+    """
+    Fetch data and generate a Kaplan-Meier plot for a given SNOMED code, saving it to a file.
+    
+    Args:
+        db_manager (SyncDBManager): The database manager.
+        query_terms (str): The SNOMED code input, e.g., "SNOMED:386661006".
+        output_file (str): The file path where the Kaplan-Meier plot will be saved.
+    """
+    logger = logging.getLogger(config.LOGGER_NAME)
+    solver = KaplanMeierQuerySolver(db_manager=db_manager)
+
+    try:
+        # Extract the concept_id from the SNOMED code
+        vocab, code = snomed_code.split(":")
+        concept_id = solver._get_concept_id(vocab, code)
+
+        # Fetch condition data for the concept_id
+        condition_data = solver.fetch_condition_data(concept_id)
+
+        # Save Kaplan-Meier curve to file
+        solver.plot_kaplan_meier_curve(condition_data, concept_id, output_file)
+    except Exception as e:
+        logger.error(f"Error generating Kaplan-Meier plot for {snomed_code}: {e}")
+        raise

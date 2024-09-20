@@ -23,6 +23,10 @@ individuals = subparsers.add_parser(
 individuals.set_defaults()
 individuals.add_argument("-f", "--filters", type=str, help="Filtering terms")
 
+survival = subparsers.add_parser("survival", help="Generate Kaplan-Meier plot")
+survival.set_defaults()
+survival.add_argument("-s", "--snomed_code", type=str, required=True, help="SNOMED code")
+survival.add_argument("-o", "--output_file", type=str, required=True, help="Output file for the Kaplan-Meier plot")
 
 def save_filtering_terms(filtering_terms: list, destination: str) -> None:
     """Save the filtering terms to a JSON file.
@@ -110,4 +114,13 @@ def main() -> None:
             logger.info(f"Saved response summary to {output_file_name}")
         except ValueError as e:
             logger.error(str(e), exc_info=True)
+        exit()
+    if args.command == "survival":
+        snomed_code = args.snomed_code
+        output_file = args.output_file
+        try:
+            query_solvers.generate_kaplan_meier_for_snomed_code(db_manager, snomed_code, output_file)
+            logger.info(f"Kaplan-Meier plot saved to {output_file}")
+        except Exception as e:
+            logger.error(f"Error generating Kaplan-Meier plot: {e}", exc_info=True)
         exit()
