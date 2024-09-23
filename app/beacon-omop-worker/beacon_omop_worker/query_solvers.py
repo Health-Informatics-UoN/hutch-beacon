@@ -353,42 +353,78 @@ class KaplanMeierQuerySolver:
             pd.DataFrame: DataFrame containing the condition data.
         """
         logger = logging.getLogger(config.LOGGER_NAME)
-        query = text(
-            f"""
-            SELECT
-                condition_occurrence.condition_occurrence_id,
-                condition_occurrence.condition_concept_id,
-                concept.concept_name,
-                condition_occurrence.condition_start_date,
-                condition_occurrence.condition_end_date,
-                person.birth_datetime,
-                person.gender_source_value,
-                person.race_source_value,
-                location.city,
-                location.county, 
-                death.death_date,
-                death.cause_concept_id
-            FROM
-                condition_occurrence
-            JOIN
-                concept ON condition_occurrence.condition_concept_id = concept.concept_id
-            JOIN
-                person ON condition_occurrence.person_id = person.person_id
-            JOIN
-                location ON person.location_id = location.location_id
-            LEFT JOIN
-                death ON condition_occurrence.person_id = death.person_id
-            WHERE
-                condition_occurrence.condition_concept_id = :concept_id
-            """
-        )
+        
         try:
-            data = pd.read_sql(query, con=self.db_manager.engine.connect(), params={"concept_id": concept_id})
+            # Load individual tables into pandas DataFrames with filtering
+            condition_occurrence_df = pd.read_sql(
+                text("SELECT * FROM condition_occurrence WHERE condition_concept_id = :concept_id"),
+                con=self.db_manager.engine.connect(),
+                params={"concept_id": concept_id}
+            )
+            
+            concept_df = pd.read_sql(
+                text("SELECT concept_id, concept_name FROM concept"),
+                con=self.db_manager.engine.connect()
+            )
+            
+            person_df = pd.read_sql(
+                text("SELECT person_id, birth_datetime, gender_source_value, race_source_value, location_id FROM person"),
+                con=self.db_manager.engine.connect()
+            )
+            
+            location_df = pd.read_sql(
+                text("SELECT location_id, city, county FROM location"),
+                con=self.db_manager.engine.connect()
+            )
+            
+            death_df = pd.read_sql(
+                text("SELECT person_id, death_date, cause_concept_id FROM death"),
+                con=self.db_manager.engine.connect()
+            )
+            
+            # Set indexes for efficient merging
+            condition_occurrence_df.set_index('condition_concept_id', inplace=True)
+            concept_df.set_index('concept_id', inplace=True)
+            person_df.set_index('person_id', inplace=True)
+            location_df.set_index('location_id', inplace=True)
+            death_df.set_index('person_id', inplace=True)
+            
+            # Perform joins using pandas
+            merged_df = condition_occurrence_df.join(
+                concept_df, on="condition_concept_id", how="inner"
+            ).join(
+                person_df, on="person_id", how="inner"
+            ).join(
+                location_df, on="location_id", how="inner"
+            ).join(
+                death_df, on="person_id", how="left"
+            )
+            
+            # Reset index to get a clean DataFrame
+            merged_df.reset_index(inplace=True)
+            
+            # Select and rename the necessary columns
+            result_df = merged_df[[
+                "condition_occurrence_id",
+                "condition_concept_id",
+                "concept_name",
+                "condition_start_date",
+                "condition_end_date",
+                "birth_datetime",
+                "gender_source_value",
+                "race_source_value",
+                "city",
+                "county",
+                "death_date",
+                "cause_concept_id"
+            ]]
+            
             logger.info(f"Successfully fetched condition data for concept_id {concept_id}.")
-            return data
+            return result_df
+        
         except Exception as e:
             logger.error(f"Error fetching condition data: {e}")
-            raise
+            raise e
 
     def plot_kaplan_meier_curve(self, data: pd.DataFrame, concept_id: str, file_path: str) -> None:
         """
@@ -444,7 +480,7 @@ class KaplanMeierQuerySolver:
             logger.info(f"Kaplan-Meier plot saved to {file_path} for concept_id {concept_id}.")
         except Exception as e:
             logger.error(f"Error while plotting and saving Kaplan-Meier curve: {e}")
-            raise
+            raise e
 
 
 # Main function to generate Kaplan-Meier analysis
@@ -472,4 +508,4 @@ def generate_kaplan_meier_for_snomed_code(db_manager, snomed_code: str, output_f
         solver.plot_kaplan_meier_curve(condition_data, concept_id, output_file)
     except Exception as e:
         logger.error(f"Error generating Kaplan-Meier plot for {snomed_code}: {e}")
-        raise
+        raise e
