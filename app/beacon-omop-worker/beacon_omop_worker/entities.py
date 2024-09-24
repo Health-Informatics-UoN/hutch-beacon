@@ -237,7 +237,7 @@ class Vocabulary(Base):
 
 class Death(Base):
     __tablename__ = "death"
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    death_id = Column(Integer, primary_key=True, autoincrement=True) # Death Table has no primary key in OMOP CDM
     person_id = Column(Integer, ForeignKey("person.person_id"), nullable=False)
     death_date = Column(Date, nullable=False)
     death_datetime = Column(DateTime, nullable=True)
