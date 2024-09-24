@@ -234,3 +234,29 @@ class Vocabulary(Base):
     vocabulary_concept_id = Column(
         Integer, ForeignKey("concept.concept_id"), nullable=False
     )
+
+class Death(Base):
+    __tablename__ = "death"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    person_id = Column(Integer, ForeignKey("person.person_id"), nullable=False)
+    death_date = Column(Date, nullable=False)
+    death_datetime = Column(DateTime, nullable=True)
+    death_type_concept_id = Column(Integer, ForeignKey("concept.concept_id"), nullable=True)
+    cause_concept_id = Column(Integer, ForeignKey("concept.concept_id"), nullable=True)
+    cause_source_value = Column(String(50), nullable=True)
+    cause_source_concept_id = Column(Integer, ForeignKey("concept.concept_id"), nullable=True)
+
+class Location(Base):
+    __tablename__ = "location"
+    location_id = Column(Integer, primary_key=True)
+    address_1 = Column(String(50), nullable=True)
+    address_2 = Column(String(50), nullable=True)
+    city = Column(String(50), nullable=True)
+    state = Column(String(2), nullable=True)
+    zip = Column(String(9), nullable=True)
+    county = Column(String(20), nullable=True)
+    location_source_value = Column(String(50), nullable=True)
+    country_concept_id = Column(Integer, ForeignKey("concept.concept_id"), nullable=True)
+    country_source_value = Column(String(80), nullable=True)
+    latitude = Column(Numeric, nullable=True)
+    longitude = Column(Numeric, nullable=True)
