@@ -7,6 +7,10 @@ import argparse
 from beacon_omop_worker.db_manager import SyncDBManager
 from beacon_omop_worker import query_solvers
 
+from dotenv import load_dotenv
+# Load environment variables from .env file
+load_dotenv()
+
 parser = argparse.ArgumentParser(
     prog="beacon-omop-worker",
     description="This program executes beacon queries against an OMOP database",
@@ -25,8 +29,9 @@ individuals.add_argument("-f", "--filters", type=str, help="Filtering terms")
 
 survival = subparsers.add_parser("survival", help="Generate Kaplan-Meier plot")
 survival.set_defaults()
-survival.add_argument("-s", "--snomed_code", type=str, required=True, help="SNOMED code")
-survival.add_argument("-o", "--output_file", type=str, required=True, help="Output file for the Kaplan-Meier plot")
+survival.add_argument("-v", "--vocabulary", type=str, required=True, help="Vocabulary name and ID")
+survival.add_argument("-o", "--output_name", type=str, required=True, help="Name output file for the Kaplan-Meier plot")
+survival.add_argument("-s", "--strata", type=str, help="Choose 'gender' or 'location' for strata OR leave blank for no strata")
 
 def save_filtering_terms(filtering_terms: list, destination: str) -> None:
     """Save the filtering terms to a JSON file.
@@ -116,11 +121,12 @@ def main() -> None:
             logger.error(str(e), exc_info=True)
         exit()
     if args.command == "survival":
-        snomed_code = args.snomed_code
-        output_file = args.output_file
+        vocabulary = args.vocabulary
+        output_name = args.output_name
+        strata = args.strata
         try:
-            query_solvers.generate_kaplan_meier_for_snomed_code(db_manager, snomed_code, output_file)
-            logger.info(f"Kaplan-Meier plot saved to {output_file}")
+            query_solvers.generate_km(db_manager, vocabulary, strata, output_name)
+            logger.info(f"Kaplan-Meier plot saved to {output_name}")
         except Exception as e:
             logger.error(f"Error generating Kaplan-Meier plot: {e}", exc_info=True)
         exit()
