@@ -7,10 +7,6 @@ import argparse
 from beacon_omop_worker.db_manager import SyncDBManager
 from beacon_omop_worker import query_solvers
 
-from dotenv import load_dotenv
-# Load environment variables from .env file
-load_dotenv()
-
 parser = argparse.ArgumentParser(
     prog="beacon-omop-worker",
     description="This program executes beacon queries against an OMOP database",
