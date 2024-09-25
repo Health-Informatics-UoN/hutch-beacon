@@ -7,13 +7,15 @@ from beacon_omop_worker.entities import (
     Person,
     Concept,
     Vocabulary,
+    Location,
+    Death
 )
 import beacon_omop_worker.config as config
 import logging
 import pandas as pd
 from lifelines import KaplanMeierFitter
 import matplotlib.pyplot as plt
-from sqlalchemy import select, and_, text
+from sqlalchemy import select, and_
 
 
 class IndividualQuerySolver:
@@ -342,6 +344,30 @@ class KaplanMeierQuerySolver:
             logger.error(f"Error fetching concept_id for {vocab}:{concept_code}: {e}")
             raise
 
+    def _get_strata(self, strata: str) -> str:
+        """
+        Get the strata column name from the strata input.
+        
+        Args:
+            strata (str): The strata input.
+        
+        Returns:
+            str: The strata column name or None if not applicable.
+        """
+        logger = logging.getLogger(config.LOGGER_NAME)
+        try:
+            if strata is None:
+                return None
+            if strata.lower() == 'gender':
+                return 'gender_source_value'
+            elif strata.lower() == 'location':
+                return 'city'
+            else:
+                return None  # Return None if it's not gender or location
+        except Exception as e:
+            logger.error(f"Error determining strata column: {e}")
+            raise e
+
     def fetch_condition_data(self, concept_id: str) -> pd.DataFrame:
         """
         Fetch data from the OMOP database based on concept_id.
@@ -355,30 +381,45 @@ class KaplanMeierQuerySolver:
         logger = logging.getLogger(config.LOGGER_NAME)
         
         try:
-            # Load individual tables into pandas DataFrames with filtering
+            # Create the queries 
+            condition_occurrence_query = select(ConditionOccurrence).where(
+                ConditionOccurrence.condition_concept_id == concept_id
+            )
+            
+            concept_query = select(Concept.concept_id, Concept.concept_name)
+            
+            person_query = select(
+                Person.person_id, Person.birth_datetime, Person.gender_source_value, 
+                Person.race_source_value, Person.location_id
+            )
+            
+            location_query = select(Location.location_id, Location.city, Location.county)
+            
+            death_query = select(Death.person_id, Death.death_date, Death.cause_concept_id)
+            
+            # Execute the queries and load the results into pandas DataFrames
             condition_occurrence_df = pd.read_sql(
-                text("SELECT * FROM condition_occurrence WHERE condition_concept_id = :concept_id"),
-                con=self.db_manager.engine.connect(),
-                params={"concept_id": concept_id}
+                condition_occurrence_query,
+                con=self.db_manager.engine.connect()
             )
             
             concept_df = pd.read_sql(
-                text("SELECT concept_id, concept_name FROM concept"),
+                concept_query,
                 con=self.db_manager.engine.connect()
             )
             
             person_df = pd.read_sql(
-                text("SELECT person_id, birth_datetime, gender_source_value, race_source_value, location_id FROM person"),
+                person_query,
                 con=self.db_manager.engine.connect()
             )
             
             location_df = pd.read_sql(
-                text("SELECT location_id, city, county FROM location"),
+                location_query,
                 con=self.db_manager.engine.connect()
             )
             
             death_df = pd.read_sql(
-                text("SELECT person_id, death_date, cause_concept_id FROM death"),
+                death_query,
                 con=self.db_manager.engine.connect()
             )
             
@@ -426,15 +467,15 @@ class KaplanMeierQuerySolver:
             logger.error(f"Error fetching condition data: {e}")
             raise e
 
-    def plot_kaplan_meier_curve(self, data: pd.DataFrame, concept_id: str, file_path: str) -> None:
+    def calculate_duration_and_observed(self, data: pd.DataFrame) -> pd.DataFrame:
         """
-        Plot the Kaplan-Meier curve for a specific medical condition and save it to a file.
+        Calculate the duration and observed (event) for the Kaplan-Meier analysis.
         
         Args:
-            data (pd.DataFrame): The data containing condition information.
-            concept_id (str): The concept_id for the condition.
-            file_path (str): The file path where the plot will be saved.
+            data (pd.DataFrame): DataFrame containing condition start and end dates.
         
+        Returns:
+            pd.DataFrame: Updated DataFrame with 'duration' and 'observed' columns.
         """
         logger = logging.getLogger(config.LOGGER_NAME)
         try:
@@ -447,65 +488,109 @@ class KaplanMeierQuerySolver:
 
             # Handle censored data
             data['observed'] = data['condition_end_date'].isna().apply(lambda x: 0 if x else 1)
-            censored_date = pd.Timestamp('2023-12-31')
+            censored_date = pd.Timestamp('2023-12-31')  # Set a fixed censor date
             data['condition_end_date'] = data['condition_end_date'].fillna(censored_date)
 
             # Calculate duration
             data['duration'] = ((data['condition_end_date'] - data['condition_start_date']).dt.days)
+            return data
+        
+        except Exception as e:
+            logger.error(f"Error calculating duration and observed: {e}")
+            raise e
 
+    def plot_km(self, data: pd.DataFrame, concept_id: str, strata: str, file_path: str) -> None:
+        """
+        Plot the Kaplan-Meier curve for a specific medical condition and save it to a file.
+        
+        Args:
+            data (pd.DataFrame): The data containing condition information with 'duration' and 'observed' columns.
+            concept_id (str): The concept_id for the condition.
+            file_path (str): The file path where the plot will be saved.
+        """
+        logger = logging.getLogger(config.LOGGER_NAME)
+        try:
             # Kaplan-Meier estimator fitting
             event_times = data['duration']
             event_observed = data['observed']
-            kmf = KaplanMeierFitter()
-            kmf.fit(event_times, event_observed)
 
-            # Plot the Kaplan-Meier curve
-            ax = kmf.plot(ci_show=True)
+            # Initialize the figure and axis
+            fig, ax = plt.subplots(figsize=(8, 6))
+
+            if strata is not None:
+                kmf_list = []
+                strata_values = data[strata].value_counts().nlargest(3).index
+                strata_labels = [str(value) for value in strata_values]
+                for i, stratum_value in enumerate(strata_values):
+                    kmf = KaplanMeierFitter()
+                    T = data['duration'][data[strata] == stratum_value]
+                    E = data['observed'][data[strata] == stratum_value]
+                    kmf.fit(T, E, label=stratum_value)
+                    ax = kmf.plot(ax=ax, ci_show=True)
+                    kmf_list.append(kmf)
+
+                    # Add the median survival time line
+                    median_survival_time = kmf.median_survival_time_
+                    plt.axvline(median_survival_time, color=f'C{i}', linestyle='--', label=f'Median {stratum_value}: {median_survival_time:.2f}')
+            else:
+                kmf = KaplanMeierFitter()
+                kmf.fit(event_times, event_observed, label='All patients')
+                ax = kmf.plot(ax=ax, ci_show=True)
+
+                # Add the median survival time line
+                median_survival_time = kmf.median_survival_time_
+                plt.axvline(median_survival_time, color='r', linestyle='--', label=f'Median: {median_survival_time:.2f}')
+
             plt.xlabel('Time (days)')
             plt.ylabel('Survival Probability')
-            plt.title(f'Kaplan-Meier Curve for Concept ID: {concept_id}')
+            plt.title(f'Kaplan-Meier Curve for {data["concept_name"].iloc[0]}')
 
-            # Customize ticks and add median survival line
             plt.xlim(0, 15)
             plt.xticks(ticks=range(0, 15, 1))
             plt.yticks(ticks=[0, 0.2, 0.4, 0.6, 0.8, 1])
-            median_survival_time = kmf.median_survival_time_
-            plt.axvline(median_survival_time, color='r', linestyle='--', label=f'Median: {median_survival_time:.2f}')
-            plt.legend()
+            plt.legend(loc = 'best')
 
             # Save the plot to the specified file
-            plt.savefig(file_path, format='png')  # You can change 'png' to 'pdf' if you prefer
-            plt.close()  # Close the plot to prevent display issues in non-GUI environments
+            plt.savefig(file_path, format='png')
+            plt.close()
 
             logger.info(f"Kaplan-Meier plot saved to {file_path} for concept_id {concept_id}.")
         except Exception as e:
             logger.error(f"Error while plotting and saving Kaplan-Meier curve: {e}")
             raise e
 
-
 # Main function to generate Kaplan-Meier analysis
-def generate_kaplan_meier_for_snomed_code(db_manager, snomed_code: str, output_file: str):
+def generate_km(db_manager, vocabulary: str, strata: str, output_name: str):
     """
     Fetch data and generate a Kaplan-Meier plot for a given SNOMED code, saving it to a file.
     
     Args:
         db_manager (SyncDBManager): The database manager.
-        query_terms (str): The SNOMED code input, e.g., "SNOMED:386661006".
-        output_file (str): The file path where the Kaplan-Meier plot will be saved.
+        vocabulary (str): The SNOMED code input, e.g., "SNOMED:386661006".
+        strata (str): The strata input for Kaplan-Meier analysis (e.g., 'gender', 'location').
+        output_name (str): The file path where the Kaplan-Meier plot will be saved.
     """
     logger = logging.getLogger(config.LOGGER_NAME)
     solver = KaplanMeierQuerySolver(db_manager=db_manager)
 
     try:
         # Extract the concept_id from the SNOMED code
-        vocab, code = snomed_code.split(":")
+        vocab, code = vocabulary.split(":")
         concept_id = solver._get_concept_id(vocab, code)
+        
+        # Get the strata column name
+        strata_column = solver._get_strata(strata)
 
         # Fetch condition data for the concept_id
         condition_data = solver.fetch_condition_data(concept_id)
 
-        # Save Kaplan-Meier curve to file
-        solver.plot_kaplan_meier_curve(condition_data, concept_id, output_file)
+        # Calculate duration and observed values for the data
+        condition_data = solver.calculate_duration_and_observed(condition_data)
+
+        # Generate and save the Kaplan-Meier plot
+        solver.plot_km(condition_data, concept_id, strata_column, output_name)
+        
+        logger.info(f"Kaplan-Meier analysis successfully generated for {vocabulary}")
     except Exception as e:
-        logger.error(f"Error generating Kaplan-Meier plot for {snomed_code}: {e}")
+        logger.error(f"Error generating Kaplan-Meier plot for {vocabulary}: {e}")
         raise e
