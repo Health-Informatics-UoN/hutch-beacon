@@ -33,6 +33,7 @@ public class OpenIdOptions
 
   /// <summary>
   /// Egress Realm base URL for API interactions with an OpenID Connect (OIDC) compliant
+  /// Identity Provider (IdP), such as Keycloak.
   /// </summary>
   public string EgressOpenIdBaseUrl { get; set; } = string.Empty;
 
