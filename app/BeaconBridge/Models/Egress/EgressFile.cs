@@ -15,11 +15,14 @@
  */
 
 using BeaconBridge.Constants.Submission;
+using BeaconBridge.Utilities;
 
 namespace BeaconBridge.Models.Egress;
 
 public class EgressFile
 {
+  public EgressFile()
+    => NewtonsoftJsonSafeInit.SetDefaultSettings();
   public int Id { get; set; }
 
   public string? Name { get; set; }
