@@ -7,6 +7,7 @@ using BeaconBridge.Models;
 using BeaconBridge.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 
 namespace BeaconBridge.Controllers;
 
@@ -16,7 +17,8 @@ public class EntryTypeController(
   IOptions<BeaconInfoOptions> beaconInfoOptions,
   CrateGenerationService crateGenerationService,
   CrateSubmissionService crateSubmissionService,
-  TesSubmissionService tesSubmissionService)
+  TesSubmissionService tesSubmissionService,
+  IFeatureManager featureFlags)
 {
   private readonly BeaconInfoOptions _beaconInfoOptions = beaconInfoOptions.Value;
 
@@ -61,6 +63,12 @@ public class EntryTypeController(
         // Poll Submission Layer API for task status every 5 seconds
         await Task.Delay(5000);
         var submissionStatus = await tesSubmissionService.CheckStatus(tesTask);
+        if (submissionStatus.Equals(StatusType.TransferredForDataOut) &&
+            await featureFlags.IsEnabledAsync(FeatureFlags.ApproveEgress)
+           )
+        {
+          await tesSubmissionService.ApproveEgress(tesTask);
+        }
 
         if (submissionStatus.Equals(StatusType.Failed)) break;
         if (submissionStatus.Equals(StatusType.Completed))
