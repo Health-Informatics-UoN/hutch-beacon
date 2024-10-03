@@ -49,11 +49,11 @@ public class OpenIdIdentityService(IOptions<OpenIdOptions> openIdOptions,
     return jwt.ValidFrom >= now && jwt.ValidTo < now;
   }
 
-  private async Task<DiscoveryDocumentResponse> GetDiscoveryDocument()
+  private async Task<DiscoveryDocumentResponse> GetDiscoveryDocument(string baseUrl)
   {
     var disco = await _http.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
     {
-      Address = _openIdOptions.OpenIdBaseUrl,
+      Address = baseUrl,
       Policy = new DiscoveryPolicy
       {
         ValidateIssuerName =
@@ -84,22 +84,27 @@ public class OpenIdIdentityService(IOptions<OpenIdOptions> openIdOptions,
   /// </param>
   /// <returns>The requested tokens</returns>
   public async Task<(string identity, string access, string refresh)> RequestUserTokens(OpenIdOptions options)
-    => await RequestUserTokens(options.ClientId, options.ClientSecret, options.Username, options.Password);
+    => await RequestUserTokens(options.OpenIdBaseUrl,options.ClientId, options.ClientSecret, options.Username, options.Password);
+
+  
+  public async Task<(string identity, string access, string refresh)> RequestUserTokensEgress(OpenIdOptions options)
+    => await RequestUserTokens(options.EgressOpenIdBaseUrl,options.EgressClientId, options.EgressClientSecret, options.Username, options.Password);
 
   /// <summary>
   /// Follow the OIDC Resource Owner Password Credentials Grant Flow to get identity and access tokens on behalf of a user
   /// from the configured Identity Provider, using the provided user credentials.
   /// </summary>
+  /// <param name="baseUrl">Base URL</param>
   /// <param name="clientId">Client ID</param>
   /// <param name="secret">Client Secret</param>
   /// <param name="username">The User's Username</param>
   /// <param name="password">The User's Password</param>
   /// <returns>The requested tokens</returns>
-  public async Task<(string identity, string access, string refresh)> RequestUserTokens(string clientId, string secret,
+  public async Task<(string identity, string access, string refresh)> RequestUserTokens(string baseUrl,string clientId, string secret,
     string username,
     string password)
   {
-    var disco = await GetDiscoveryDocument();
+    var disco = await GetDiscoveryDocument(baseUrl);
 
     // Make a password token request for a user
     var tokenResponse = await _http.RequestPasswordTokenAsync(new()
@@ -149,7 +154,7 @@ public class OpenIdIdentityService(IOptions<OpenIdOptions> openIdOptions,
   /// <returns>An OIDC access token for the requesting client.</returns>
   public async Task<string> RequestClientAccessToken(string clientId, string? secret)
   {
-    var disco = await GetDiscoveryDocument();
+    var disco = await GetDiscoveryDocument(_openIdOptions.OpenIdBaseUrl);
 
     // Make a password token request for a user
     var tokenRequest = new ClientCredentialsTokenRequest
@@ -192,7 +197,7 @@ public class OpenIdIdentityService(IOptions<OpenIdOptions> openIdOptions,
   public async Task<(string access, string refresh)> RefreshAccessToken(string clientId, string? secret,
     string refreshToken)
   {
-    var disco = await GetDiscoveryDocument();
+    var disco = await GetDiscoveryDocument(_openIdOptions.OpenIdBaseUrl);
 
     var tokenRequest = new RefreshTokenRequest
     {

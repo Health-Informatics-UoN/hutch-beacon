@@ -30,6 +30,21 @@ public class OpenIdOptions
   /// </summary>
   ///  TODO in future it should be possible to omit this and use the Client Credentials flow?
   public string Password { get; set; } = string.Empty;
+
+  /// <summary>
+  /// Egress Realm base URL for API interactions with an OpenID Connect (OIDC) compliant
+  /// </summary>
+  public string EgressOpenIdBaseUrl { get; set; } = string.Empty;
+
+  /// <summary>
+  /// Egress Client ID for an OIDC IdP
+  /// </summary>
+  public string EgressClientId { get; set; } = string.Empty;
+
+  /// <summary>
+  /// Egress Client Secret for an OIDC IdP (if the IdP's Client config requires it)
+  /// </summary>
+  public string EgressClientSecret { get; set; } = string.Empty;
 }
 
 public static class OpenIdOptionsExtensions
