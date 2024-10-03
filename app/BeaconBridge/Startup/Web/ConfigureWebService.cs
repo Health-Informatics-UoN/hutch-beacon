@@ -1,5 +1,4 @@
 using System.IO.Abstractions;
-using System.Text.Json.Serialization;
 using BeaconBridge.Config;
 using BeaconBridge.Constants;
 using BeaconBridge.Data;
@@ -14,10 +13,7 @@ public static class ConfigureWebService
 {
   public static WebApplicationBuilder ConfigureServices(this WebApplicationBuilder b)
   {
-    b.Services.AddControllers().AddJsonOptions(options =>
-    {
-      options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-    });
+    b.Services.AddControllers().AddJsonOptions(DefaultJsonOptions.Configure);
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     b.Services.AddEndpointsApiExplorer();
     b.Services.AddSwaggerGen();

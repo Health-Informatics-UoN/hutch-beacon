@@ -15,7 +15,7 @@ public static class NewtonsoftJsonSafeInit
     {
       // Fixes https://github.com/advisories/GHSA-5crp-9r3c-p9vr
       // Improper Handling of Exceptional Conditions in Newtonsoft.Json
-      Newtonsoft.Json.JsonConvert.DefaultSettings = () => new() { MaxDepth = 128, ReferenceLoopHandling = ReferenceLoopHandling.Ignore};
+      JsonConvert.DefaultSettings = () => new() { MaxDepth = 128, ReferenceLoopHandling = ReferenceLoopHandling.Ignore};
       isInitialized = true;
     }
   }
