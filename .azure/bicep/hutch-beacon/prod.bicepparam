@@ -35,6 +35,7 @@ param backendAppSettings = {
     ServiceInfo__DocumentationUrl: 'https://github.com/Health-Informatics-UoN/beacon-tools'
     
     Flags__MakeAssessActions: true
+    Flags__ApproveEgress: true
     
     AssessActions__CheckValue: true
     AssessActions__Validate: true

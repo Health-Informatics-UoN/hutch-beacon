@@ -138,11 +138,16 @@ var baseBackendSettings = {
   IdentityProvider__ClientSecret: referenceSecret(kv.name, 'oidc-client-secret')
   IdentityProvider__Username: referenceSecret(kv.name, 'oidc-username')
   IdentityProvider__Password: referenceSecret(kv.name, 'oidc-password')
+  IdentityProvider__EgressOpenIdBaseUrl: referenceSecret(kv.name, 'oidc-egress-base-url')
+  IdentityProvider__EgressClientId: referenceSecret(kv.name,'oidc-egress-client-id')
+  IdentityProvider__EgressClientSecret: referenceSecret(kv.name,'oidc-egress-client-secret')
 
   // Submission Layer settings
   SubmissionLayer__ProjectName: referenceSecret(kv.name, 'submission-project-name')
   SubmissionLayer__Tres__0: referenceSecret(kv.name, 'submission-tre-name')
   SubmissionLayer__SubmissionLayerHost: referenceSecret(kv.name, 'submission-host')
+  // Egress Layer settings
+  EgressLayer__EgressLayerHost: referenceSecret(kv.name,'egress-host')
 }
 
 var baseFrontendSettings = {
