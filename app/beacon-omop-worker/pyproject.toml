@@ -21,11 +21,14 @@ packages = [
 
 [tool.poetry.dependencies]
 sqlalchemy = "^2.0.29"
-pandas="1.4.4"
+pandas=">=1.4.4"
 psycopg2-binary = "^2.9.9"
 requests="2.31.0"
-python = ">=3.8,<3.11"
+python = ">=3.9,<3.11"
 
+numpy = "<2.0"
+poetry-dotenv-plugin = "^0.2.0"
+lifelines = "^0.29.0"
 [tool.poetry.group.dev.dependencies]
 black = "^24.4.0"
 
