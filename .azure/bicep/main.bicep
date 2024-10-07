@@ -133,18 +133,18 @@ var baseBackendSettings = {
   Minio__Bucket: referenceSecret(kv.name, 'minio-bucket')
 
   // openid-connect settings
-  IdentityProvider__OpenIdBaseUrl: referenceSecret(kv.name, 'oidc-base-url')
-  IdentityProvider__ClientId: referenceSecret(kv.name, 'oidc-client-id')
-  IdentityProvider__ClientSecret: referenceSecret(kv.name, 'oidc-client-secret')
-  IdentityProvider__Username: referenceSecret(kv.name, 'oidc-username')
-  IdentityProvider__Password: referenceSecret(kv.name, 'oidc-password')
+  IdentityProvider__Submission__OpenIdBaseUrl: referenceSecret(kv.name, 'oidc-base-url')
+  IdentityProvider__Submission__ClientId: referenceSecret(kv.name, 'oidc-client-id')
+  IdentityProvider__Submission__ClientSecret: referenceSecret(kv.name, 'oidc-client-secret')
+  IdentityProvider__Submission__Username: referenceSecret(kv.name, 'oidc-username')
+  IdentityProvider__Submission__Password: referenceSecret(kv.name, 'oidc-password')
   
   // egress openid-connect settings
-  EgressIdentityProvider__OpenIdBaseUrl: referenceSecret(kv.name, 'oidc-egress-base-url')
-  EgressIdentityProvider__ClientId: referenceSecret(kv.name,'oidc-egress-client-id')
-  EgressIdentityProvider__ClientSecret: referenceSecret(kv.name,'oidc-egress-client-secret')
-  EgressIdentityProvider__Username: referenceSecret(kv.name, 'oidc-egress-username')
-  EgressIdentityProvider__Password: referenceSecret(kv.name, 'oidc-egress-password')
+  IdentityProvider__Egress__OpenIdBaseUrl: referenceSecret(kv.name, 'oidc-egress-base-url')
+  IdentityProvider__Egress__ClientId: referenceSecret(kv.name,'oidc-egress-client-id')
+  IdentityProvider__Egress__ClientSecret: referenceSecret(kv.name,'oidc-egress-client-secret')
+  IdentityProvider__Egress__Username: referenceSecret(kv.name, 'oidc-egress-username')
+  IdentityProvider__Egress__Password: referenceSecret(kv.name, 'oidc-egress-password')
 
   // Submission Layer settings
   SubmissionLayer__ProjectName: referenceSecret(kv.name, 'submission-project-name')
