@@ -46,7 +46,8 @@ public static class ConfigureWebService
       .Configure<AssessActionsOptions>(b.Configuration.GetSection("AssessActions"))
       .Configure<FilteringTermsUpdateOptions>(b.Configuration.GetSection("FilteringTerms"))
       .Configure<SubmissionOptions>(b.Configuration.GetSection("SubmissionLayer"))
-      .Configure<EgressOptions>(b.Configuration.GetSection("EgressLayer"));
+      .Configure<EgressOptions>(b.Configuration.GetSection("EgressLayer"))
+      .Configure<EgressOpenIdOptions>(b.Configuration.GetSection("EgressIdentityProvider"));
     // Add HttpClients
 
     // Add Services
