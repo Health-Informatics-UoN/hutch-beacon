@@ -138,9 +138,13 @@ var baseBackendSettings = {
   IdentityProvider__ClientSecret: referenceSecret(kv.name, 'oidc-client-secret')
   IdentityProvider__Username: referenceSecret(kv.name, 'oidc-username')
   IdentityProvider__Password: referenceSecret(kv.name, 'oidc-password')
-  IdentityProvider__EgressOpenIdBaseUrl: referenceSecret(kv.name, 'oidc-egress-base-url')
-  IdentityProvider__EgressClientId: referenceSecret(kv.name,'oidc-egress-client-id')
-  IdentityProvider__EgressClientSecret: referenceSecret(kv.name,'oidc-egress-client-secret')
+  
+  // egress openid-connect settings
+  EgressIdentityProvider__OpenIdBaseUrl: referenceSecret(kv.name, 'oidc-egress-base-url')
+  EgressIdentityProvider__ClientId: referenceSecret(kv.name,'oidc-egress-client-id')
+  EgressIdentityProvider__ClientSecret: referenceSecret(kv.name,'oidc-egress-client-secret')
+  EgressIdentityProvider__Username: referenceSecret(kv.name, 'oidc-egress-username')
+  EgressIdentityProvider__Password: referenceSecret(kv.name, 'oidc-egress-password')
 
   // Submission Layer settings
   SubmissionLayer__ProjectName: referenceSecret(kv.name, 'submission-project-name')

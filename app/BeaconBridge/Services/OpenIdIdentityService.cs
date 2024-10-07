@@ -87,8 +87,8 @@ public class OpenIdIdentityService(IOptions<OpenIdOptions> openIdOptions,
     => await RequestUserTokens(options.OpenIdBaseUrl,options.ClientId, options.ClientSecret, options.Username, options.Password);
 
   
-  public async Task<(string identity, string access, string refresh)> RequestUserTokensEgress(OpenIdOptions options)
-    => await RequestUserTokens(options.EgressOpenIdBaseUrl,options.EgressClientId, options.EgressClientSecret, options.Username, options.Password);
+  public async Task<(string identity, string access, string refresh)> RequestUserTokensEgress(EgressOpenIdOptions options)
+    => await RequestUserTokens(options.OpenIdBaseUrl,options.ClientId, options.ClientSecret, options.Username, options.Password);
 
   /// <summary>
   /// Follow the OIDC Resource Owner Password Credentials Grant Flow to get identity and access tokens on behalf of a user

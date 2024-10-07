@@ -18,18 +18,20 @@ public class TesSubmissionService
   private readonly ILogger<TesSubmissionService> _logger;
   private readonly OpenIdIdentityService _openIdIdentity;
   private readonly OpenIdOptions _openIdOptions;
+  private readonly EgressOpenIdOptions _egressOpenIdOptions;
   private readonly SubmissionOptions _submissionOptions;
   private readonly EgressOptions _egressOptions;
   private readonly string _identityToken;
   private readonly string _egressIdentityToken;
 
   public TesSubmissionService(IOptions<SubmissionOptions> submissionOptions, OpenIdIdentityService openIdIdentity,
-    IOptions<OpenIdOptions> openIdOptions, ILogger<TesSubmissionService> logger, IOptions<EgressOptions> egressOptions)
+    IOptions<OpenIdOptions> openIdOptions, ILogger<TesSubmissionService> logger, IOptions<EgressOptions> egressOptions, IOptions<EgressOpenIdOptions> egressOpenIdOptions)
   {
     _openIdIdentity = openIdIdentity;
     _openIdOptions = openIdOptions.Value;
     _submissionOptions = submissionOptions.Value;
     _logger = logger;
+    _egressOpenIdOptions = egressOpenIdOptions.Value;
     _egressOptions = egressOptions.Value;
     _identityToken = GetAuthorised().Result;
     _egressIdentityToken = GetEgressAuthorised().Result;
@@ -166,11 +168,11 @@ public class TesSubmissionService
   {
     egressSubmission.Status = EgressStatus.FullyApproved;
     egressSubmission.Completed = DateTime.Now;
-    egressSubmission.Reviewer = _openIdOptions.Username;
+    egressSubmission.Reviewer = _egressOpenIdOptions.Username;
     foreach (var file in egressSubmission.Files)
     {
       file.Status = FileStatus.Approved;
-      file.Reviewer = _openIdOptions.Username;
+      file.Reviewer = _egressOpenIdOptions.Username;
     }
     return egressSubmission;
   }
@@ -179,7 +181,7 @@ public class TesSubmissionService
   {
     try
     {
-      var (identity, _, _) = await _openIdIdentity.RequestUserTokensEgress(_openIdOptions);
+      var (identity, _, _) = await _openIdIdentity.RequestUserTokensEgress(_egressOpenIdOptions);
       return identity;
     }
     catch (InvalidOperationException)
