@@ -9,12 +9,12 @@ namespace BeaconBridge.Services;
 /// <summary>
 /// Performs interactions with an Open ID Connect compliant IdentityProvider such as Keycloak.
 /// </summary>
-public class OpenIdIdentityService(IOptions<OpenIdOptions> openIdOptions,
+public class OpenIdIdentityService(IOptionsSnapshot<OpenIdOptions> openIdOptions,
   IHttpClientFactory httpClientFactory,
   ILogger<OpenIdIdentityService> logger)
 {
   private readonly HttpClient _http = httpClientFactory.CreateClient();
-  private readonly OpenIdOptions _openIdOptions = openIdOptions.Value;
+  private readonly OpenIdOptions _openIdOptions = openIdOptions.Get(OpenIdOptions.Submission);
 
   /// <summary>
   /// Check that a JWT is valid and unexpired
@@ -87,7 +87,7 @@ public class OpenIdIdentityService(IOptions<OpenIdOptions> openIdOptions,
     => await RequestUserTokens(options.OpenIdBaseUrl,options.ClientId, options.ClientSecret, options.Username, options.Password);
 
   
-  public async Task<(string identity, string access, string refresh)> RequestUserTokensEgress(EgressOpenIdOptions options)
+  public async Task<(string identity, string access, string refresh)> RequestUserTokensEgress(OpenIdOptions options)
     => await RequestUserTokens(options.OpenIdBaseUrl,options.ClientId, options.ClientSecret, options.Username, options.Password);
 
   /// <summary>

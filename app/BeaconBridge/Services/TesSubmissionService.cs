@@ -18,20 +18,20 @@ public class TesSubmissionService
   private readonly ILogger<TesSubmissionService> _logger;
   private readonly OpenIdIdentityService _openIdIdentity;
   private readonly OpenIdOptions _openIdOptions;
-  private readonly EgressOpenIdOptions _egressOpenIdOptions;
+  private readonly OpenIdOptions _egressOpenIdOptions;
   private readonly SubmissionOptions _submissionOptions;
   private readonly EgressOptions _egressOptions;
   private readonly string _identityToken;
   private readonly string _egressIdentityToken;
 
   public TesSubmissionService(IOptions<SubmissionOptions> submissionOptions, OpenIdIdentityService openIdIdentity,
-    IOptions<OpenIdOptions> openIdOptions, ILogger<TesSubmissionService> logger, IOptions<EgressOptions> egressOptions, IOptions<EgressOpenIdOptions> egressOpenIdOptions)
+    IOptionsSnapshot<OpenIdOptions> openIdOptions, ILogger<TesSubmissionService> logger, IOptions<EgressOptions> egressOptions)
   {
     _openIdIdentity = openIdIdentity;
-    _openIdOptions = openIdOptions.Value;
+    _openIdOptions = openIdOptions.Get(OpenIdOptions.Submission);
     _submissionOptions = submissionOptions.Value;
     _logger = logger;
-    _egressOpenIdOptions = egressOpenIdOptions.Value;
+    _egressOpenIdOptions = openIdOptions.Get(OpenIdOptions.Egress);
     _egressOptions = egressOptions.Value;
     _identityToken = GetAuthorised().Result;
     _egressIdentityToken = GetEgressAuthorised().Result;
