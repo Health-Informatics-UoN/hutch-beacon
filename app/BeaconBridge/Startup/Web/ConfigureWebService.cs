@@ -37,6 +37,8 @@ public static class ConfigureWebService
       .Configure<OrganisationOptions>(b.Configuration.GetSection("Organisation"))
       .Configure<ServiceOptions>(b.Configuration.GetSection("ServiceInfo"))
       .Configure<OpenIdOptions>(b.Configuration.GetSection("IdentityProvider"))
+      .Configure<OpenIdOptions>(OpenIdOptions.Submission, b.Configuration.GetSection("IdentityProvider:Submission"))
+      .Configure<OpenIdOptions>(OpenIdOptions.Egress, b.Configuration.GetSection("IdentityProvider:Egress"))
       .Configure<MinioOptions>(b.Configuration.GetSection("Minio"))
       .Configure<WorkflowOptions>(b.Configuration.GetSection("Workflow"))
       .Configure<CrateAgentOptions>(b.Configuration.GetSection("Crate:Agent"))
@@ -45,7 +47,9 @@ public static class ConfigureWebService
       .Configure<AgreementPolicyOptions>(b.Configuration.GetSection("AgreementPolicy"))
       .Configure<AssessActionsOptions>(b.Configuration.GetSection("AssessActions"))
       .Configure<FilteringTermsUpdateOptions>(b.Configuration.GetSection("FilteringTerms"))
-      .Configure<SubmissionOptions>(b.Configuration.GetSection("SubmissionLayer"));
+      .Configure<SubmissionOptions>(b.Configuration.GetSection("SubmissionLayer"))
+      .Configure<EgressOptions>(b.Configuration.GetSection("EgressLayer"));
+    
     // Add HttpClients
 
     // Add Services
@@ -56,7 +60,7 @@ public static class ConfigureWebService
       .AddTransient<CrateGenerationService>()
       .AddTransient<FilteringTermsService>()
       .AddTransient<CrateSubmissionService>()
-      .AddSingleton<TesSubmissionService>();
+      .AddTransient<TesSubmissionService>();
 
     return b;
   }

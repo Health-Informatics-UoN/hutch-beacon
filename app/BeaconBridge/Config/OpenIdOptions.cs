@@ -3,6 +3,16 @@ namespace BeaconBridge.Config;
 public class OpenIdOptions
 {
   /// <summary>
+  /// For Submission API interactions
+  /// </summary>
+  public const string Submission = nameof(Submission);
+
+  /// <summary>
+  /// For Egress API interactions
+  /// </summary>
+  public const string Egress = nameof(Egress);
+
+  /// <summary>
   /// Fully qualified absolute base URL for API interactions with an OpenID Connect (OIDC) compliant
   /// Identity Provider (IdP), such as Keycloak.
   /// e.g. https://keycloak.tre.com/realms/tre-fx

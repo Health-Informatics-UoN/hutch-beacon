@@ -4,6 +4,7 @@ using BeaconBridge.Config;
 using BeaconBridge.Constants.Submission;
 using BeaconBridge.Data.Entities.Submission;
 using BeaconBridge.Models;
+using BeaconBridge.Models.Egress;
 using BeaconBridge.Models.Submission;
 using Flurl;
 using Flurl.Http;
@@ -17,17 +18,23 @@ public class TesSubmissionService
   private readonly ILogger<TesSubmissionService> _logger;
   private readonly OpenIdIdentityService _openIdIdentity;
   private readonly OpenIdOptions _openIdOptions;
+  private readonly OpenIdOptions _egressOpenIdOptions;
   private readonly SubmissionOptions _submissionOptions;
+  private readonly EgressOptions _egressOptions;
   private readonly string _identityToken;
+  private readonly string _egressIdentityToken;
 
   public TesSubmissionService(IOptions<SubmissionOptions> submissionOptions, OpenIdIdentityService openIdIdentity,
-    IOptions<OpenIdOptions> openIdOptions, ILogger<TesSubmissionService> logger)
+    IOptionsSnapshot<OpenIdOptions> openIdOptions, ILogger<TesSubmissionService> logger, IOptions<EgressOptions> egressOptions)
   {
     _openIdIdentity = openIdIdentity;
-    _openIdOptions = openIdOptions.Value;
+    _openIdOptions = openIdOptions.Get(OpenIdOptions.Submission);
     _submissionOptions = submissionOptions.Value;
     _logger = logger;
+    _egressOpenIdOptions = openIdOptions.Get(OpenIdOptions.Egress);
+    _egressOptions = egressOptions.Value;
     _identityToken = GetAuthorised().Result;
+    _egressIdentityToken = GetEgressAuthorised().Result;
   }
 
   /// <summary>
@@ -115,6 +122,72 @@ public class TesSubmissionService
       var error = await e.GetResponseStringAsync();
       _logger.LogError("Could not get submission status update. {Message}", error);
       throw;
+    }
+  }
+
+  public async Task ApproveEgress(Models.TesTask tesTask)
+  {
+    // account for sub layer having different sub ids
+    var subId = Int32.Parse(tesTask.SubId) + 1;
+
+    var reqAllEgress = _egressOptions.EgressLayerHost
+      .AppendPathSegments("api")
+      .AppendPathSegments("DataEgress")
+      .AppendPathSegments("GetAllEgresses")
+      .AppendQueryParam("unprocessedonly", true)
+      .WithOAuthBearerToken(_egressIdentityToken);
+
+    try
+    {
+      // Get all unprocessed Egress requests
+      var allEgressResponse = await reqAllEgress.GetAsync().ReceiveJson<List<EgressSubmission>>();
+      var egressRequest = allEgressResponse.First(submission => submission.SubmissionId == subId.ToString());
+      _logger.LogInformation("Submission {id} is waiting for Egress approval", egressRequest.SubmissionId);
+
+      // Approve
+      var reqApproveEgress = _egressOptions.EgressLayerHost
+        .AppendPathSegments("api")
+        .AppendPathSegments("DataEgress")
+        .AppendPathSegments("CompleteEgress")
+        .AppendQueryParam("id", egressRequest.Id)
+        .WithOAuthBearerToken(_egressIdentityToken);
+
+      await reqApproveEgress.PostJsonAsync(ApproveEgressSubmission(egressRequest));
+      _logger.LogInformation("Successfully Approved Egress for tes submission: {egressResponse}",
+        egressRequest.SubmissionId);
+    }
+    catch (FlurlHttpException e)
+    {
+      var error = await e.GetResponseStringAsync();
+      _logger.LogError("Could not get available egress information. {Message}", error);
+      throw;
+    }
+  }
+
+  private EgressSubmission ApproveEgressSubmission(EgressSubmission egressSubmission)
+  {
+    egressSubmission.Status = EgressStatus.FullyApproved;
+    egressSubmission.Completed = DateTime.Now;
+    egressSubmission.Reviewer = _egressOpenIdOptions.Username;
+    foreach (var file in egressSubmission.Files)
+    {
+      file.Status = FileStatus.Approved;
+      file.Reviewer = _egressOpenIdOptions.Username;
+    }
+    return egressSubmission;
+  }
+
+  private async Task<string> GetEgressAuthorised()
+  {
+    try
+    {
+      var (identity, _, _) = await _openIdIdentity.RequestUserTokensEgress(_egressOpenIdOptions);
+      return identity;
+    }
+    catch (InvalidOperationException)
+    {
+      _logger.LogCritical("Could not get authorised with the Identity Provider");
+      return string.Empty;
     }
   }
 
