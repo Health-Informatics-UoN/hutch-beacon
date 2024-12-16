@@ -6,6 +6,7 @@ using BeaconBridge.Data.Entities.Submission;
 using BeaconBridge.Models;
 using BeaconBridge.Models.Egress;
 using BeaconBridge.Models.Submission;
+using BeaconBridge.Models.Submission.Tes;
 using Flurl;
 using Flurl.Http;
 using Microsoft.Extensions.Options;
@@ -25,7 +26,8 @@ public class TesSubmissionService
   private readonly string _egressIdentityToken;
 
   public TesSubmissionService(IOptions<SubmissionOptions> submissionOptions, OpenIdIdentityService openIdIdentity,
-    IOptionsSnapshot<OpenIdOptions> openIdOptions, ILogger<TesSubmissionService> logger, IOptions<EgressOptions> egressOptions)
+    IOptionsSnapshot<OpenIdOptions> openIdOptions, ILogger<TesSubmissionService> logger,
+    IOptions<EgressOptions> egressOptions)
   {
     _openIdIdentity = openIdIdentity;
     _openIdOptions = openIdOptions.Get(OpenIdOptions.Submission);
@@ -35,6 +37,47 @@ public class TesSubmissionService
     _egressOptions = egressOptions.Value;
     _identityToken = GetAuthorised().Result;
     _egressIdentityToken = GetEgressAuthorised().Result;
+  }
+
+  public TesTask CreateTesTask(string beaconTaskId)
+  {
+    var tesTask = new TesTask()
+    {
+      Name = $"beacon-{beaconTaskId}",
+      Outputs = new List<TesOutput>()
+      {
+        new()
+        {
+          Url = "",
+          Path = "/workspace/data",
+          Type = TesFileType.DIRECTORYEnum
+        }
+      },
+      Executors = new List<TesExecutor>()
+      {
+        new()
+        {
+          Image = "hutchstack/beacon-omop-worker:latest", //version to be set as an option
+
+          Command = new List<string>()
+          {
+            "beacon-omop-worker",
+            "individuals",
+            "-f",
+            "Gender:F",
+            "SNOMED:386661006",
+            "SNOMED:271825005"
+          },
+          // need to set environment vars here?
+        }
+      },
+      Tags = new Dictionary<string, string>()
+      {
+        { "project", _submissionOptions.ProjectName },
+        { "tres", string.Join('|', _submissionOptions.Tres) }
+      },
+    };
+    return tesTask;
   }
 
   /// <summary>
@@ -174,6 +217,7 @@ public class TesSubmissionService
       file.Status = FileStatus.Approved;
       file.Reviewer = _egressOpenIdOptions.Username;
     }
+
     return egressSubmission;
   }
 
