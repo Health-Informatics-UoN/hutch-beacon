@@ -24,19 +24,22 @@ public class TesSubmissionService
   private readonly EgressOptions _egressOptions;
   private readonly string _identityToken;
   private readonly string _egressIdentityToken;
+  private readonly TesTaskOptions _tesTaskOptions;
 
   public TesSubmissionService(IOptions<SubmissionOptions> submissionOptions, OpenIdIdentityService openIdIdentity,
     IOptionsSnapshot<OpenIdOptions> openIdOptions, ILogger<TesSubmissionService> logger,
-    IOptions<EgressOptions> egressOptions)
+    IOptions<EgressOptions> egressOptions, IOptions<TesTaskOptions> tesTaskOptions)
   {
     _openIdIdentity = openIdIdentity;
     _openIdOptions = openIdOptions.Get(OpenIdOptions.Submission);
     _submissionOptions = submissionOptions.Value;
     _logger = logger;
+    _tesTaskOptions = tesTaskOptions.Value;
     _egressOpenIdOptions = openIdOptions.Get(OpenIdOptions.Egress);
     _egressOptions = egressOptions.Value;
     _identityToken = GetAuthorised().Result;
     _egressIdentityToken = GetEgressAuthorised().Result;
+    
   }
 
   public TesTask CreateTesTask(string beaconTaskId)
@@ -48,16 +51,18 @@ public class TesSubmissionService
       {
         new()
         {
-          Url = "",
-          Path = "/workspace/data",
-          Type = TesFileType.DIRECTORYEnum
+          Name = _tesTaskOptions.Outputs.Name,
+          Url = _tesTaskOptions.Outputs.Url,
+          Path = _tesTaskOptions.Outputs.Path,
+          Type = TesFileType.DIRECTORYEnum,
+          Description = "Results for beacon query"
         }
       },
       Executors = new List<TesExecutor>()
       {
         new()
         {
-          Image = "hutchstack/beacon-omop-worker:latest", //version to be set as an option
+          Image = $"hutchstack/beacon-omop-worker:{_tesTaskOptions.ImageVersion}",
 
           Command = new List<string>()
           {
@@ -68,7 +73,15 @@ public class TesSubmissionService
             "SNOMED:386661006",
             "SNOMED:271825005"
           },
-          // need to set environment vars here?
+          Stdout = $"{_tesTaskOptions.Outputs.Path}/stdout",
+          Env = new Dictionary<string, string>()
+          {
+            { "DATASOURCE_DB_DATABASE", "hutch" },
+            { "DATASOURCE_DB_HOST", "trefx01-hutch.uksouth.cloudapp.azure.com" },
+            { "DATASOURCE_DB_PASSWORD", "example" },
+            { "DATASOURCE_DB_USERNAME", "postgres" }
+          },
+          Workdir = "/outputs"
         }
       },
       Tags = new Dictionary<string, string>()

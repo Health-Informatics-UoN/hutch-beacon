@@ -46,7 +46,7 @@ public class EntryTypeController(
     {
       TesTask tesTask;
       var taskId = Guid.NewGuid().ToString();
-      if (await featureFlags.IsEnabledAsync(FeatureFlags.ApproveEgress))
+      if (await featureFlags.IsEnabledAsync(FeatureFlags.UseRoCrate))
       {
         // Build RO-Crate
         var zipBytes = await crateGenerationService.BuildCrate(filters, taskId);
