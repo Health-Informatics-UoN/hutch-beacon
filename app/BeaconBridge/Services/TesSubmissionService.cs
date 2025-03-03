@@ -39,10 +39,9 @@ public class TesSubmissionService
     _egressOptions = egressOptions.Value;
     _identityToken = GetAuthorised().Result;
     _egressIdentityToken = GetEgressAuthorised().Result;
-    
   }
 
-  public TesTask CreateTesTask(string beaconTaskId)
+  public TesTask CreateTesTask(string beaconTaskId, string filters)
   {
     var tesTask = new TesTask()
     {
@@ -62,25 +61,17 @@ public class TesSubmissionService
       {
         new()
         {
-          Image = $"hutchstack/beacon-omop-worker:{_tesTaskOptions.ImageVersion}",
+          Image = $"{_tesTaskOptions.BeaconImage.Image}:{_tesTaskOptions.BeaconImage.Version}",
 
           Command = new List<string>()
           {
-            "beacon-omop-worker",
+            "beacon",
             "individuals",
             "-f",
-            "Gender:F",
-            "SNOMED:386661006",
-            "SNOMED:271825005"
+            filters
           },
           Stdout = $"{_tesTaskOptions.Outputs.Path}/stdout",
-          Env = new Dictionary<string, string>()
-          {
-            { "DATASOURCE_DB_DATABASE", "hutch" },
-            { "DATASOURCE_DB_HOST", "trefx01-hutch.uksouth.cloudapp.azure.com" },
-            { "DATASOURCE_DB_PASSWORD", "example" },
-            { "DATASOURCE_DB_USERNAME", "postgres" }
-          },
+          Env = _tesTaskOptions.Env,
           Workdir = "/outputs"
         }
       },

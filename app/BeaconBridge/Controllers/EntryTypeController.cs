@@ -56,7 +56,7 @@ public class EntryTypeController(
       }
       else
       {
-        var task = tesSubmissionService.CreateTesTask(taskId);
+        var task = tesSubmissionService.CreateTesTask(taskId,filters);
         tesTask = await tesSubmissionService.SubmitTesTask(task);
       }
 
