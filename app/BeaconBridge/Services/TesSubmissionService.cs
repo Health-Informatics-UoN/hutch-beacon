@@ -6,6 +6,7 @@ using BeaconBridge.Data.Entities.Submission;
 using BeaconBridge.Models;
 using BeaconBridge.Models.Egress;
 using BeaconBridge.Models.Submission;
+using BeaconBridge.Models.Submission.Tes;
 using Flurl;
 using Flurl.Http;
 using Microsoft.Extensions.Options;
@@ -23,18 +24,64 @@ public class TesSubmissionService
   private readonly EgressOptions _egressOptions;
   private readonly string _identityToken;
   private readonly string _egressIdentityToken;
+  private readonly TesTaskOptions _tesTaskOptions;
 
   public TesSubmissionService(IOptions<SubmissionOptions> submissionOptions, OpenIdIdentityService openIdIdentity,
-    IOptionsSnapshot<OpenIdOptions> openIdOptions, ILogger<TesSubmissionService> logger, IOptions<EgressOptions> egressOptions)
+    IOptionsSnapshot<OpenIdOptions> openIdOptions, ILogger<TesSubmissionService> logger,
+    IOptions<EgressOptions> egressOptions, IOptions<TesTaskOptions> tesTaskOptions)
   {
     _openIdIdentity = openIdIdentity;
     _openIdOptions = openIdOptions.Get(OpenIdOptions.Submission);
     _submissionOptions = submissionOptions.Value;
     _logger = logger;
+    _tesTaskOptions = tesTaskOptions.Value;
     _egressOpenIdOptions = openIdOptions.Get(OpenIdOptions.Egress);
     _egressOptions = egressOptions.Value;
     _identityToken = GetAuthorised().Result;
     _egressIdentityToken = GetEgressAuthorised().Result;
+  }
+
+  public TesTask CreateTesTask(string beaconTaskId, string filters)
+  {
+    var tesTask = new TesTask()
+    {
+      Name = $"beacon-{beaconTaskId}",
+      Outputs = new List<TesOutput>()
+      {
+        new()
+        {
+          Name = _tesTaskOptions.Outputs.Name,
+          Url = _tesTaskOptions.Outputs.Url,
+          Path = _tesTaskOptions.Outputs.Path,
+          Type = TesFileType.DIRECTORYEnum,
+          Description = "Results for beacon query"
+        }
+      },
+      Executors = new List<TesExecutor>()
+      {
+        new()
+        {
+          Image = $"{_tesTaskOptions.BeaconImage.Image}:{_tesTaskOptions.BeaconImage.Version}",
+
+          Command = new List<string>()
+          {
+            "beacon",
+            "individuals",
+            "-f",
+            filters
+          },
+          Stdout = $"{_tesTaskOptions.Outputs.Path}/stdout",
+          Env = _tesTaskOptions.Env,
+          Workdir = "/outputs"
+        }
+      },
+      Tags = new Dictionary<string, string>()
+      {
+        { "project", _submissionOptions.ProjectName },
+        { "tres", string.Join('|', _submissionOptions.Tres) }
+      },
+    };
+    return tesTask;
   }
 
   /// <summary>
@@ -174,6 +221,7 @@ public class TesSubmissionService
       file.Status = FileStatus.Approved;
       file.Reviewer = _egressOpenIdOptions.Username;
     }
+
     return egressSubmission;
   }
 

@@ -42,15 +42,23 @@ public class EntryTypeController(
     };
     individualsResponse.Meta.ReturnedSchemas.Add(new ReturnedSchema()
       { EntityType = EntityTypes.Individuals, Schema = Schemas.Individuals });
-
     if (filters is not null)
     {
-      var bagItPath = Guid.NewGuid().ToString();
-      // Build RO-Crate
-      var zipBytes = await crateGenerationService.BuildCrate(filters, bagItPath);
+      TesTask tesTask;
+      var taskId = Guid.NewGuid().ToString();
+      if (await featureFlags.IsEnabledAsync(FeatureFlags.UseRoCrate))
+      {
+        // Build RO-Crate
+        var zipBytes = await crateGenerationService.BuildCrate(filters, taskId);
 
-      // Submit Crate
-      var tesTask = await crateSubmissionService.SubmitCrate(bagItPath, zipBytes, bagItPath);
+        // Submit Crate
+        tesTask = await crateSubmissionService.SubmitCrate(taskId, zipBytes, taskId);
+      }
+      else
+      {
+        var task = tesSubmissionService.CreateTesTask(taskId, filters);
+        tesTask = await tesSubmissionService.SubmitTesTask(task);
+      }
 
       // Poll for results
       // Start 5-minute timer
