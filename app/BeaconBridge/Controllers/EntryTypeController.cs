@@ -68,10 +68,11 @@ public class EntryTypeController(
       await Task.Delay(5000);
       while (timer.Elapsed.TotalSeconds < 480)
       {
-        // Poll Submission Layer API for task status every 5 seconds
-        await Task.Delay(5000);
         var submissionStatus = await tesSubmissionService.CheckStatus(tesTask);
-        if (submissionStatus.Equals(StatusType.TransferredForDataOut) &&
+        
+        // Poll Submission Layer API for task status every 15 seconds
+        await Task.Delay(20000);
+        if (submissionStatus.Equals(StatusType.DataOutRequested) &&
             await featureFlags.IsEnabledAsync(FeatureFlags.ApproveEgress)
            )
         {
