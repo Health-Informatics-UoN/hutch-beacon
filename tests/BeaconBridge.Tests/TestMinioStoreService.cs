@@ -2,6 +2,8 @@ using BeaconBridge.Config;
 using BeaconBridge.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Minio;
+using Minio.DataModel.Args;
 using Moq;
 using Xunit;
 
@@ -9,11 +11,14 @@ namespace BeaconBridge.Tests;
 
 public class TestMinioStoreService
 {
+  private readonly Mock<ILogger<MinioStoreService>> _logger = new();
+  private readonly Mock<IMinioClient> _minio = new();
+
+
   [Fact]
-  public void GetObjectDownloadUrl_Returns_CorrectUrl()
+  public async Task GetObjectDownloadUrl_Returns_CorrectUrl()
   {
     // Arrange
-    var logger = new Mock<ILogger<MinioService>>();
     var options = Options.Create(new MinioOptions
     {
       AccessKey = "Access",
@@ -22,14 +27,17 @@ public class TestMinioStoreService
       Bucket = "test-bucket",
       Host = "localhost:9000"
     });
-    var service = new MinioService(logger.Object, options);
-    var objectName = "test.crate.zip";
-    var expectedUrl = "http://localhost:9000/browser/test-bucket/" + objectName;
+    var service = new MinioStoreService(_logger.Object, options.Value, _minio.Object);
 
+    _minio.Setup(m => m.PresignedGetObjectAsync(It.IsAny<PresignedGetObjectArgs>()))
+      .ReturnsAsync("http://localhost:9000/download/testFile.zip");
+
+    var objectName = "testFile.zip";
+    var expectedUrl = "http://localhost:9000/download/testFile.zip";
     // Act
-    var actualUrl = service.GetObjectDownloadUrl(objectName);
+    var actualUrl = await service.GetObjectDownloadUrl(objectName);
 
     // Assert
-    Assert.Equal(actualUrl, expectedUrl);
+    Assert.Equal(expectedUrl, actualUrl);
   }
 }
