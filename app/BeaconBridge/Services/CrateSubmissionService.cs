@@ -6,7 +6,7 @@ using Minio.Exceptions;
 namespace BeaconBridge.Services;
 
 public class CrateSubmissionService(
-  MinioService minioService,
+  MinioStoreServiceFactory minioStoreServiceFactory,
   ILogger<CrateSubmissionService> logger,
   IOptions<SubmissionOptions> submissionOptions,
   TesSubmissionService submissionService)
@@ -23,12 +23,13 @@ public class CrateSubmissionService(
   public async Task<Models.TesTask> SubmitCrate(string bagItPath, byte[] zip, string beaconTaskId)
   {
     var fileName = bagItPath + ".zip";
+    var store = await minioStoreServiceFactory.Create();
     // Add the workflow crate to MinIO
-    if (await minioService.StoreExists())
+    if (await store.StoreExists())
     {
       try
       {
-        if (minioService.ObjectIsInStore(fileName))
+        if (store.ObjectIsInStore(fileName))
         {
           logger.LogInformation("{Object} already exists",
             Path.GetFileName(bagItPath));
@@ -36,7 +37,7 @@ public class CrateSubmissionService(
         else
         {
           logger.LogInformation("Saving Beacon workflow to object store");
-          await minioService.WriteToStore(fileName, zip);
+          await store.WriteToStore(fileName, zip);
         }
       }
       catch (Exception e) when (e is MinioException or FileNotFoundException)
@@ -59,7 +60,7 @@ public class CrateSubmissionService(
 
 
     // Get the workflow URL
-    var downloadUrl = minioService.GetObjectDownloadUrl(fileName);
+    var downloadUrl = await store.GetObjectUrl(fileName);
     logger.LogInformation("Download URL found:{url}", downloadUrl);
     // Build the TES task
     var tesTask = new TesTask
@@ -70,7 +71,7 @@ public class CrateSubmissionService(
       {
         new()
         {
-          Image = downloadUrl,
+          Image = downloadUrl
         }
       },
       Tags = new Dictionary<string, string>()

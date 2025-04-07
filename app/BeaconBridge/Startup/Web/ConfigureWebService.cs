@@ -57,7 +57,7 @@ public static class ConfigureWebService
     b.Services
       // .AddTransient<UserHelper>()  // Not used at the moment
       .AddTransient<OpenIdIdentityService>()
-      .AddTransient<MinioService>()
+      .AddTransient<MinioStoreServiceFactory>()
       .AddTransient<CrateGenerationService>()
       .AddTransient<FilteringTermsService>()
       .AddTransient<CrateSubmissionService>()
