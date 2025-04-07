@@ -60,7 +60,7 @@ public class CrateSubmissionService(
 
 
     // Get the workflow URL
-    var downloadUrl = await store.GetObjectUrl(fileName);
+    var downloadUrl = await store.GetObjectDownloadUrl(fileName);
     logger.LogInformation("Download URL found:{url}", downloadUrl);
     // Build the TES task
     var tesTask = new TesTask

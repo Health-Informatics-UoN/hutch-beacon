@@ -194,24 +194,24 @@ public class MinioStoreService(
   }
 
   /// <summary>
-  /// For a given object in a Minio Bucket we have access to,
-  /// get a direct download link.
+  /// Get the pre-signed download URL to an object in MinIO.
   /// </summary>
-  /// <param name="objectId">ID of the object to get a link for</param>
-  /// <returns>The URL which the object can be downloaded from</returns>
-  public async Task<string> GetObjectUrl(string objectId)
+  /// <param name="objectName">The name of the object to download.</param>
+  /// <returns>The object's download URL.</returns>
+  public async Task<string> GetObjectDownloadUrl(string objectName)
   {
-    // Check whether the object exists using statObject().
-    // If the object is not found, statObject() throws an exception,
-    // else it means that the object exists.
-    await minio.StatObjectAsync(new StatObjectArgs()
-      .WithBucket(options.Bucket)
-      .WithObject(objectId));
-
-    return await minio.PresignedGetObjectAsync(new PresignedGetObjectArgs()
-      .WithExpiry((int)TimeSpan.FromDays(1).TotalSeconds)
-      .WithBucket(options.Bucket)
-      .WithObject(objectId));
+    try
+    {
+      var args = new PresignedGetObjectArgs().WithBucket(options.Bucket).WithObject(objectName)
+        .WithExpiry(60 * 60 * 24);
+      var url = await minio.PresignedGetObjectAsync(args: args);
+      return url;
+    }
+    catch (MinioException)
+    {
+      logger.LogError("Unable to get Pre-signed Object URL");
+      throw;
+    }
   }
 
   /// <summary>
@@ -229,9 +229,9 @@ public class MinioStoreService(
       .WithBucket(options.Bucket)
       .WithObject(objectName)
       .WithCallbackStream(stream => { stream.CopyToAsync(memoryStream); });
-    
+
     logger.LogInformation("Downloading {FileName} from {Bucket}", objectName, options.Bucket);
-    
+
     await minio.GetObjectAsync(getObjectArgs);
     byte[] byteArray = memoryStream.ToArray();
     logger.LogInformation("Successfully downloaded {FileName} from {Bucket}", objectName,
