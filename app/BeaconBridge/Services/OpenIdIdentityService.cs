@@ -214,4 +214,23 @@ public class OpenIdIdentityService(IOptionsSnapshot<OpenIdOptions> openIdOptions
     logger.LogError("Attempted OIDC Token Request failed: {Error}", tokenResponse.Error);
     throw new InvalidOperationException(tokenResponse.Error);
   }
+  
+  
+  /// <summary>
+  /// Authorise user given OIDC credentials
+  /// </summary>
+  /// <returns>The identity token for the authorised user.</returns>
+  public async Task<string> GetAuthorised(OpenIdOptions options)
+  {
+    try
+    {
+      var (identity, _, _) = await RequestUserTokens(options);
+      return identity;
+    }
+    catch (InvalidOperationException)
+    {
+      logger.LogCritical("Could not get authorised with the Identity Provider");
+      return string.Empty;
+    }
+  }
 }
