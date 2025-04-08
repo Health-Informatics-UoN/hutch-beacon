@@ -68,10 +68,14 @@ public class EntryTypeController(
       await Task.Delay(5000);
       while (timer.Elapsed.TotalSeconds < 480)
       {
-        // Poll Submission Layer API for task status every 5 seconds
-        await Task.Delay(5000);
-        var submissionStatus = await tesSubmissionService.CheckStatus(tesTask);
-        if (submissionStatus.Equals(StatusType.TransferredForDataOut) &&
+        // Poll Submission Layer API for task status every 20 seconds
+        await Task.Delay(20000);
+
+        var submittedTask = await tesSubmissionService.GetTesTask(tesTask);
+        var submissionStatus = submittedTask.Status;
+
+        // If status is "DataOutRequested" then approve Egress
+        if (submissionStatus.Equals(StatusType.DataOutRequested) &&
             await featureFlags.IsEnabledAsync(FeatureFlags.ApproveEgress)
            )
         {
@@ -81,7 +85,8 @@ public class EntryTypeController(
         if (submissionStatus.Equals(StatusType.Failed)) break;
         if (submissionStatus.Equals(StatusType.Completed))
         {
-          var responseSummary = await tesSubmissionService.DownloadResults(tesTask);
+          var responseSummary =
+            await tesSubmissionService.DownloadResults(submittedTask.Id, submittedTask.Project.OutputBucket);
           individualsResponse.ResponseSummary = responseSummary;
           break;
         }

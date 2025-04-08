@@ -1,6 +1,7 @@
 using System.IO.Compression;
 using System.Text.Json;
 using BeaconBridge.Config;
+using BeaconBridge.Constants;
 using BeaconBridge.Constants.Submission;
 using BeaconBridge.Data.Entities.Submission;
 using BeaconBridge.Models;
@@ -10,6 +11,7 @@ using BeaconBridge.Models.Submission.Tes;
 using Flurl;
 using Flurl.Http;
 using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 using TesTask = BeaconBridge.Models.Submission.Tes.TesTask;
 
 namespace BeaconBridge.Services;
@@ -25,20 +27,28 @@ public class TesSubmissionService
   private readonly string _identityToken;
   private readonly string _egressIdentityToken;
   private readonly TesTaskOptions _tesTaskOptions;
+  private readonly MinioStoreServiceFactory _minioStore;
+  private readonly IFeatureManager _featureFlags;
+  private readonly MinioOptions _minioOptions;
 
   public TesSubmissionService(IOptions<SubmissionOptions> submissionOptions, OpenIdIdentityService openIdIdentity,
     IOptionsSnapshot<OpenIdOptions> openIdOptions, ILogger<TesSubmissionService> logger,
-    IOptions<EgressOptions> egressOptions, IOptions<TesTaskOptions> tesTaskOptions)
+    IOptions<EgressOptions> egressOptions, IOptions<TesTaskOptions> tesTaskOptions, IFeatureManager featureFlags,
+    MinioStoreServiceFactory minioStore, IOptions<MinioOptions> minioOptions)
+
   {
     _openIdIdentity = openIdIdentity;
     _openIdOptions = openIdOptions.Get(OpenIdOptions.Submission);
     _submissionOptions = submissionOptions.Value;
     _logger = logger;
+    _featureFlags = featureFlags;
+    _minioStore = minioStore;
+    _minioOptions = minioOptions.Value;
     _tesTaskOptions = tesTaskOptions.Value;
     _egressOpenIdOptions = openIdOptions.Get(OpenIdOptions.Egress);
     _egressOptions = egressOptions.Value;
-    _identityToken = GetAuthorised().Result;
-    _egressIdentityToken = GetEgressAuthorised().Result;
+    _identityToken = _openIdIdentity.GetAuthorised(_openIdOptions).Result;
+    _egressIdentityToken = _openIdIdentity.GetAuthorised(_egressOpenIdOptions).Result;
   }
 
   public TesTask CreateTesTask(string beaconTaskId, string filters)
@@ -65,7 +75,7 @@ public class TesSubmissionService
 
           Command = new List<string>()
           {
-            "beacon",
+            "beacon-omop-worker",
             "individuals",
             "-f",
             filters
@@ -82,6 +92,32 @@ public class TesSubmissionService
       },
     };
     return tesTask;
+  }
+
+  /// <summary>
+  /// Get a Submitted TES Task from the Sub. Layer API
+  /// </summary>
+  /// <param name="tesTask"></param>
+  /// <returns></returns>
+  public async Task<Submission> GetTesTask(Models.TesTask tesTask)
+  {
+    var subId = Int32.Parse(tesTask.SubId) + 1;
+
+    var req = _submissionOptions.SubmissionLayerHost
+      .AppendPathSegments("api")
+      .AppendPathSegments("Submission", "GetASubmission", subId)
+      .WithOAuthBearerToken(_identityToken);
+    try
+    {
+      var task = await req.GetAsync().ReceiveJson<Submission>();
+      return task;
+    }
+    catch (FlurlHttpException e)
+    {
+      var error = await e.GetResponseStringAsync();
+      _logger.LogError("Could not get task. {Message}", error);
+      throw;
+    }
   }
 
   /// <summary>
@@ -109,44 +145,53 @@ public class TesSubmissionService
     }
   }
 
-  public async Task<ResponseSummary> DownloadResults(Models.TesTask tesTask)
+  public async Task<ResponseSummary> DownloadResults(int taskId, string outputBucket)
   {
-    // Account for submission layer tre branching ids
-    var subId = Int32.Parse(tesTask.SubId) + 1;
-
-    var req = _submissionOptions.SubmissionLayerHost
-      .AppendPathSegments("api")
-      .AppendPathSegments("Submission", "DownloadFile")
-      .SetQueryParam("submissionId", subId)
-      .WithOAuthBearerToken(_identityToken);
-
     var responseSummary = new ResponseSummary();
-    try
+    if (await _featureFlags.IsEnabledAsync(FeatureFlags.UseRoCrate))
     {
-      var response = await req.GetBytesAsync();
-      _logger.LogInformation("Successfully downloaded results crate.");
-
-      // Load stream into ZipArchive
-      var memoryStream = new MemoryStream(response);
-      var zipArchive = new ZipArchive(memoryStream);
-
-      foreach (var entry in zipArchive.Entries)
+      var req = _submissionOptions.SubmissionLayerHost
+        .AppendPathSegments("api")
+        .AppendPathSegments("Submission", "DownloadFile")
+        .SetQueryParam("submissionId", taskId)
+        .WithOAuthBearerToken(_identityToken);
+      try
       {
-        // Look for output file
-        if (entry.Name.EndsWith("output.json"))
+        var response = await req.GetBytesAsync();
+        _logger.LogInformation("Successfully downloaded results crate.");
+
+
+        // Load stream into ZipArchive
+        var memoryStream = new MemoryStream(response);
+        var zipArchive = new ZipArchive(memoryStream);
+
+        foreach (var entry in zipArchive.Entries)
         {
-          responseSummary = JsonSerializer.Deserialize<ResponseSummary>(entry.Open());
+          // Look for output file
+          if (entry.Name.EndsWith("output.json"))
+          {
+            responseSummary = JsonSerializer.Deserialize<ResponseSummary>(entry.Open());
+          }
         }
       }
+      catch (FlurlHttpException e)
+      {
+        var error = await e.GetResponseStringAsync();
+        _logger.LogError("Could not download results crate {Message}", error);
+        throw;
+      }
     }
-    catch (FlurlHttpException e)
+    else
     {
-      var error = await e.GetResponseStringAsync();
-      _logger.LogError("Could not download results crate {Message}", error);
-      throw;
+      var store = await _minioStore.Create(new MinioOptions()
+        { Host = _minioOptions.Host, Bucket = outputBucket, Secure = _minioOptions.Secure });
+      // Get results from output bucket
+      var file = await store.GetFromStore($"{taskId}/output.json");
+      
+      responseSummary = JsonSerializer.Deserialize<ResponseSummary>(file);
     }
 
-    return responseSummary ?? throw new NullReferenceException();
+    return responseSummary ?? throw new NullReferenceException("Could not unpack response summary from output.json");
   }
 
   public async Task<StatusType> CheckStatus(Models.TesTask tesTask)
@@ -223,37 +268,5 @@ public class TesSubmissionService
     }
 
     return egressSubmission;
-  }
-
-  private async Task<string> GetEgressAuthorised()
-  {
-    try
-    {
-      var (identity, _, _) = await _openIdIdentity.RequestUserTokensEgress(_egressOpenIdOptions);
-      return identity;
-    }
-    catch (InvalidOperationException)
-    {
-      _logger.LogCritical("Could not get authorised with the Identity Provider");
-      return string.Empty;
-    }
-  }
-
-  /// <summary>
-  /// Authorise this service with the Submission Layer.
-  /// </summary>
-  /// <returns>The identity token for the authorised user.</returns>
-  private async Task<string> GetAuthorised()
-  {
-    try
-    {
-      var (identity, _, _) = await _openIdIdentity.RequestUserTokens(_openIdOptions);
-      return identity;
-    }
-    catch (InvalidOperationException)
-    {
-      _logger.LogCritical("Could not get authorised with the Identity Provider");
-      return string.Empty;
-    }
   }
 }
