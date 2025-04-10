@@ -5,6 +5,7 @@ import InfoPopup from "@/app/components/InfoPopup";
 import Button from "@/app/components/Button";
 import SearchDropdown from "@/app/components/SearchDropdown";
 import SelectedOption from "@/app/components/SelectedOption";
+import Loader from "./Loader";
 import { FaSearch } from "react-icons/fa";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { getIndividuals } from "@/app/actions";
@@ -85,13 +86,7 @@ export default function SearchForm({ filteringTerms }) {
         )}
         <span className="flex space-x-2">
           <Button
-            icon={
-              isLoading ? (
-                <loader className={inter.className} />
-              ) : (
-                <FaSearch size={18} />
-              )
-            }
+            icon={isLoading ? <Loader /> : <FaSearch size={18} />}
             text={isLoading ? "Loading.." : "Search"}
             onClick={fetchIndividuals}
             disabled={isLoading}
