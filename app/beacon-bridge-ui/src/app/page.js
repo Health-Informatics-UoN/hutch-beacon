@@ -6,8 +6,7 @@ export default async function Home() {
 
   return(
     <div className="px-6">
-      <div>
-        <h1 className="mb-4 text-xl md:text-2xl">About</h1>
+      <div className="py-5">
         <p>This Beacon uses the <u><a href="https://github.com/ga4gh-beacon/beacon-v2/">GA4GH Beacon v2 API</a></u> to find individuals present in an implementation of a Trusted Research Environment (TRE), called <u><a href="https://trefx.uk/">TRE-FX.</a></u></p><br/>
         <p>TRE-FX streamlines the ability to run the same analysis across multiple TREs.  In this demonstrator, the analysis is a Beacon query (specifically, a Beacon query using only filters) that is run as a workflow over an OMOP database of synthetic COVID-19 patient EHRs.</p><br/>
         <p>There are four stages involved from sending a Beacon query to receiving a Beacon response using the TRE-FX implementation:</p>
