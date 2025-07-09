@@ -15,6 +15,7 @@ export default async function Home() {
         <p>&nbsp; 3 - The TRE uses the Beacon query in the input parameters for a <i>Beacon over OMOP</i> workflow, which is <u><a href="https://workflowhub.eu/workflows/882">available from WorkflowHub</a></u>.</p>
         <p>&nbsp; 4 - To ensure no disclosive data are released from the TRE, workflow outputs are held for egress approval from the TRE owner in a manual process.  In this demonstrator, synthetic data are used so the Beacon response is automatically released.</p><br/>
         <p>The Beacon will return <span className="text-uon-forest-80">true</span> or <span className="text-uon-red-100">false</span> to indicate if the filters have been observed in any individuals.</p><br/>
+        <p>Note: It may take up to 3 minutes for a Beacon response from this demonstrator.  This is due to the query waiting at the submission layer for ingress into the TRE.</p><br/>
         <p>This Beacon TRE-FX demonstrator is provided by the Centre for Health Informatics and Digital Research Service at the University of Nottingham.</p>
       </div>
       <SearchForm filteringTerms={filteringTerms}/>
