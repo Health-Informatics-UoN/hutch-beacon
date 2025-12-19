@@ -20,7 +20,14 @@ export const request = async (
     ...(options.headers || {}),
   };
 
-  const response = await fetch(`${apiUrl}/api/${url}`, {
+  // safely build our url, with or without slashes in the parts
+  // path prefix is not hardcoded, so the BACKEND_URL has to contain
+  // the complete path excluding the final endpoint (e.g. `filtering_terms` or `individuals`)
+  const fullUrl =
+    (apiUrl.endsWith("/") ? apiUrl : `${apiUrl}/`) +
+    (url.startsWith("/") ? url.substring(1) : url);
+
+  const response = await fetch(fullUrl, {
     method: options.method || "GET",
     headers: headers,
     body: options.body,
