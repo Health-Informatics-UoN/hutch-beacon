@@ -14,7 +14,7 @@ export async function getFilteringTerms() {
     `filtering_terms?${searchParam}`, 
     {cache: "no-store"}
   )
-  return filteringTermsResponse["response"]
+  return filteringTermsResponse?.response?.filteringTerms ?? [];
 }
 
 /**
@@ -27,5 +27,5 @@ export async function getIndividuals(filters) {
   searchParam.set("filters", filters.map(s => s.id).join(","))
 
   var response = await request(`individuals?${searchParam.toString()}`)
-  return response["responseSummary"]
+  return response?.responseSummary ?? {exists: false, numTotalResults: 0};
 }
